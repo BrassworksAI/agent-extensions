@@ -2,7 +2,7 @@
 set -e
 
 # OpenCode SDD Dev Install (macOS/Linux only)
-# Creates symlinks from ~/.config/opencode to the local repo's opencode/ folder
+# Creates symlinks to the local repo's opencode/ folder
 # This allows you to edit files and push changes back to the repo
 
 # Colors (if terminal supports them)
@@ -35,29 +35,29 @@ confirm() {
   esac
 }
 
-# Main
-main() {
-  echo ""
-  echo "  OpenCode SDD Dev Install (Symlink Mode)"
-  echo "  ========================================"
-  echo ""
+# Find git root by walking up directories (no git required)
+find_git_root() {
+  dir="$PWD"
+  while [ "$dir" != "/" ]; do
+    if [ -d "$dir/.git" ] || [ -f "$dir/.git" ]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
 
-  # Determine script location to find repo root
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-  PAYLOAD_DIR="$SCRIPT_DIR/opencode"
+# Install symlinks to a target directory
+# Arguments: $1 = target root, $2 = payload dir, $3 = label for messages
+install_symlinks() {
+  TARGET_ROOT="$1"
+  PAYLOAD_DIR="$2"
+  LABEL="$3"
 
-  if [ ! -d "$PAYLOAD_DIR" ]; then
-    error "Cannot find 'opencode/' directory at $SCRIPT_DIR"
-  fi
-
-  TARGET_ROOT="$HOME/.config/opencode"
-
-  info "Source: $PAYLOAD_DIR"
-  info "Target: $TARGET_ROOT (symlinks)"
-  echo ""
+  info "Installing to $LABEL: $TARGET_ROOT"
 
   # Build file list and detect conflicts
-  info "Scanning for conflicts..."
   CONFLICTS=""
   CONFLICT_COUNT=0
 
@@ -85,7 +85,7 @@ main() {
   # Handle conflicts
   if [ $CONFLICT_COUNT -gt 0 ]; then
     echo ""
-    warn "Found $CONFLICT_COUNT conflicting file(s)/symlink(s):"
+    warn "Found $CONFLICT_COUNT conflicting file(s)/symlink(s) in $LABEL:"
     echo ""
     printf "$CONFLICTS" | head -20
     if [ $CONFLICT_COUNT -gt 20 ]; then
@@ -95,15 +95,14 @@ main() {
     warn "These will be replaced with symlinks to the repo."
     echo ""
     if ! confirm "Replace ALL conflicting files with symlinks?"; then
-      error "Installation aborted by user"
+      warn "Skipping $LABEL install"
+      return 1
     fi
     echo ""
-  else
-    success "No conflicts detected"
   fi
 
   # Create symlinks
-  info "Creating symlinks..."
+  info "Creating symlinks for $LABEL..."
 
   for file in $FILES; do
     src="$PAYLOAD_DIR/$file"
@@ -124,13 +123,92 @@ main() {
     ln -s "$src" "$dest" || error "Failed to create symlink for $file"
   done
 
+  success "Symlinks created at: $TARGET_ROOT"
+  return 0
+}
+
+# Main
+main() {
   echo ""
+  echo "  OpenCode SDD Dev Install (Symlink Mode)"
+  echo "  ========================================"
+  echo ""
+
+  # Determine script location to find repo root
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  PAYLOAD_DIR="$SCRIPT_DIR/opencode"
+
+  if [ ! -d "$PAYLOAD_DIR" ]; then
+    error "Cannot find 'opencode/' directory at $SCRIPT_DIR"
+  fi
+
+  info "Source: $PAYLOAD_DIR"
+  echo ""
+
+  # Choose install mode
+  echo "Where would you like to install symlinks?"
+  echo "  1) Global (~/.config/opencode)"
+  echo "  2) Local (current repo's .opencode folder)"
+  echo "  3) Both global and local"
+  echo ""
+  printf "Enter choice [1/2/3]: "
+  read -r choice
+
+  INSTALL_GLOBAL=""
+  INSTALL_LOCAL=""
+
+  case "$choice" in
+    1)
+      INSTALL_GLOBAL="yes"
+      ;;
+    2)
+      INSTALL_LOCAL="yes"
+      ;;
+    3)
+      INSTALL_GLOBAL="yes"
+      INSTALL_LOCAL="yes"
+      ;;
+    *)
+      error "Invalid choice. Please enter 1, 2, or 3."
+      ;;
+  esac
+
+  # Validate local install is possible
+  if [ -n "$INSTALL_LOCAL" ]; then
+    GIT_ROOT="$(find_git_root)" || error "Not inside a git repository. Cannot determine repo root for local install."
+    LOCAL_TARGET="$GIT_ROOT/.opencode"
+  fi
+
+  echo ""
+
+  INSTALLED_COUNT=0
+
+  # Install globally if requested
+  if [ -n "$INSTALL_GLOBAL" ]; then
+    GLOBAL_TARGET="$HOME/.config/opencode"
+    if install_symlinks "$GLOBAL_TARGET" "$PAYLOAD_DIR" "global"; then
+      INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    fi
+    echo ""
+  fi
+
+  # Install locally if requested
+  if [ -n "$INSTALL_LOCAL" ]; then
+    if install_symlinks "$LOCAL_TARGET" "$PAYLOAD_DIR" "local"; then
+      INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    fi
+    echo ""
+  fi
+
+  if [ $INSTALLED_COUNT -eq 0 ]; then
+    error "No installations completed"
+  fi
+
   success "Dev install complete!"
   echo ""
-  info "Symlinks created at: $TARGET_ROOT"
   info "Source files at: $PAYLOAD_DIR"
   echo ""
-  echo "Any edits you make in ~/.config/opencode will modify the repo files."
+  echo "Any edits you make to the symlinked files will modify the repo files."
   echo "You can commit and push changes directly."
   echo ""
 }
