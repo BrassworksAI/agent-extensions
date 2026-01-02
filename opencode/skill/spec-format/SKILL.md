@@ -29,9 +29,32 @@ Each capability spec follows this structure:
 
 Brief description of what this capability does and why it exists.
 
+## Access
+
+Optional section declaring access level for capabilities that have access control.
+Use a blockquote marker to indicate the access level:
+
+> Authenticated
+
+or
+
+> Public
+
+Projects define their own access levels in a platform-level spec (e.g., `auth-gating.md`).
+This keeps individual specs clean while still being explicit about access requirements.
+
 ## Dependencies
 
 Optional section listing dependencies on other specs or external systems.
+
+## Entry
+
+Optional section describing how users/systems arrive at this capability.
+Use for capabilities with clear entry points (navigation, triggers, conditions).
+
+> **ADDED**
+
+- WHEN a user navigates to <destination> the system SHALL <action>.
 
 ## Requirements
 
@@ -45,7 +68,40 @@ Requirements as a bulleted list. Optional grouping headings (### Group Name) for
 ### <Another Group>
 
 - WHILE <state> the system SHALL <action>.
+
+## Exit
+
+Optional section describing how the capability completes or where users end up.
+Use for capabilities with clear exit points (redirects, returns, completions).
+
+> **ADDED**
+
+- WHEN <action> completes the system SHALL redirect to <destination>.
+- IF <condition> THEN the system SHALL <alternative exit>.
 ```
+
+### When to Use Entry/Exit
+
+| Spec Type | Entry | Exit |
+|-----------|-------|------|
+| User-facing flows (sign-in, deletion) | ✓ | ✓ |
+| Compositions (navigation, dashboard) | — | — |
+| Programmatic capabilities (read, provision) | ✓ (trigger) | ✓ (returns) |
+| Static content pages (terms, privacy) | ✓ | — |
+
+Omit sections that don't apply. Not every spec needs Entry/Exit.
+
+### Surface-Agnostic Language
+
+Use action-oriented but surface-agnostic language in Entry/Exit:
+
+| Prefer | Avoid |
+|--------|-------|
+| "navigates to" | "clicks link to" |
+| "initiates sign-out" | "clicks sign-out button" |
+| "requests deletion" | "submits the delete form" |
+
+The spec describes *what the user intends to do*, not *how they physically do it*.
 
 ## EARS Syntax
 

@@ -71,12 +71,53 @@ Gates prevent advancing until prerequisites are met:
 |------|----|----------------|
 | ideation | proposal | Seed reviewed and approved |
 | proposal | specs | Proposal reviewed and approved |
-| specs | discovery | All delta specs written |
+| specs | discovery | All delta specs written and user-approved |
 | discovery | tasks | Architecture review complete |
 | tasks | plan | Tasks defined with requirements |
 | plan | implement | Plan approved for current task |
 | implement | reconcile | All tasks complete |
 | reconcile | finish | Implementation matches specs |
+
+## Phase Work Completion
+
+When phase deliverables are ready but user has not yet approved them:
+
+```markdown
+## Pending
+
+- [Phase artifacts] complete (e.g., "All 12 delta specs written")
+- Specialist review complete (if applicable)
+- **User review required**: [what to review] before advancing to [next phase]
+```
+
+**Rules:**
+- Phase work is considered "done" when deliverables are complete and reviewed (e.g., Archimedes for specs)
+- DO NOT automatically advance to the next phase when work is complete
+- ALWAYS indicate "User review required" in Pending when phase deliverables are ready
+- User must explicitly approve before state advances to next phase
+- Only after user approval should you update `## Phase` and clear the review note
+
+Example transition from specs -> discovery:
+
+**After specs work completes:**
+```markdown
+## Phase
+specs
+
+## Pending
+- All 43 delta specs written
+- Archimedes review complete
+- **User review required**: Review specs under changes/capstan/specs/ before advancing to discovery
+```
+
+**After user approves:**
+```markdown
+## Phase
+discovery
+
+## Pending
+- None
+```
 
 ## Updating State
 
