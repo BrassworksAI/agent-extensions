@@ -1,7 +1,6 @@
 ---
 name: sdd/forge
 description: SDD orchestrator - the workshop where spec-driven development happens
-model: github-copilot/gpt-5.2
 ---
 
 <skill>sdd-state-management</skill>
