@@ -146,14 +146,43 @@ Purpose: Document thinking so users can continue in a new chat with full context
 - Remove items when resolved (don't strike through)
 - Deferred ideas go elsewhere (e.g., `docs/future-capabilities.md`)
 
-## User Approval Gates
+## Conversational Phase Advancement
 
-For full lane, don't auto-advance phases. Indicate when user review is needed:
+Phase transitions happen through natural conversation, not automatic advancement.
+
+### How It Works
+
+1. **Present work**: Show what was produced (proposals, specs, plans, etc.)
+2. **Discuss**: Answer questions, incorporate feedback, refine collaboratively
+3. **Wait for explicit approval**: User must clearly signal they're satisfied
+4. **Log the decision**: Document what was approved in state.md
+5. **Update phase**: Only then advance to the next phase
+
+### Explicit Approval
+
+Look for clear signals that the user approves the work:
+- "Looks good", "that works", "approved", "let's move on"
+- User runs the next command without raising issues
+- Clear statement that the work is complete
+
+**These do NOT count as approval:**
+- User asking clarifying questions
+- User providing additional context
+- Acknowledging without agreement ("interesting", "I see")
+- Answering questions you asked
+
+### Logging Decisions
+
+When user explicitly approves, document it in state.md:
 
 ```markdown
 ## Pending
 
-- **User review required**: Review specs before advancing to discovery
+None - [artifact] approved: [brief summary of what was agreed]
 ```
 
-Advance only after explicit user approval.
+This creates a record of decisions made during conversation.
+
+### Natural Flow
+
+Keep it conversational. Don't force "ready to advance?" checkpoints. Work through the step with the user like collaborators solving a problem together. You'll naturally know when they're satisfied and ready to move on.

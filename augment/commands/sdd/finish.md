@@ -47,11 +47,13 @@ complete
 
 ### Cleanup Options
 
-Ask user about cleanup preference:
+Discuss cleanup preference with user:
 
 1. **Keep all artifacts**: Leave `changes/<name>/` intact for history
 2. **Archive**: Move to `changes/archive/<name>/`
 3. **Remove**: Delete `changes/<name>/` (delta specs already synced)
+
+Only proceed with cleanup after user explicitly chooses an option.
 
 ### Summary Report
 

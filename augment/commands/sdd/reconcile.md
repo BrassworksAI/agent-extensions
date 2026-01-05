@@ -109,9 +109,15 @@ Proceed to finish
 
 ### Completion
 
-When user approves your reconciliation findings and any spec changes:
+Work through reconciliation collaboratively with the user. When they explicitly approve your findings and any spec changes:
 
-1. Update state.md phase to `finish`
-2. Suggest running `/sdd/finish <name>`
+1. Log approval in state.md under `## Pending`:
+   ```
+   None - Reconciliation approved: [brief summary of findings]
+   ```
+2. Update state.md phase to `finish`
+3. Suggest running `/sdd:finish <name>`
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
 **Note**: If delta specs were created or updated, they will be synced to canonical specs during finish.

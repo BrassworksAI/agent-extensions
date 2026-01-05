@@ -80,7 +80,13 @@ Each task should be:
 
 ### Completion
 
-When tasks are defined:
+Work through task breakdown collaboratively with the user. When they explicitly approve:
 
-1. Update state.md phase to `plan`
-2. Suggest running `/sdd/plan <name>` to plan first task
+1. Log approval in state.md under `## Pending`:
+   ```
+   None - Tasks approved: [number] tasks defined
+   ```
+2. Update state.md phase to `plan`
+3. Suggest running `/sdd:plan <name>` to plan first task
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.

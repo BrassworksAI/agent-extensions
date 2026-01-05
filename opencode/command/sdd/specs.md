@@ -71,7 +71,13 @@ When specs are complete, suggest the user run `/sdd/tools/critique specs`:
 
 ### Completion
 
-When specs pass review:
+Work through specs collaboratively with the user. When they explicitly approve:
 
-1. Update state.md phase to `discovery`
-2. Suggest running `/sdd/discovery <name>`
+1. Log approval in state.md under `## Pending`:
+   ```
+   None - Specs approved: [list of spec files written]
+   ```
+2. Update state.md phase to `discovery`
+3. Suggest running `/sdd/discovery <name>`
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.

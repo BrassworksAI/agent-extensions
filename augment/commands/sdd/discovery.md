@@ -121,7 +121,13 @@ If discovery reveals the specs themselves need changes:
 
 ### Completion
 
-When architecture assessment is complete:
+Work through architecture assessment collaboratively with the user. When they explicitly approve:
 
-1. Update state.md phase to `tasks`
-2. Suggest running `/sdd/tasks <name>`
+1. Log approval in state.md under `## Pending`:
+   ```
+   None - Architecture reviewed: [brief summary of findings/decisions]
+   ```
+2. Update state.md phase to `tasks`
+3. Suggest running `/sdd:tasks <name>`
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.

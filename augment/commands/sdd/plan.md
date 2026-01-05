@@ -87,9 +87,17 @@ Create `changes/<name>/plans/<NN>.md`:
 
 ### Completion
 
+Work through the plan collaboratively with the user. When they explicitly approve:
+
 1. Mark task as `in_progress` in tasks.md
-2. Update state.md phase to `implement`
-3. Suggest `/sdd:implement <name>`
+2. Log approval in state.md under `## Pending`:
+   ```
+   None - Plan approved for task [N]: [task title]
+   ```
+3. Update state.md phase to `implement`
+4. Suggest `/sdd:implement <name>`
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
 ---
 
@@ -156,8 +164,16 @@ For vibe/bug lanes:
 
 ### Completion
 
-1. Update state.md phase to `implement`
-2. Suggest `/sdd:implement <name>`
+Work through the plan collaboratively with the user. When they explicitly approve:
+
+1. Log approval in state.md under `## Pending`:
+   ```
+   None - Plan approved: [brief summary of approach]
+   ```
+2. Update state.md phase to `implement`
+3. Suggest `/sdd:implement <name>`
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
 ---
 

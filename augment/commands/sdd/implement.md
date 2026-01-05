@@ -63,14 +63,19 @@ After implementation:
 
 **Full Lane:**
 1. Mark current task `complete` in tasks.md
-2. Check if more tasks remain:
-   - **More tasks**: Update state to `plan`, suggest `/sdd:plan <name>`
-   - **All complete**: Update state to `reconcile`, suggest `/sdd:reconcile <name>`
+2. Check if more tasks remain and discuss with user:
+   - **More tasks**: When user approves task completion, update state to `plan`, suggest `/sdd:plan <name>`
+   - **All complete**: When user approves final task, update state to `reconcile`, suggest `/sdd:reconcile <name>`
+3. Log in state.md under `## Pending`:
+   ```
+   None - Task [N] complete: [brief summary]
+   ```
 
 **Vibe/Bug Lane:**
-1. Implementation is complete with the single plan
-2. User decides next step:
-   - **Throwing away**: Done - no further action needed
-   - **Keeping the work**: Update state to `reconcile`, suggest `/sdd:reconcile <name>`
+1. Implementation complete - discuss with user what's next:
+   - **Throwing away**: Done - no state update needed
+   - **Keeping the work**: When user decides to keep it, update state to `reconcile`, suggest `/sdd:reconcile <name>`
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
 > **Note**: For vibe/bug lanes, reconcile is optional. If the work is exploratory or a quick fix that doesn't warrant spec updates, stopping here is perfectly valid.

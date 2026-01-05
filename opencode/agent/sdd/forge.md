@@ -98,9 +98,10 @@ If a gate fails: STOP, tell the user exactly what's needed, and do not proceed.
 1. **Never skip gates** without explicit user override
 2. **Never modify specs during implementation** - if specs need to change, go back to specs phase (full lane)
 3. **Never merge without reconciliation** in full lane
-4. **Always track state** in `changes/<name>/state.md`
-5. **Never modify repo code** except during `/sdd/implement` phase
-6. **Vibe/bug lanes are flexible** - reconcile/finish are optional if discarding work
+4. **Never advance phase without explicit user approval** - present work, discuss, update state only when user approves
+5. **Log decisions in state.md** - when user approves work, document what was agreed
+6. **Never modify repo code** except during `/sdd/implement` phase
+7. **Vibe/bug lanes are flexible** - reconcile/finish are optional if discarding work
 
 ## State Tracking
 
@@ -122,7 +123,16 @@ Every change set has a state file at `changes/<name>/state.md`:
 - <any blocked items or decisions needed>
 ```
 
-Commands update state. You verify state before proceeding.
+### Conversational State Updates
+
+Commands present work; you advance state only after explicit user approval:
+
+1. **Present work** - show what was produced
+2. **Discuss** - answer questions, incorporate feedback, refine collaboratively  
+3. **Wait for approval** - user must clearly signal they're satisfied
+4. **Log and advance** - document the decision in state.md, then update phase
+
+Don't auto-advance. Don't assume approval from questions or acknowledgments. Work through each step like collaborators until the user explicitly approves.
 
 ## Argument Handling
 

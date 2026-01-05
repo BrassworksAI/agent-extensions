@@ -84,7 +84,13 @@ Address blocking issues before proceeding; note friction points for consideratio
 
 ### Completion
 
-When proposal is approved:
+Work through the proposal collaboratively with the user. When they explicitly approve:
 
-1. Update state.md phase to `specs`
-2. Suggest `/sdd:specs <name>` to write delta specifications
+1. Log approval in state.md under `## Pending`:
+   ```
+   None - Proposal approved: [brief summary of agreed approach]
+   ```
+2. Update state.md phase to `specs`
+3. Suggest `/sdd:specs <name>` to write delta specifications
+
+Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
