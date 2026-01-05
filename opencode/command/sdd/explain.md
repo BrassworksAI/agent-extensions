@@ -18,7 +18,15 @@ Explain SDD concepts, workflow, or specific phases to help users understand the 
 
 ## Instructions
 
-### No Arguments - Full Overview
+### FIRST: Check for Topic Argument
+
+**If `$ARGUMENTS` is provided**: Skip directly to "Specific Topic" section below. Do NOT output the full overview.
+
+**If `$ARGUMENTS` is empty/not provided**: Output the full overview below.
+
+---
+
+### Full Overview (only when no argument provided)
 
 Provide a comprehensive explanation of SDD:
 
@@ -171,9 +179,18 @@ User: /sdd/finish
 
 ---
 
-### Specific Topics
+### Specific Topic (when argument provided)
 
-When user asks about a specific topic, explain in depth:
+When the user provides a topic in `$ARGUMENTS`, explain **only that topic** in depth. Do not output the full overview above.
+
+Use this format for the topic:
+1. **What it is** - Clear definition
+2. **Why it exists** - The problem it solves
+3. **How it works** - Mechanics and structure
+4. **Example** - Concrete illustration
+5. **Common questions** - Anticipate confusion points
+
+#### Known Topics
 
 | Topic | What to Explain |
 |-------|-----------------|
@@ -189,14 +206,7 @@ When user asks about a specific topic, explain in depth:
 | `tools` | `/sdd/tools/*` commands for critique, scenario testing, taxonomy |
 | `skills` | Architecture-fit-check and architecture-workshop frameworks |
 
-### Response Format
-
-For any topic:
-1. **What it is** - Clear definition
-2. **Why it exists** - The problem it solves
-3. **How it works** - Mechanics and structure
-4. **Example** - Concrete illustration
-5. **Common questions** - Anticipate confusion points
+If the topic doesn't match a known topic exactly, interpret the user's intent and explain the relevant concept.
 
 ### Research if Needed
 
