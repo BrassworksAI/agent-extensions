@@ -45,7 +45,7 @@ ideation -> proposal -> specs -> discovery -> tasks -> plan -> implement -> reco
 | `ideation` | Explore problem space | `seed.md` |
 | `proposal` | Define what we're building | `proposal.md` |
 | `specs` | Write detailed specifications | `specs/*.md` (delta specs) |
-| `discovery` | Review specs against architecture | Discovery notes |
+| `discovery` | Understand high-level architecture needs | `thoughts/*.md` |
 | `tasks` | Break specs into tasks | `tasks.md` |
 | `plan` | Plan current task | `plans/NN.md` |
 | `implement` | Execute the plan | Code changes |

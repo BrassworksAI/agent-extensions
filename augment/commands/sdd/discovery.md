@@ -1,11 +1,19 @@
 ---
-description: Review specs against existing architecture
+description: Discover high-level architectural requirements for delta specs
 argument-hint: <change-set-name>
 ---
 
 # Discovery
 
-Review delta specs against existing repository architecture.
+Understand the high-level architectural requirements for implementing delta specs. This phase answers the big questions about how the change fits into—or extends—the existing architecture.
+
+## Purpose
+
+Discovery is NOT about planning implementation details. It's about:
+- Understanding what architectural patterns/systems the specs will touch
+- Identifying if the change slots cleanly into existing architecture (simple case)
+- Recognizing when architectural concerns need resolution before planning (complex case)
+- Working through high-level solutions when the path isn't obvious
 
 ## Arguments
 
@@ -34,73 +42,86 @@ Before evaluating architecture fit, **delegate to @librarian** to understand the
    - Identify specific code areas specs will touch
    - Note any patterns that seem relevant
 
-### Architecture Fit Evaluation
+### Architecture Assessment
 
-Use this framework to evaluate if delta specs fit the existing architecture:
+Answer the primary question:
 
-**Primary Question:** Can an implementer translate these delta specs into the repo's current architecture with routine changes + small refactors?
+**Can these delta specs be implemented cleanly within the existing architecture?**
 
-#### Process
+#### Simple Case: Clean Fit
 
-1. **Identify Constraints** based on research:
-   - **Structural**: Module boundaries, dependency directions, layering rules
-   - **Behavioral**: Error handling, state management, concurrency model
-   - **Interface**: API contracts, extension points, data formats
+If the specs slot easily into existing architecture (e.g., new endpoint, data to template, straightforward CRUD), there's not much to record here:
+- Note that architecture review found no concerns
+- Proceed directly to tasks phase
 
-2. **Evaluate Each Delta** against constraints:
-   - Can it be implemented using existing patterns?
-   - Does it require crossing boundaries in new ways?
-   - Does it introduce new primitives the repo doesn't have?
+#### Complex Case: Concerns Exist
 
-3. **Check for Workaround Smell**:
-   - Am I proposing adjustments that are really just hacks?
-   - Would these adjustments create inconsistent patterns?
+If the specs WOULD work but raise concerns:
+- Would require messy workarounds
+- Introduces inconsistent patterns  
+- Creates technical debt
+- Requires primitives the codebase doesn't have
 
-#### Verdicts
+Then adopt the **Daedalus personality** (master architect) to work through the best solution with the user.
 
-| Verdict | Choose When |
-|---------|-------------|
-| **FITS** | All constraints satisfied, changes follow existing patterns |
-| **FITS_WITH_ADJUSTMENTS** | Minor violations fixable with targeted work |
-| **NO_FIT** | Clean solution requires a new paradigm |
+### Daedalus Mode (When Concerns Exist)
 
-### Analyzing Findings
+When architectural concerns are identified, engage as Daedalus—the master architect who designs elegant solutions:
 
-Based on verdict:
+1. **Explain the concern clearly** to the user:
+   - What makes the straightforward approach problematic
+   - Why it matters for maintainability/consistency
+   - What questions need answering
 
-1. **FITS**: Proceed to tasks phase
-2. **FITS_WITH_ADJUSTMENTS**: Document adjustments needed in proposal.md, then proceed
-3. **NO_FIT**: Explore architecture options (see below)
+2. **Explore high-level solutions**:
+   - **Light-touch options**: Adapter layer, new module boundary, small abstraction
+   - **Architecture options**: New eventing/pubsub system, state management pattern, concurrency model
 
-### Architecture Workshop (if NO_FIT)
+3. **Work through it with the user**:
+   - Present tradeoffs (blast radius, incremental path, long-term impact)
+   - Get user input on direction
+   - Reach consensus on approach
 
-If architecture evaluation returns NO_FIT:
+4. **Capture thoughts along the way** in `changes/<name>/thoughts/`:
+   - Create files as needed during the session
+   - Free-form format—whatever captures the exploration
+   - Document concerns, options considered, decisions reached
+   - This preserves context if user continues in a new chat
 
-1. Tell user: "Architecture fit evaluation returned NO_FIT. Exploring architecture options."
+### Thoughts Directory
 
-2. **Generate Options**:
-   - **Light-Touch**: New module boundary, adapter layer, small abstraction
-   - **Architecture**: New eventing/pubsub, state machine, concurrency model change
+Discovery outputs to `changes/<name>/thoughts/`. This is a free-form workspace:
 
-3. **Evaluate Each Option**:
-   - **Blast radius**: Which domains/components change
-   - **Incremental path**: Can we keep repo green throughout?
-   - **Long-term impact**: How this affects future changes
+```
+changes/<name>/
+  thoughts/
+    architecture-concerns.md
+    options-explored.md
+    decision-rationale.md
+```
 
-4. Document chosen approach in proposal.md
-5. If architecture work affects specs, return to specs phase first
+Create as many files as needed. The goal is capturing the architectural exploration so it's not lost.
+
+### Constraint Framework (for evaluation)
+
+When assessing fit, consider these constraint types:
+
+| Constraint Type | Examples |
+|-----------------|----------|
+| **Structural** | Module boundaries, dependency directions, layering rules |
+| **Behavioral** | Error handling patterns, state management, concurrency model |
+| **Interface** | API contracts, extension points, data formats |
 
 ### Updating Specs
 
-If discovery reveals spec issues:
+If discovery reveals the specs themselves need changes:
 - Return to specs phase
-- Update delta specs
+- Update delta specs to reflect architectural decisions
 - Re-run discovery
 
 ### Completion
 
-When architecture review passes:
+When architecture assessment is complete:
 
 1. Update state.md phase to `tasks`
-2. Document any architectural decisions in proposal.md
-3. Suggest running `/sdd/tasks <name>`
+2. Suggest running `/sdd/tasks <name>`
