@@ -31,10 +31,10 @@ If lane is `vibe` or `bug`, redirect user to `/sdd/plan` instead.
 !`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
 
 ### Specs
-!`cat changes/$1/specs/* 2>/dev/null || echo "No specs found"`
+!`find changes/$1/specs -name "*.md" -exec cat {} + 2>/dev/null || echo "No specs found"`
 
 ### Thoughts
-!`cat changes/$1/thoughts/* 2>/dev/null || echo "No thoughts found"`
+!`find changes/$1/thoughts -name "*.md" -exec cat {} + 2>/dev/null || echo "No thoughts found"`
 
 ## Instructions
 
