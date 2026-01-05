@@ -21,18 +21,31 @@ Create implementation tasks for the change set. This command is for **full lane*
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `tasks` and lane is `full`
-2. Read delta specs from `changes/<name>/specs/`
-3. Read `changes/<name>/proposal.md` to understand high-level intent and goals
-4. Read any architectural thoughts in `changes/<name>/thoughts/`
+1. Read `changes/$1/state.md` - verify phase is `tasks` and lane is `full`
 
 If lane is `vibe` or `bug`, redirect user to `/sdd/plan` instead.
+
+## Context
+
+### Proposal
+!`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
+
+### Specs
+!`cat changes/$1/specs/* 2>/dev/null || echo "No specs found"`
+
+### Thoughts
+!`cat changes/$1/thoughts/* 2>/dev/null || echo "No thoughts found"`
+
+## Instructions
 
 ### Collaborative Tasking
 
 This command is a **dialogue**, not a one-way generation.
 
-1. **Think Out Loud**: Before writing the file, present your initial thoughts on the task breakdown. Explain *why* you're grouping certain requirements and why you've chosen a specific order.
+1. **Think Out Loud**: Before writing the file, present your initial thoughts on the task breakdown.
+   - Generalize the requirements: Tasks should include *anything* necessary to make the implementation successful (e.g., scaffolding, environment setup, refactoring).
+   - Traceability: You MUST explicitly call out which specific spec requirements are covered by each task.
+   - Explain *why* you're grouping certain requirements and why you've chosen a specific order (e.g., maintaining system stability, foundation-first).
 2. **Present Options**: If there are multiple valid ways to slice the work (e.g., horizontal vs vertical, foundation-first vs feature-first), present them to the user with trade-offs.
 3. **Invite Feedback**: Explicitly ask the user if they have specific preferences for task granularity or if there's a specific logical flow they want to follow to maintain system stability.
 4. **Iterate**: Only write `tasks.md` once a consensus on the strategy has been reached.
@@ -60,17 +73,11 @@ What this task accomplishes. Focus on why it exists and what it changes.
 
 **Requirements:**
 
+#### Foundations & Prerequisites (if any, else skip)
+- <Description of technical prerequisite, scaffolding, or environment setup needed for success>
+
 #### <spec-path>
 - "<full EARS requirement line>"
-
-**Acceptance Criteria:**
-- <Testable criterion>
-- <Testable criterion>
-
----
-
-### [ ] <Title>
-
 ...
 ```
 
