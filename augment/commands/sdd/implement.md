@@ -21,8 +21,10 @@ Execute the current implementation plan.
 
 1. Read `changes/<name>/state.md` - verify phase is `implement`
 2. Determine lane and load plan:
-   - **Full lane**: Read `changes/<name>/tasks.md` to find current in_progress task, then read corresponding plan from `changes/<name>/plans/`
+   - **Full lane**: Read `changes/<name>/tasks.md` only to identify the current task (prefer `[o]`; otherwise first `[ ]`). Then load the corresponding plan from `changes/<name>/plans/`.
    - **Vibe/Bug lane**: Read `changes/<name>/plan.md` (single combined plan)
+
+For full lane, the plan file is the source of truth for what to do; `tasks.md` is bookkeeping (current task + completion).
 
 ### Implementation Process
 
@@ -62,14 +64,15 @@ After implementation:
 ### Completion
 
 **Full Lane:**
-1. Update `tasks.md`: change `[o]` to `[x]` for the finished task.
-2. Check if more tasks remain and discuss with user:
-   - **More tasks**: When user approves task completion, update state to `plan`, suggest `/sdd:plan <name>`
-   - **All complete**: When user approves final task, update state to `reconcile`, suggest `/sdd:reconcile <name>`
-3. Log in state.md under `## Pending`:
-   ```
-   None - Task [N] complete: [brief summary]
-   ```
+1. Review results with the user and confirm validation is green.
+2. When the user explicitly approves the implementation, suggest making a git commit before advancing state. Provide a copy/paste commit message:
+   - `git commit -am "<concise message summarizing what/why>"`
+3. Wait for the user to confirm the commit is made and the working tree is clean.
+4. Update `changes/<name>/tasks.md`: change the current `[o]` to `[x]`.
+5. If any tasks remain `[ ]` after marking the current task complete, update `changes/<name>/state.md` phase to `plan` and suggest `/sdd:plan <name>`.
+6. If no tasks remain `[ ]` (i.e., you just completed the last task in the change set), update `changes/<name>/state.md` phase to `reconcile` and suggest `/sdd:reconcile <name>`.
+
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only). If a completion/approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`).
 
 **Vibe/Bug Lane:**
 1. Implementation complete - discuss with user what's next:

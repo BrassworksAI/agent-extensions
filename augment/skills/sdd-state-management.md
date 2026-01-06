@@ -4,7 +4,9 @@ This skill covers how SDD tracks change set state and enforces phase gates.
 
 ## State File
 
-Every change set has a state file at `changes/<name>/state.md`:
+Every change set has a state file at `changes/<name>/state.md`.
+
+Phase transitions happen only after explicit user approval—questions and feedback don't count as approval. Task status in `changes/<name>/tasks.md` can move to `[o]` (In Progress) as soon as work (planning or implementation) starts.
 
 ```markdown
 # SDD State: <name>

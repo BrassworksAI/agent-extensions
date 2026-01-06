@@ -34,8 +34,9 @@ For full lane, plan one task at a time.
 ### Identify Current Task
 
 1. Read `changes/<name>/tasks.md`
-2. Find the first task marked `[ ]` (Pending) or `[o]` (In Progress)
-3. Read any existing plans in `changes/<name>/plans/`
+2. If a task is already `[o]` (In Progress), assume it is the current task and continue planning it.
+3. Otherwise, pick the first `[ ]` (Pending) task as the current task.
+4. Read any existing plans in `changes/<name>/plans/`
 
 ### Load Specs (Full Lane)
 
@@ -66,7 +67,9 @@ This command is a **dialogue**, not a one-way generation.
 
 ### Create Plan
 
-Only after the user indicates alignment, create `changes/<name>/plans/<NN>.md`:
+At the start of planning (before writing the plan file), update `changes/<name>/tasks.md` to mark the current task as `[o]` (In Progress). Ensure there is at most one `[o]` task at a time.
+
+Only after the user indicates alignment, create `changes/<name>/plans/<NN>.md` (or update the existing plan for the in-progress task):
 
 ```markdown
 # Plan: <Task Title>
@@ -108,13 +111,9 @@ Only after the user indicates alignment, create `changes/<name>/plans/<NN>.md`:
 
 After the plan file is written, review it with the user. When they explicitly approve:
 
-1. Update `tasks.md`: Mark the task as `[o]` (In Progress). Ensure all other tasks are either `[ ]` or `[x]`.
-2. Log approval in state.md under `## Pending`:
-   ```
-   None - Plan approved for task [N]: [task title]
-   ```
-3. Update state.md phase to `implement`
-4. Suggest `/sdd/implement <name>`
+1. Update `changes/<name>/state.md` phase to `implement`
+2. If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`), not `## Pending`.
+3. Suggest `/sdd/implement <name>`
 
 Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
@@ -195,11 +194,8 @@ For vibe/bug lanes:
 
 After the plan file is written, review it with the user. When they explicitly approve:
 
-1. Log approval in state.md under `## Pending`:
-   ```
-   None - Plan approved: [brief summary of approach]
-   ```
-2. Update state.md phase to `implement`
+1. Update `changes/<name>/state.md` phase to `implement`
+2. If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`), not `## Pending`.
 3. Suggest `/sdd/implement <name>`
 
 Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
