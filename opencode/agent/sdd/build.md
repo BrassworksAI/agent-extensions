@@ -91,8 +91,8 @@ permission:
     "* | bash": deny
     "curl * | *": deny
     "wget * | *": deny
-    "chmod *": deny
-    "chown *": deny
+    "chmod *": ask
+    "chown *": ask
     # Mutating git - ask
     "git add*": ask
     "git commit*": ask
