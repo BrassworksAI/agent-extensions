@@ -47,7 +47,7 @@ With research in hand, suggest the user run `/sdd/tools/taxonomy-map <name>`:
 
 ### Writing Change Set Specs
 
-Create specs in `changes/<name>/specs/` following the `spec-format` skill.
+Create specs in `changes/<name>/specs/` following the `spec-format` skill. Specs may be nested by domain/subdomain under that folder (e.g. `changes/<name>/specs/auth/login.md`).
 Remember that change set specs have YAML frontmatter `kind: new | delta`.
 
 1. **Identify capabilities** needed from the proposal

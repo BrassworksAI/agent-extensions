@@ -46,7 +46,9 @@ Create specs in `changes/<name>/specs/` following the spec format guidance below
 
 #### Spec File Structure
 
-Specs live in `specs/` at the repository root, organized by domain:
+Canonical specs (post-finish) may live in a domain taxonomy under `specs/` at the repository root.
+
+Change-set specs for this change are authored under `changes/<name>/specs/` and may be nested by domain/subdomain.
 
 ```
 specs/

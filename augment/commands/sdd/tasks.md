@@ -18,7 +18,7 @@ Create implementation tasks for the change set. This command is for **full lane*
 ### Setup
 
 1. Read `changes/<name>/state.md` - verify phase is `tasks` and lane is `full`
-2. Read change-set specs from `changes/<name>/specs/` (both `kind: new` and `kind: delta`)
+2. Read change-set specs from `changes/<name>/specs/**/*.md` (both `kind: new` and `kind: delta`)
 3. Read `changes/<name>/proposal.md` to understand high-level intent and goals
 4. Read any architectural thoughts in `changes/<name>/thoughts/`
 

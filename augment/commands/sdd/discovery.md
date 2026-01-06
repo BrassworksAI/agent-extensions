@@ -24,7 +24,7 @@ Discovery is NOT about planning implementation details. It's about:
 ### Setup
 
 1. Read `changes/<name>/state.md` - verify phase is `discovery` and lane is `full`
-2. Read all change-set specs from `changes/<name>/specs/` (both `kind: new` and `kind: delta`)
+2. Read all change-set specs from `changes/<name>/specs/**/*.md` (both `kind: new` and `kind: delta`)
 3. Read `changes/<name>/proposal.md` for context
 
 ### Research Phase (Critical)

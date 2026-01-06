@@ -37,6 +37,13 @@ For full lane, plan one task at a time.
 2. Find the first task marked `[ ]` (Pending) or `[o]` (In Progress)
 3. Read any existing plans in `changes/<name>/plans/`
 
+### Load Specs (Full Lane)
+
+Read all change-set specs for context, recursively:
+- `changes/<name>/specs/**/*.md`
+
+Do not assume specs only exist at `changes/<name>/specs/*.md`.
+
 ### Research
 
 Delegate to `@librarian` to understand:
