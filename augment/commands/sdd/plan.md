@@ -36,8 +36,12 @@ For full lane, plan one task at a time.
 
 1. Read `changes/<name>/tasks.md`
 2. If a task is already `[o]` (In Progress), assume it is current task and continue planning it.
+   - **CRITICAL**: Do NOT replan or replace the `[o]` task unless the user explicitly requests it
+   - Focus on enhancing the existing plan or planning the next sub-tasks for that task
 3. Otherwise, pick the first `[ ]` (Pending) task as the current task.
 4. Read any existing plans in `changes/<name>/plans/`
+   - If a plan exists for the current task, READ it first before making changes
+   - Never overwrite an existing plan without user approval
 
 ### Load Specs (Full Lane)
 
@@ -71,6 +75,12 @@ This command is a **dialogue**, not a one-way generation.
 ### Create Plan
 
 At the start of planning (before writing the plan file), update `changes/<name>/tasks.md` to mark the current task as `[o]` (In Progress). Ensure there is at most one `[o]` task at a time.
+
+**IMPORTANT**: If you're continuing a task marked `[o]`, check if a plan already exists for it. If it does:
+- Read the existing plan first
+- Either enhance it with more details/clarifications, OR
+- Ask the user if they want to replace it
+- Do NOT silently overwrite existing plans
 
 Only after the user indicates alignment, create `changes/<name>/plans/<NN>.md` (or update the existing plan for the in-progress task):
 

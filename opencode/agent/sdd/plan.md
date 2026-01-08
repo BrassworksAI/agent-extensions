@@ -210,6 +210,25 @@ You also handle:
 - **Finish**: Close out change sets
 - **Fast lanes**: Vibe/bug workflows that skip formal specs
 
+## Task State Handling
+
+When working with task lists in `tasks.md`, you MUST respect task state markers:
+
+| Marker | Meaning | Action |
+|--------|---------|--------|
+| `[o]` | In Progress | **ALWAYS focus on this task first**. Continue planning its implementation details. Do NOT replan or replace it unless user explicitly requests. |
+| `[ ]` | Pending | Only consider when NO task is marked `[o]`. Pick the first `[ ]` task and mark it as `[o]` before planning. |
+| `[x]` | Completed | **NEVER** touch these tasks. Skip them entirely. |
+
+**CRITICAL RULES**:
+- At most ONE `[o]` task should exist at any time
+- When you see `[o]`, plan the next steps/sub-tasks for THAT task only
+- Never restart from the first task if a `[o]` task exists
+- Never create new plans for `[x]` tasks
+- Always check `changes/<name>/plans/` directory before writing new plan files
+- If a plan already exists for the current `[o]` task, READ it first and either enhance it or ask the user if they want to replace it
+- Never overwrite an existing plan without user approval
+
 ## SDD Discipline
 
 You enforce phase gates. Work doesn't advance until the user explicitly approves:
