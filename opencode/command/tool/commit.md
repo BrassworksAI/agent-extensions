@@ -35,8 +35,6 @@ Analyze the changes above and create commits following these rules:
 
 ```
 <type>(<scope>): <description>
-
-[optional body]
 ```
 
 ### Allowed Types
@@ -53,6 +51,7 @@ Analyze the changes above and create commits following these rules:
 - Omit scope only for cross-cutting changes
 
 ### Commit Message Style
+- **Single sentence only** - no additional text, body, or clarifying details
 - Write in terms of what the **system now does** (not what you did)
 - Focus on the **why** and **impact**, not implementation details
 - Messages will be used in changelogs, so write for end-users/developers

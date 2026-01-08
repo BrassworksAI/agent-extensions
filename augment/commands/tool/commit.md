@@ -55,8 +55,6 @@ Use this format for all commits:
 
 ```
 <type>(<scope>): <description>
-
-[optional body]
 ```
 
 #### Allowed Types
@@ -78,7 +76,9 @@ Use this format for all commits:
 
 ### 4. Commit Message Style
 
-Write in terms of what the **system now does**, not what you did. Messages will be used in changelogs.
+- **Single sentence only** - no additional text, body, or clarifying details
+- Write in terms of what the **system now does**, not what you did
+- Messages will be used in changelogs
 
 **Good examples:**
 - `feat(auth): support OAuth2 refresh tokens`
