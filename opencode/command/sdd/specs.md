@@ -20,9 +20,15 @@ Write change-set specifications for the change set (`kind: new` and `kind: delta
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `specs` and lane is `full`
-2. Read `changes/<name>/proposal.md` for context
-3. List existing `specs/` structure to understand current taxonomy
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
+
+If lane is not `full`, redirect user to appropriate command.
 
 ### Research Phase
 
@@ -54,6 +60,8 @@ Remember that change set specs have YAML frontmatter `kind: new | delta`.
 2. **Determine paths** using taxonomy mapping guidance
 3. **Write requirements** using EARS syntax
 
+Update state.md `## Notes` with progress on spec writing, key decisions, and any issues encountered.
+
 ### Spec Review
 
 For each spec file:
@@ -72,13 +80,9 @@ When specs are complete, suggest the user run `/sdd/tools/critique specs`:
 
 ### Completion
 
-Work through specs collaboratively with the user. When they explicitly approve:
+When they explicitly approve the specs:
 
-1. Log approval in state.md under `## Pending`:
-   ```
-   None - Specs approved: [list of spec files written]
-   ```
-2. Update state.md phase to `discovery`
-3. Suggest running `/sdd/discovery <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd/discovery <name>`
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

@@ -1,15 +1,11 @@
 ---
-description: Execute the implementation plan
-argument-hint: <change-name>
+description: Execute implementation plan
+argument-hint: <change-set-name>
 ---
 
 # Implement
 
-Execute the current implementation plan.
-
-> **SDD Process**: Read `changes/<name>/state.md` first to verify phase is `implement`. If unsure how state management works, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
-
-> **Research**: If you encounter unexpected code during implementation, delegate to `@librarian` with a specific question. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+Execute current implementation plan.
 
 ## Arguments
 
@@ -17,23 +13,33 @@ Execute the current implementation plan.
 
 ## Instructions
 
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
+
+> **Research**: When needed, delegate to `@librarian` for codebase context. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `implement`
+1. Read `changes/<name>/state.md`
 2. Determine lane and load plan:
-   - **Full lane**: Read `changes/<name>/tasks.md` only to identify the current task (prefer `[o]`; otherwise first `[ ]`). Then load the corresponding plan from `changes/<name>/plans/`.
-   - **Vibe/Bug lane**: Read `changes/<name>/plan.md` (single combined plan)
+   - **Full lane**: Read `tasks.md` only to identify current task (prefer `[o]`; otherwise first `[ ]`). Then load corresponding plan from `plans/`.
+   - **Vibe/Bug lane**: Read `plan.md` (single combined plan)
 
-For full lane, the plan file is the source of truth for what to do; `tasks.md` is bookkeeping (current task + completion).
+### Entry Check
+
+Apply state entry check logic from `.augment/skills/sdd-state-management.md`.
+
+For full lane, plan file is source of truth for what to do; `tasks.md` is bookkeeping (current task + completion).
 
 ### Implementation Process
 
-Execute the plan step by step:
+Execute plan step by step:
 
-1. **Follow the plan**: The plan was created for a reason - follow it
+1. **Follow plan**: The plan was created for a reason - follow it
 2. **Validate as you go**: Run tests/checks after each significant change
-3. **Keep the repo green**: Don't leave broken state
+3. **Keep repo green**: Don't leave broken state
 4. **Document deviations**: If you must deviate from plan, note why
+
+Update state.md `## Notes` with implementation progress and any deviations.
 
 ### Research During Implementation
 
@@ -43,7 +49,7 @@ If you encounter unexpected situations, delegate to `@librarian`:
 - **Need to understand a dependency**: Research how it works
 - **Unclear integration**: Research before guessing
 
-Don't guess when you can research. But also don't over-research - the plan should have captured the major research needs.
+Don't guess when you can research. But also don't over-research - plan should have captured major research needs.
 
 ### Handling Issues
 
@@ -64,18 +70,16 @@ After implementation:
 ### Completion
 
 **Full Lane:**
-1. Review results with the user and confirm validation is green.
-2. When the user explicitly approves the implementation, update `changes/<name>/tasks.md`: change the current `[o]` to `[x]`.
-3. If any tasks remain `[ ]` after marking the current task complete, update `changes/<name>/state.md` phase to `plan` and suggest `/sdd:plan <name>`.
-4. If no tasks remain `[ ]` (i.e., you just completed the last task in the change set), update `changes/<name>/state.md` phase to `reconcile` and suggest `/sdd:reconcile <name>`.
-
-Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only). If a completion/approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`).
+1. Review results with user and confirm validation is green.
+2. When user explicitly approves implementation, update `changes/<name>/tasks.md`: change current `[o]` to `[x]`.
+3. If any tasks remain `[ ]` after marking current task complete, update `changes/<name>/state.md`: `## Phase Status: complete`, clear `## Notes`, and suggest `/sdd:plan <name>`.
+4. If no tasks remain `[ ]` (i.e., you just completed last task in change set), update `changes/<name>/state.md`: `## Phase Status: complete`, clear `## Notes`, and suggest `/sdd:reconcile <name>`.
 
 **Vibe/Bug Lane:**
 1. Implementation complete - discuss with user what's next:
    - **Throwing away**: Done - no state update needed
-   - **Keeping the work**: When user decides to keep it, update state to `reconcile`, suggest `/sdd:reconcile <name>`
+   - **Keeping work**: When user decides to keep it, update state: `## Phase Status: complete`, clear `## Notes`, suggest `/sdd:reconcile <name>`
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).
 
-> **Note**: For vibe/bug lanes, reconcile is optional. If the work is exploratory or a quick fix that doesn't warrant spec updates, stopping here is perfectly valid.
+> **Note**: For vibe/bug lanes, reconcile is optional. If work is exploratory or a quick fix that doesn't warrant spec updates, stopping here is perfectly valid.

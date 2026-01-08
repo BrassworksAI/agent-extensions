@@ -5,25 +5,24 @@ argument-hint: <change-name> [task-number]
 
 # Plan
 
-Research the codebase and create an implementation plan.
-
-> **SDD Process**: Read `changes/<name>/state.md` first to verify phase is `plan`. If unsure how state management works, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
-
-> **Research**: When you need to investigate the codebase, delegate to `@librarian` with a specific research question. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
-
-> **External Research**: For dependencies, APIs, or version-specific topics, use `websearch` or `codesearch`. See `.augment/skills/keep-current.md` (project-local) or `~/.augment/skills/keep-current.md` (global) for guidance.
+Research codebase and create an implementation plan.
 
 ## Arguments
 
-- `$ARGUMENTS` - Change set name (for full lane, plans the next incomplete task)
+- `$ARGUMENTS` - Change set name (for full lane, plans next incomplete task)
 
 ## Instructions
 
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
+
+> **Research**: When you need to investigate codebase, delegate to `@librarian` with a specific research question. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+
+> **External Research**: For dependencies, APIs, or version-specific topics, use `websearch` or `codesearch`. See `.augment/skills/keep-current.md` (project-local) or `~/.augment/skills/keep-current.md` (global) for guidance.
+
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `plan`
-2. Determine lane (full, vibe, or bug)
-3. Read context:
+1. Read `changes/<name>/state.md`
+2. Determine lane and load context:
    - **Full lane**: Read `tasks.md`, identify current task
    - **Vibe/Bug lane**: Read `context.md`
 
@@ -36,7 +35,7 @@ For full lane, plan one task at a time.
 ### Identify Current Task
 
 1. Read `changes/<name>/tasks.md`
-2. If a task is already `[o]` (In Progress), assume it is the current task and continue planning it.
+2. If a task is already `[o]` (In Progress), assume it is current task and continue planning it.
 3. Otherwise, pick the first `[ ]` (Pending) task as the current task.
 4. Read any existing plans in `changes/<name>/plans/`
 
@@ -57,11 +56,13 @@ Delegate to `@librarian` to understand:
 
 If you might introduce new dependencies, APIs, or framework features, also do quick online research to confirm current best practices and version-specific details.
 
+Update state.md `## Notes` with research findings and planning progress.
+
 ### Collaborative Planning
 
 This command is a **dialogue**, not a one-way generation.
 
-1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and the approach you’re leaning toward.
+1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and approach you're leaning toward.
 2. **Present Options**: If there are multiple reasonable approaches, present 2–3 with trade-offs.
 3. **Ask Targeted Questions**: Clarify any unknowns that materially affect the plan (scope boundaries, rollout strategy, time/complexity constraints).
 4. **Invite Feedback**: Ask the user if they want any changes to structure, granularity, or sequencing.
@@ -113,9 +114,8 @@ Only after the user indicates alignment, create `changes/<name>/plans/<NN>.md` (
 
 After the plan file is written, review it with the user. When they explicitly approve:
 
-1. Update `changes/<name>/state.md` phase to `implement`
-2. If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`), not `## Pending`.
-3. Suggest `/sdd:implement <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest `/sdd:implement <name>`
 
 Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
@@ -128,7 +128,7 @@ For vibe/bug lanes, combine discovery + tasking + planning into one pass. Get to
 ### Research
 
 Delegate to `@librarian` to understand:
-- What exists in the codebase
+- What exists in codebase
 - Where changes need to happen
 - Patterns to follow
 - Potential risks or complications
@@ -137,7 +137,7 @@ Delegate to `@librarian` to understand:
 
 This command is a **dialogue**, not a one-way generation.
 
-1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and the approach you’re leaning toward.
+1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and approach you're leaning toward.
 2. **Present Options**: If there are multiple reasonable approaches, present 2–3 with trade-offs.
 3. **Ask Targeted Questions**: Clarify any unknowns that materially affect the plan.
 4. **Invite Feedback**: Ask the user if they want to adjust scope or sequencing.
@@ -156,7 +156,7 @@ Only after the user indicates alignment, create `changes/<name>/plan.md` (single
 
 ## Research Findings
 
-<What we learned about the codebase>
+<What we learned about codebase>
 - Relevant files and patterns
 - Integration points
 - Potential risks
@@ -196,9 +196,8 @@ For vibe/bug lanes:
 
 After the plan file is written, review it with the user. When they explicitly approve:
 
-1. Update `changes/<name>/state.md` phase to `implement`
-2. If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`), not `## Pending`.
-3. Suggest `/sdd:implement <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest `/sdd:implement <name>`
 
 Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 

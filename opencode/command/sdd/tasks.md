@@ -21,24 +21,21 @@ Create implementation tasks for the change set. This command is for **full lane*
 
 ### Setup
 
-1. Read `changes/$1/state.md` - verify phase is `tasks` and lane is `full`
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
+
+!`find changes/$1/specs -name "*.md" -exec cat {} + 2>/dev/null || echo "No specs found"`
+
+!`find changes/$1/thoughts -name "*.md" -exec cat {} + 2>/dev/null || echo "No thoughts found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
 
 If lane is `vibe` or `bug`, redirect user to `/sdd/plan` instead.
 
-## Context
-
-> **Note**: The proposal, specs, and thoughts are injected below. Do NOT manually read these files—they are already in your context.
-
-### Proposal
-!`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
-
-### Specs
-!`find changes/$1/specs -name "*.md" -exec cat {} + 2>/dev/null || echo "No specs found"`
-
-### Thoughts
-!`find changes/$1/thoughts -name "*.md" -exec cat {} + 2>/dev/null || echo "No thoughts found"`
-
-## Instructions
+> **Note**: The proposal, specs, and thoughts are injected above. Do NOT manually read these files—they are already in your context.
 
 ### Collaborative Tasking
 
@@ -51,6 +48,8 @@ This command is a **dialogue**, not a one-way generation.
 2. **Present Options**: If there are multiple valid ways to slice the work (e.g., horizontal vs vertical, foundation-first vs feature-first), present them to the user with trade-offs.
 3. **Invite Feedback**: Explicitly ask the user if they have specific preferences for task granularity or if there's a specific logical flow they want to follow to maintain system stability.
 4. **Iterate**: Only write `tasks.md` once a consensus on the strategy has been reached.
+
+Update state.md `## Notes` with task breakdown decisions and rationale.
 
 ### Task Structure
 
@@ -109,16 +108,9 @@ Each task should be:
 
 ### Completion
 
-Work through the task breakdown collaboratively with the user. 
+When they explicitly approve the tasks:
 
-1. **Be Proactive**: If the grouping or ordering is ambiguous, propose a logical structure based on architectural best practices ("Foundations First", "Implementation Slices"). Explain the rationale behind your choices.
-2. **Ask for Clarification**: If a requirement is genuinely ambiguous or could be grouped in multiple valid ways with different trade-offs, ask the user for their preference.
-3. **Approval**: When the user explicitly approves:
-   - Log approval in state.md under `## Pending`:
-     ```
-     None - Tasks approved: [number] tasks defined
-     ```
-   - Update state.md phase to `plan`
-   - Suggest running `/sdd/plan <name>` to plan first task
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd/plan <name>` to plan first task
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

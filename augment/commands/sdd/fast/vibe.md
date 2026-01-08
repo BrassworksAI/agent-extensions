@@ -15,7 +15,7 @@ Skip the spec ceremony - get to building fast.
 
 ## Instructions
 
-> **SDD Process**: If unsure about phase progression or lane mechanics, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
 
 ### Gather Context
 
@@ -33,17 +33,23 @@ Derive a kebab-case name from the context. Create `changes/<name>/`:
 ```markdown
 # SDD State: <name>
 
-## Phase
-
-plan
-
 ## Lane
 
 vibe
 
+## Phase
+
+plan
+
+## Phase Status
+
+in_progress
+
 ## Pending
 
 - None
+
+## Notes
 ```
 
 **context.md:**
@@ -52,7 +58,7 @@ vibe
 
 ## What We're Exploring
 
-<Capture the user's intent in their words>
+<Capture user's intent in their words>
 
 ## Initial Thoughts
 
@@ -61,18 +67,18 @@ vibe
 
 ### Next Steps
 
-Tell the user:
+Tell user:
 - Change set created
-- Run `/sdd/plan <name>` to research, plan, and start building
+- Run `/sdd:plan <name>` to research, plan, and start building
 
 ### The Vibe Flow
 
 ```
-/sdd/fast/vibe <context>  →  /sdd/plan  →  /sdd/implement
+/sdd:fast:vibe <context>  →  /sdd:plan  →  /sdd:implement
                                               ↓
                               [if keeping it]
                                               ↓
-                          /sdd/reconcile  →  /sdd/finish
+                          /sdd:reconcile  →  /sdd:finish
 ```
 
-Reconcile and finish are optional. If you're throwing it away, stop after implement. If you're keeping it, reconcile captures specs from your implementation.
+Reconcile and finish are optional. If you're throwing it away, stop after implement. If you're keeping it, reconcile captures specs from what was built.

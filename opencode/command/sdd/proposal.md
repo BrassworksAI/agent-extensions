@@ -21,9 +21,15 @@ Draft and refine the proposal document for a change set. This command is primari
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `proposal` (or `ideation` transitioning)
-2. Read `changes/<name>/seed.md` if exists (for context)
-3. Read `changes/<name>/proposal.md` if exists
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/seed.md 2>/dev/null || echo "No seed found"`
+
+!`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
 
 ### Research Phase (Recommended)
 
@@ -51,7 +57,7 @@ If lane not yet selected, determine with user:
 
 For vibe or bug work, redirect user to the appropriate fast command.
 
-Update state.md with selected lane.
+Update state.md `## Lane` with selected lane.
 
 ### Collaborative Refinement
 
@@ -64,6 +70,8 @@ This is a dialogue, not a generation task. The user brings whatever definition t
 **Recommend, don't decide.** If you see a pattern in the codebase that might apply: "Based on how similar features work, you might want to handle this as X—does that fit?" Let the user decide.
 
 **Surface logic gaps.** When the described behavior has holes: "You mentioned auto-save, but what happens if the user is offline? Is that something we need to handle?" Ask if it should be considered, then let them answer.
+
+Update state.md `## Notes` with key decisions and progress during this phase.
 
 ### Proposal Content
 
@@ -118,13 +126,9 @@ Address blocking issues before proceeding; note friction points for consideratio
 
 ### Completion
 
-Work through the proposal collaboratively with the user. When they explicitly approve:
+When they explicitly approve the proposal:
 
-1. Log approval in state.md under `## Pending`:
-   ```
-   None - Proposal approved: [brief summary of agreed approach]
-   ```
-2. Update state.md phase to `specs`
-3. Suggest `/sdd/specs <name>` to write change-set specifications (`kind: new|delta`)
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest `/sdd/specs <name>` to write change-set specifications (`kind: new|delta`)
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

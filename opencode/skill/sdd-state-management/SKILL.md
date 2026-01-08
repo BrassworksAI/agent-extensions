@@ -14,17 +14,25 @@ Every change set has a state file at `changes/<name>/state.md`:
 ```markdown
 # SDD State: <name>
 
-## Phase
-
-<current-phase>
-
 ## Lane
 
 <full|vibe|bug>
 
+## Phase
+
+<current-phase>
+
+## Phase Status
+
+in_progress | complete
+
 ## Pending
 
-- <any blocked items or decisions needed>
+<only unresolved items>
+
+## Notes
+
+<freeform - decisions, progress, context - cleared when phase complete>
 ```
 
 ## Lanes Overview
@@ -149,43 +157,53 @@ Purpose: Document thinking so users can continue in a new chat with full context
 
 `## Pending` is NOT an approval log. Do not record approvals there.
 
-## Conversational Phase Advancement
+## Flexible Phase Management
 
-Phase transitions happen through natural conversation, not automatic advancement.
+Phase transitions are guided but not rigid. Users can skip phases or jump ahead if needed.
 
-### How It Works
+### Core Principles
 
-1. **Present work**: Show what was produced (proposals, specs, plans, etc.)
-2. **Discuss**: Answer questions, incorporate feedback, refine collaboratively
-3. **Wait for explicit approval**: User must clearly signal they're satisfied
-4. **Log the decision**: Document what was approved in state.md
-5. **Update phase**: Only then advance to the next phase
+- **Flexible flow**: The phase sequence is a guide, not a strict process. Users can skip phases or jump ahead.
+- **User intent first**: When users run a command, assume they know what they're doing. Provide guidance but don't block.
+- **Smart but not controlling**: Suggest the right path, warn about skipped phases, confirm major jumps, but ultimately follow the user's lead.
 
-### Explicit Approval
+### Entry Check Logic
 
-Look for clear signals that the user approves the work:
-- "Looks good", "that works", "approved", "let's move on"
-- User runs the next command without raising issues
-- Clear statement that the work is complete
+When a command is invoked, check the current state and handle appropriately:
 
-**These do NOT count as approval:**
-- User asking clarifying questions
-- User providing additional context
-- Acknowledging without agreement ("interesting", "I see")
-- Answering questions you asked
+1. **Natural progression** (previous phase is `complete`):
+   - Update state.md: `## Phase` → current command's phase, `## Phase Status: in_progress`
+   - Proceed with command
 
-### Logging Decisions
+2. **Jumping forward across multiple phases**:
+   - Show: "Skipping over [phase1, phase2] - are you sure?"
+   - If confirmed: Update state.md to this phase, set `## Phase Status: in_progress`
 
-When user explicitly approves a gate:
+3. **Going back to a previous phase**:
+   - Show: "Moving back to [phase] - this will reset its status to in_progress"
+   - If confirmed: Update state.md to that phase, set `## Phase Status: in_progress`
 
-- Update `changes/<name>/state.md` `## Phase` to the next phase immediately.
-- Remove any now-resolved items from `## Pending`.
-- Leave `## Pending` blank if nothing is pending.
+4. **Same phase already complete**:
+   - Show: "This phase is complete - do you want to re-enter it?"
+   - If confirmed: Set `## Phase Status: in_progress`
 
-Do NOT write approval summaries into `## Pending`.
+5. **Same phase in_progress** or first run:
+   - Continue with command (natural continuation)
 
-If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`).
+### Command Completion
 
-### Natural Flow
+When a command completes (user approves work):
 
-Keep it conversational. Don't force "ready to advance?" checkpoints. Work through the step with the user like collaborators solving a problem together. You'll naturally know when they're satisfied and ready to move on.
+- Set `## Phase Status: complete`
+- Clear `## Notes` to empty string
+- Do NOT advance to next phase - next command will handle that
+
+### Keeping Notes Updated
+
+During command execution, keep `## Notes` updated with:
+- Decisions made
+- Current progress
+- Context about where we are
+- Blockers or issues encountered
+
+Notes are meant to capture state so work can be resumed later or in a new chat. They should be concise but informative.

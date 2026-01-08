@@ -28,17 +28,23 @@ Create a new SDD change set with the given name.
    ```markdown
    # SDD State: <name>
 
-   ## Phase
-
-   ideation
-
    ## Lane
 
    (not yet selected)
 
+   ## Phase
+
+   ideation
+
+   ## Phase Status
+
+   in_progress
+
    ## Pending
 
     - Select lane (full/vibe/bug) during proposal
+
+   ## Notes
    ```
 5. **Initialize proposal.md** with empty template:
    ```markdown

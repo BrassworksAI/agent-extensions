@@ -48,7 +48,7 @@ Everything in SDD revolves around a **change set** - a named collection of files
 ```
 changes/
   add-user-auth/           # Change set directory
-    state.md               # Current phase, lane, gates passed
+    state.md               # Lane, phase, phase status, notes, pending
     proposal.md            # What we're building and why
     specs/                 # Change-set specs (full lane only; `kind: new|delta`)
       api.md
@@ -105,7 +105,6 @@ Vibe/Bug lanes have optional completion - if throwing away the work, stop after 
 | `/sdd/reconcile` | Verify implementation, capture specs if needed |
 | `/sdd/finish` | Close the change set |
 | `/sdd/status` | Show current state |
-| `/sdd/continue` | Resume where you left off |
 
 #### Example: Vibe Lane Flow
 
@@ -200,7 +199,7 @@ Use this format for the topic:
 | `tasks` | Task format, checkboxes, requirements sections (full lane) |
 | `plans` | Plan structure - per-task for full lane, single plan.md for vibe/bug |
 | `reconcile` | What reconciliation checks, spec capture for vibe/bug |
-| `state` | state.md structure, gates, how progression works |
+| `state` | state.md structure (lane, phase, phase status, notes), flexible progression |
 | `commands` | All available commands and when to use them |
 | `forge` | How Forge works as SDD workshop |
 | `tools` | `/sdd/tools/*` commands for critique, scenario testing, taxonomy |

@@ -19,8 +19,13 @@ Explore the problem space collaboratively to develop a seed document.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `ideation` or initialize if new
-2. Check for existing `changes/<name>/seed.md`
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/seed.md 2>/dev/null || echo "No seed found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
 
 ### Research Phase (As Needed)
 
@@ -44,7 +49,7 @@ This is a **collaborative conversation**. Your job is to:
 2. **Explore constraints**: What are the boundaries? What's out of scope?
 3. **Surface assumptions**: What's being taken for granted?
 4. **Identify risks**: What could go wrong?
-5. **Document incrementally**: Update seed.md as understanding develops
+5. **Document incrementally**: Update seed.md and state.md `## Notes` as understanding develops
 
 ### Seed Document Structure
 
@@ -90,7 +95,9 @@ If critique identifies serious issues, work with user to address them.
 
 ### Completion
 
-When seed is solid and user approves:
+When seed is solid and user explicitly approves:
 
-1. Update state.md phase to `proposal`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
 2. Suggest running `/sdd/proposal <name>`
+
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

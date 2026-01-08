@@ -5,9 +5,9 @@ argument-hint: <change-set-name>
 
 # Reconcile
 
-Ensure that change-set specs match the implementation diff.
+Ensure that change set specs match implementation diff.
 
-**This is a collaborative process** - present your findings to the user and get their input before making changes. Do not make unilateral decisions about what to add, remove, or modify in specs.
+**This is a collaborative process** - present your findings to user and get their input before making changes. Do not make unilateral decisions about what to add, remove, or modify in specs.
 
 ## Arguments
 
@@ -15,95 +15,56 @@ Ensure that change-set specs match the implementation diff.
 
 ## Instructions
 
-> **SDD Process**: Read `changes/<name>/state.md` first to verify phase is `reconcile`. If unsure about state management, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
 
-> **Spec Format**: When writing change-set specs from implementation diff, use proper EARS syntax and delta format. See `.augment/skills/spec-format.md` (project-local) or `~/.augment/skills/spec-format.md` (global) for guidance.
+> **Spec Format**: Use guidance from `.augment/skills/spec-format.md` (project-local) or `~/.augment/skills/spec-format.md` (global) for spec structure.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `reconcile`
-2. Read `changes/<name>/tasks.md` for context
+1. Read `changes/<name>/state.md`
+2. Read `changes/<name>/tasks.md`
+
+### Entry Check
+
+Apply state entry check logic from `.augment/skills/sdd-state-management.md`.
 
 ### The Process
 
-1. **Get the implementation diff**: What code was actually changed?
+1. **Get implementation diff**: What code was actually changed?
 
 2. **If specs/ exists** (`changes/<name>/specs/`):
-    - Compare specs to the diff
-    - Present findings to the user:
-      - Does the diff match what the specs describe?
-      - Are there implementation changes not covered by specs?
-      - Are there specs describing things not in the diff?
-    - Get user input on what to do:
-      - Add missing specs for unspecced implementation?
-      - Remove specs that don't match diff?
-      - Modify existing specs to match implementation?
+   - Compare specs to diff
+   - Present findings to user:
+     - Does diff match what specs describe?
+     - Are there implementation changes not covered by specs?
+     - Are there specs describing things not in diff?
+   - Get user input on what to do:
+     - Add missing specs for unspecced implementation?
+     - Remove specs that don't match diff?
+     - Modify existing specs to match implementation?
 
 3. **If specs/ does not exist**:
-    - Analyze whether the implementation adds/removes logic worth specifying
-    - Present your analysis: what changed and whether it's spec-worthy
-- Ask user: "Should I capture specs for these changes?"
-- If yes: Create `changes/<name>/specs/` and write change-set specs (`kind: new` and/or `kind: delta`)
-
-    - If no: Document that specs were not created (trivial changes)
+   - Analyze whether implementation adds/removes logic worth specifying
+   - Present your analysis: what changed and whether it's spec-worthy
+   - Ask user: "Should I capture specs for these changes?"
+   - If yes: Create `changes/<name>/specs/` and write change-set specs (`kind: new` and/or `kind: delta`)
+   - If no: Document that specs were not created (trivial changes)
 
 4. **Document findings** in `changes/<name>/reconciliation.md`
 
+Update state.md `## Notes` with reconciliation findings and decisions.
+
 ### Writing Change-Set Specs from Diff
 
-When creating specs from the implementation:
+When creating specs from implementation:
 
-- Analyze what changed and what it means for the system
-- Write proper change-set specs:
+- Analyze what changed and what it means for system
+- Use spec format guidance to write proper change-set specs:
   - Describe added capabilities (positive requirements)
   - Describe removed capabilities (negative requirements)
   - Describe behavioral changes
 - Each spec file should cover a logical area of change
 
-### Change Set Spec Kinds
-
-All specs under `changes/<name>/specs/` MUST include YAML frontmatter:
-
-```markdown
----
-kind: new | delta
----
-```
-
-- Use `kind: new` for brand new capabilities; write the spec like a normal spec (no delta markers).
-- Use `kind: delta` for edits to existing canonical specs.
-
-### Delta Spec Format
-
-For `kind: delta`, use section buckets (NOT blockquote markers):
-
-```markdown
-## Requirements
-
-### ADDED
-
-#### <Topic>
-- The system SHALL <new requirement>.
-
-### MODIFIED
-
-#### <Topic>
-
-**Before:**
-- The system SHALL <old text>.
-
-**After:**
-- The system SHALL <new text>.
-
-### REMOVED
-
-#### <Topic>
-- The system SHALL <removed requirement>.
-
-**Reason:** <Why>
-```
-
-Only use `### ADDED/MODIFIED/REMOVED` inside `## Requirements` and `## Access` (if present).
 ### Reconciliation Report
 
 ```markdown
@@ -127,15 +88,11 @@ Proceed to finish
 
 ### Completion
 
-Work through reconciliation collaboratively with the user. When they explicitly approve your findings and any spec changes:
+When they explicitly approve your findings and any spec changes:
 
-1. Log approval in state.md under `## Pending`:
-   ```
-   None - Reconciliation approved: [brief summary of findings]
-   ```
-2. Update state.md phase to `finish`
-3. Suggest running `/sdd:finish <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd:finish <name>`
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).
 
 **Note**: If change-set specs were created or updated, finish will move `kind: new` specs and merge `kind: delta` specs into canonical.

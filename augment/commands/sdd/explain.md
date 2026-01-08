@@ -15,9 +15,9 @@ Explain SDD concepts, workflow, or specific phases to help users understand the 
 
 ### FIRST: Check for Topic Argument
 
-**If `$ARGUMENTS` is provided**: Skip directly to "Specific Topic" section below. Do NOT output the full overview.
+**If `$ARGUMENTS` is provided**: Skip directly to "Specific Topic" section below. Do NOT output full overview.
 
-**If `$ARGUMENTS` is empty/not provided**: Output the full overview below.
+**If `$ARGUMENTS` is empty/not provided**: Output full overview below.
 
 ---
 
@@ -43,7 +43,7 @@ Everything in SDD revolves around a **change set** - a named collection of files
 ```
 changes/
   add-user-auth/           # Change set directory
-    state.md               # Current phase, lane, gates passed
+    state.md               # Lane, phase, phase status, notes, pending
     proposal.md            # What we're building and why
     specs/                 # Change-set specs (full lane only; `kind: new|delta`)
       api.md
@@ -62,7 +62,7 @@ changes/
 | **Vibe** | Prototypes, experiments, quick enhancements | Implement first, specs later (if keeping) |
 | **Bug** | Defect fixes | Fix first, spec impact assessed at reconcile |
 
-The key insight: **Full lane** writes specs before implementation. **Vibe/Bug lanes** invert this - implement first, capture specs from the diff at reconcile (if the work is worth keeping).
+The key insight: **Full lane** writes specs before implementation. **Vibe/Bug lanes** invert this - implement first, capture specs from diff at reconcile (if work is worth keeping).
 
 #### Phase Progression
 
@@ -73,12 +73,12 @@ init -> proposal -> specs -> discovery -> tasks -> plan -> implement -> reconcil
 
 **Vibe Lane** (freedom to explore):
 ```
-/sdd/fast/vibe <context> -> plan -> implement -> [reconcile -> finish]
+/sdd:fast:vibe <context> -> plan -> implement -> [reconcile -> finish]
 ```
 
 **Bug Lane** (fix with triage):
 ```
-/sdd/fast/bug <context> -> plan -> implement -> [reconcile -> finish]
+/sdd:fast:bug <context> -> plan -> implement -> [reconcile -> finish]
 ```
 
 Vibe/Bug lanes have optional completion - if throwing away the work, stop after implement. If keeping, reconcile captures specs from what was built.
@@ -87,96 +87,95 @@ Vibe/Bug lanes have optional completion - if throwing away the work, stop after 
 
 | Command | Purpose |
 |---------|---------|
-| `/sdd/init <name>` | Start a new change set (full lane) |
-| `/sdd/fast/vibe <context>` | Start vibe lane - exploration mode |
-| `/sdd/fast/bug <context>` | Start bug lane - fix with triage |
-| `/sdd/brainstorm` | Explore problem space before proposing |
-| `/sdd/proposal` | Draft/refine the proposal (full lane) |
-| `/sdd/specs` | Write change-set specifications (full lane) |
-| `/sdd/discovery` | Verify specs fit repo architecture |
-| `/sdd/tasks` | Generate implementation tasks (full lane) |
-| `/sdd/plan` | Create implementation plan |
-| `/sdd/implement` | Execute current plan |
-| `/sdd/reconcile` | Verify implementation, capture specs if needed |
-| `/sdd/finish` | Close the change set |
-| `/sdd/status` | Show current state |
-| `/sdd/continue` | Resume where you left off |
+| `/sdd:init <name>` | Start a new change set (full lane) |
+| `/sdd:fast:vibe <context>` | Start vibe lane - exploration mode |
+| `/sdd:fast:bug <context>` | Start bug lane - fix with triage |
+| `/sdd:brainstorm` | Explore problem space before proposing |
+| `/sdd:proposal` | Draft/refine proposal (full lane) |
+| `/sdd:specs` | Write change-set specifications (full lane) |
+| `/sdd:discovery` | Verify specs fit repo architecture |
+| `/sdd:tasks` | Generate implementation tasks (full lane) |
+| `/sdd:plan` | Create implementation plan |
+| `/sdd:implement` | Execute current plan |
+| `/sdd:reconcile` | Verify implementation, capture specs if needed |
+| `/sdd:finish` | Close change set |
+| `/sdd:status` | Show current state |
 
 #### Example: Vibe Lane Flow
 
 ```
-User: /sdd/fast/vibe "I want to try a new caching approach for the API layer"
+User: /sdd:fast:vibe "I want to try a new caching approach for the API layer"
       [Creates context.md with freeform exploration context]
 
-User: /sdd/plan
+User: /sdd:plan
       [Creates single plan.md combining research + implementation steps]
 
-User: /sdd/implement
+User: /sdd:implement
       [Executes plan, makes changes, iterates freely]
 
 # If throwing away: DONE - no further steps needed
 
 # If keeping the work:
-User: /sdd/reconcile
+User: /sdd:reconcile
       [Reviews diff, captures change-set specs from implementation]
 
-User: /sdd/finish
+User: /sdd:finish
       [Change set closed; `kind: new` specs moved, `kind: delta` specs merged to canonical]
 ```
 
 #### Example: Bug Lane Flow
 
 ```
-User: /sdd/fast/bug "Users are seeing 500 errors when submitting forms with special characters"
+User: /sdd:fast:bug "Users are seeing 500 errors when submitting forms with special characters"
       [Triages: actual bug or behavioral change?]
       [If behavioral change -> redirects to full lane]
       [If bug -> researches, creates context.md with root cause]
 
-User: /sdd/plan
+User: /sdd:plan
       [Creates single plan.md with fix approach]
 
-User: /sdd/implement
+User: /sdd:implement
       [Applies fix, validates]
 
 # If one-off fix: DONE
 
 # If keeping for spec update:
-User: /sdd/reconcile
+User: /sdd:reconcile
       [Assesses spec impact, updates if warranted]
 
-User: /sdd/finish
+User: /sdd:finish
 ```
 
 #### Example: Full Lane Flow
 
 ```
-User: /sdd/init add-plugin-system
-User: /sdd/proposal
+User: /sdd:init add-plugin-system
+User: /sdd:proposal
       "Add a plugin architecture to allow extending functionality"
-      [Draft proposal.md, set lane: full]
+      [Forge helps draft proposal.md, sets lane: full]
 
-User: /sdd/specs
-      [Write change-set specs defining interfaces, behaviors]
+User: /sdd:specs
+      [Forge writes change-set specs defining interfaces, behaviors]
 
-User: /sdd/discovery
+User: /sdd:discovery
       [Uses architecture-fit-check to verify specs fit existing architecture]
 
-User: /sdd/tasks
+User: /sdd:tasks
       [Generates tasks from change-set specs]
 
-User: /sdd/plan -> /sdd/implement (for each task)
+User: /sdd:plan -> /sdd:implement (for each task)
 
-User: /sdd/reconcile
+User: /sdd:reconcile
       [Verifies implementation satisfies all spec requirements]
 
-User: /sdd/finish
+User: /sdd:finish
 ```
 
 ---
 
 ### Specific Topic (when argument provided)
 
-When the user provides a topic in `$ARGUMENTS`, explain **only that topic** in depth. Do not output the full overview above.
+When user provides a topic in `$ARGUMENTS`, explain **only that topic** in depth. Do not output full overview above.
 
 Use this format for the topic:
 1. **What it is** - Clear definition
@@ -195,12 +194,12 @@ Use this format for the topic:
 | `tasks` | Task format, checkboxes, requirements sections (full lane) |
 | `plans` | Plan structure - per-task for full lane, single plan.md for vibe/bug |
 | `reconcile` | What reconciliation checks, spec capture for vibe/bug |
-| `state` | state.md structure, gates, how progression works |
+| `state` | state.md structure (lane, phase, phase status, notes), flexible progression |
 | `commands` | All available commands and when to use them |
-| `tools` | `/sdd/tools/*` commands for critique, scenario testing, taxonomy |
+| `tools` | `/sdd:tools:*` commands for critique, scenario testing, taxonomy |
 
-If the topic doesn't match a known topic exactly, interpret the user's intent and explain the relevant concept.
+If topic doesn't match a known topic exactly, interpret user's intent and explain relevant concept.
 
 ### Research if Needed
 
-If the user asks about something implementation-specific (e.g., "how does reconciliation actually compare specs to code?"), **delegate to @librarian** to investigate the codebase for accurate details rather than guessing.
+If user asks about something implementation-specific (e.g., "how does reconciliation actually compare specs to code?"), delegate to `@librarian` to investigate codebase for accurate details rather than guessing.

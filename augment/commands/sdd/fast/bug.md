@@ -13,7 +13,7 @@ Investigate and fix a bug. This command triages the issue, researches the codeba
 
 ## Instructions
 
-> **SDD Process**: If unsure about lane mechanics or triage decisions, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
 
 > **Research**: When investigating root cause, delegate to `@librarian`. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
 
@@ -40,10 +40,10 @@ Before investigating, determine what type of issue this is:
 - New capability or feature request disguised as bug
 
 **If it's a behavioral change:**
-> This looks like a behavioral change rather than a bug. The current behavior may be working as specified. 
+> This looks like a behavioral change rather than a bug. The current behavior may be working as specified.
 >
 > I recommend using the full SDD lane to properly spec out the new behavior:
-> - `/sdd/init <name>` → `/sdd/proposal` → `/sdd/specs`
+> - `/sdd:init <name>` → `/sdd:proposal` → `/sdd:specs`
 >
 > This ensures the change is captured in specs before implementation.
 
@@ -58,7 +58,7 @@ From the bug context, derive a descriptive kebab-case name:
 
 ### Research the Issue
 
-**Delegate to @librarian** to investigate:
+Delegate to `@librarian` to investigate:
 
 1. **Locate the problem**: Where is this happening in the codebase?
 2. **Understand the flow**: Trace the execution path
@@ -73,17 +73,23 @@ Create `changes/<name>/`:
 ```markdown
 # SDD State: <name>
 
-## Phase
-
-plan
-
 ## Lane
 
 bug
 
+## Phase
+
+plan
+
+## Phase Status
+
+in_progress
+
 ## Pending
 
 - None
+
+## Notes
 ```
 
 **context.md:**
@@ -118,25 +124,25 @@ Based on your research:
 - **No spec impact**: Fix is purely implementation - proceed normally
 - **Possible spec impact**: Note it in context.md, reconcile will catch it
 - **Obvious spec impact**: Flag to user:
-  > This fix will change documented behavior. Consider running `/sdd/specs` first to update specs, or proceed and capture changes at reconcile.
+  > This fix will change documented behavior. Consider running `/sdd:specs` first to update specs, or proceed and capture changes at reconcile.
 
 Most bugs are implementation issues where specs remain aligned. Trust reconcile to catch edge cases.
 
 ### Next Steps
 
-Tell the user:
+Tell user:
 - Change set created
 - Root cause identified
-- Run `/sdd/plan <name>` to plan and implement the fix
+- Run `/sdd:plan <name>` to plan and implement the fix
 
 ### The Bug Flow
 
 ```
-/sdd/fast/bug <context>  →  /sdd/plan  →  /sdd/implement
+/sdd:fast:bug <context>  →  /sdd:plan  →  /sdd:implement
                                               ↓
                               [if specs affected]
                                               ↓
-                          /sdd/reconcile  →  /sdd/finish
+                          /sdd:reconcile  →  /sdd:finish
 ```
 
 Reconcile and finish are optional if the fix doesn't affect specs. If behavior changed, reconcile captures the spec updates.

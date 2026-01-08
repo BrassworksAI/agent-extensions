@@ -5,7 +5,7 @@ argument-hint: <change-set-name>
 
 # Specs
 
-Write change-set specifications for the change set (`kind: new` and `kind: delta`).
+Write change-set specifications for change set (`kind: new` and `kind: delta`).
 
 ## Arguments
 
@@ -13,21 +13,29 @@ Write change-set specifications for the change set (`kind: new` and `kind: delta
 
 ## Instructions
 
-> **SDD Process**: Read `changes/<name>/state.md` first to verify phase is `specs`. If unsure about state management, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
 
-> **Research & Spec Format**: Use @librarian for understanding existing spec structure (see `.augment/skills/research.md` or `~/.augment/skills/research.md`). Use EARS syntax and proper structure (see `.augment/skills/spec-format.md` or `~/.augment/skills/spec-format.md`).
+> **Research**: When needed, delegate to `@librarian` for codebase context. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+
+> **Spec Format**: Use guidance from `.augment/skills/spec-format.md` (project-local) or `~/.augment/skills/spec-format.md` (global) for EARS syntax and structure.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `specs` and lane is `full`
-2. Read `changes/<name>/proposal.md` for context
+1. Read `changes/<name>/state.md`
+2. Read `changes/<name>/proposal.md`
 3. List existing `specs/` structure to understand current taxonomy
+
+### Entry Check
+
+Apply state entry check logic from `.augment/skills/sdd-state-management.md`.
+
+If lane is not `full`, redirect user to appropriate command.
 
 ### Research Phase
 
-Before writing specs, research the codebase:
+Before writing specs, delegate to `@librarian`:
 
-1. **Delegate to @librarian** to understand:
+1. **Research to understand**:
    - Current spec structure and taxonomy
    - Related existing capabilities
    - How similar things are specified
@@ -38,109 +46,22 @@ Before writing specs, research the codebase:
 
 ### Taxonomy Mapping
 
-With research in hand, suggest the user run `/sdd/tools/taxonomy-map <name>`:
+With research in hand, suggest user run `/sdd:tools:taxonomy-map <name>`:
 
-- Determines where new capabilities should live in the spec hierarchy
+- Determines where new capabilities should live in spec hierarchy
 - Recommends brownfield (existing specs) vs greenfield (new specs)
 - Provides boundary decisions and group structure
 
-### Writing Delta Specs
+### Writing Change Set Specs
 
-Create specs in `changes/<name>/specs/` following the spec format guidance below.
+Create specs in `changes/<name>/specs/` following spec format guidance. Specs may be nested by domain/subdomain under that folder (e.g. `changes/<name>/specs/auth/login.md`).
+Remember that change set specs have YAML frontmatter `kind: new | delta`.
 
-#### Spec File Structure
-
-Canonical specs (post-finish) may live in a domain taxonomy under `specs/` at the repository root.
-
-Change-set specs for this change are authored under `changes/<name>/specs/` and may be nested by domain/subdomain.
-
-```
-specs/
-  <domain>/
-    <subdomain>/
-      <capability>.md
-```
-
-#### Capability Spec Format
-
-```markdown
-# <Capability Name>
-
-## Overview
-
-Brief description of what this capability does and why it exists.
-
-## Requirements
-
-Requirements as a bulleted list. Optional grouping headings for organization.
-
-### <Optional Group>
-
-- The system SHALL <requirement in active voice>.
-- WHEN <trigger> the system SHALL <action>.
-```
-
-#### EARS Syntax
-
-Requirements use EARS (Easy Approach to Requirements Syntax) patterns:
-
-| Pattern | Template | Use When |
-|---------|----------|----------|
-| Ubiquitous | The system SHALL `<action>`. | Fundamental system properties |
-| Event-driven | WHEN `<trigger>` the system SHALL `<action>`. | Response to a specific event |
-| State-driven | WHILE `<state>` the system SHALL `<action>`. | Behavior during a particular state |
-| Unwanted behavior | IF `<condition>` THEN the system SHALL `<action>`. | Handling errors, edge cases |
-| Complex | WHEN `<trigger>` IF `<condition>` THEN the system SHALL `<action>`. | Combining patterns |
-
-#### Change Set Spec Kinds
-
-All specs under `changes/<name>/specs/` MUST include YAML frontmatter:
-
-```markdown
----
-kind: new | delta
----
-```
-
-- Use `kind: new` for brand new capabilities; write the spec like a normal spec (no delta markers).
-- Use `kind: delta` for edits to existing canonical specs.
-
-#### Delta Spec Format
-
-For `kind: delta`, use section buckets (NOT blockquote markers):
-
-```markdown
-## Requirements
-
-### ADDED
-
-#### <Topic>
-- The system SHALL <new requirement>.
-
-### MODIFIED
-
-#### <Topic>
-
-**Before:**
-- The system SHALL <old text>.
-
-**After:**
-- The system SHALL <new text>.
-
-### REMOVED
-
-#### <Topic>
-- The system SHALL <removed requirement>.
-
-**Reason:** <Why>
-```
-
-Only use `### ADDED/MODIFIED/REMOVED` inside `## Requirements` and `## Access` (if present).
-### Identifying Capabilities
-
-1. **Identify capabilities** needed from the proposal
+1. **Identify capabilities** needed from proposal
 2. **Determine paths** using taxonomy mapping guidance
 3. **Write requirements** using EARS syntax
+
+Update state.md `## Notes` with progress on spec writing, key decisions, and any issues encountered.
 
 ### Spec Review
 
@@ -152,7 +73,7 @@ For each spec file:
 
 ### Critique
 
-When specs are complete, suggest the user run `/sdd/tools/critique specs`:
+When specs are complete, suggest user run `/sdd:tools:critique specs`:
 
 - Checks for completeness and contradictions
 - Identifies missing edge cases
@@ -160,13 +81,9 @@ When specs are complete, suggest the user run `/sdd/tools/critique specs`:
 
 ### Completion
 
-Work through specs collaboratively with the user. When they explicitly approve:
+When they explicitly approve specs:
 
-1. Log approval in state.md under `## Pending`:
-   ```
-   None - Specs approved: [list of spec files written]
-   ```
-2. Update state.md phase to `discovery`
-3. Suggest running `/sdd:discovery <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd:discovery <name>`
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

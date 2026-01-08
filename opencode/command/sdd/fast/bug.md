@@ -40,7 +40,7 @@ Before investigating, determine what type of issue this is:
 - New capability or feature request disguised as bug
 
 **If it's a behavioral change:**
-> This looks like a behavioral change rather than a bug. The current behavior may be working as specified. 
+> This looks like a behavioral change rather than a bug. The current behavior may be working as specified.
 >
 > I recommend using the full SDD lane to properly spec out the new behavior:
 > - `/sdd/init <name>` → `/sdd/proposal` → `/sdd/specs`
@@ -73,17 +73,23 @@ Create `changes/<name>/`:
 ```markdown
 # SDD State: <name>
 
-## Phase
-
-plan
-
 ## Lane
 
 bug
 
+## Phase
+
+plan
+
+## Phase Status
+
+in_progress
+
 ## Pending
 
 - None
+
+## Notes
 ```
 
 **context.md:**

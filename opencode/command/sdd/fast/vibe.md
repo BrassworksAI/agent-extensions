@@ -34,17 +34,23 @@ Derive a kebab-case name from the context. Create `changes/<name>/`:
 ```markdown
 # SDD State: <name>
 
-## Phase
-
-plan
-
 ## Lane
 
 vibe
 
+## Phase
+
+plan
+
+## Phase Status
+
+in_progress
+
 ## Pending
 
 - None
+
+## Notes
 ```
 
 **context.md:**
@@ -53,7 +59,7 @@ vibe
 
 ## What We're Exploring
 
-<Capture the user's intent in their words>
+<Capture user's intent in their words>
 
 ## Initial Thoughts
 

@@ -19,10 +19,17 @@ Execute the current implementation plan.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `implement`
-2. Determine lane and load plan:
-   - **Full lane**: Read `changes/<name>/tasks.md` only to identify the current task (prefer `[o]`; otherwise first `[ ]`). Then load the corresponding plan from `changes/<name>/plans/`.
-   - **Vibe/Bug lane**: Read `changes/<name>/plan.md` (single combined plan)
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/tasks.md 2>/dev/null || echo "No tasks found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
+
+Determine lane and load plan:
+- **Full lane**: Read `changes/<name>/tasks.md` only to identify the current task (prefer `[o]`; otherwise first `[ ]`). Then load the corresponding plan from `changes/<name>/plans/`.
+- **Vibe/Bug lane**: Read `changes/<name>/plan.md` (single combined plan)
 
 For full lane, the plan file is the source of truth for what to do; `tasks.md` is bookkeeping (current task + completion).
 
@@ -34,6 +41,8 @@ Execute the plan step by step:
 2. **Validate as you go**: Run tests/checks after each significant change
 3. **Keep the repo green**: Don't leave broken state
 4. **Document deviations**: If you must deviate from plan, note why
+
+Update state.md `## Notes` with implementation progress and any deviations.
 
 ### Research During Implementation
 
@@ -66,17 +75,14 @@ After implementation:
 **Full Lane:**
 1. Review results with the user and confirm validation is green.
 2. When the user explicitly approves the implementation, update `changes/<name>/tasks.md`: change the current `[o]` to `[x]`.
-3. If any tasks remain `[ ]` after marking the current task complete, update `changes/<name>/state.md` phase to `plan` and suggest `/sdd/plan <name>`.
-4. If no tasks remain `[ ]` (i.e., you just completed the last task in the change set), update `changes/<name>/state.md` phase to `reconcile` and suggest `/sdd/reconcile <name>`.
-
-Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only). If a completion/approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`).
+3. If any tasks remain `[ ]` after marking the current task complete, update `changes/<name>/state.md`: `## Phase Status: complete`, clear `## Notes`, and suggest `/sdd/plan <name>`.
+4. If no tasks remain `[ ]` (i.e., you just completed the last task in the change set), update `changes/<name>/state.md`: `## Phase Status: complete`, clear `## Notes`, and suggest `/sdd/reconcile <name>`.
 
 **Vibe/Bug Lane:**
 1. Implementation complete - discuss with user what's next:
    - **Throwing away**: Done - no state update needed
-   - **Keeping the work**: When user decides to keep it, update state to `reconcile`, suggest `/sdd/reconcile <name>`
+   - **Keeping the work**: When user decides to keep it, update state: `## Phase Status: complete`, clear `## Notes`, suggest `/sdd/reconcile <name>`
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).
 
 > **Note**: For vibe/bug lanes, reconcile is optional. If the work is exploratory or a quick fix that doesn't warrant spec updates, stopping here is perfectly valid.
-

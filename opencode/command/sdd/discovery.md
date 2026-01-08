@@ -29,9 +29,17 @@ Discovery is NOT about planning implementation details. It's about:
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `discovery` and lane is `full`
-2. Read all change-set specs from `changes/<name>/specs/**/*.md` (both `kind: new` and `kind: delta`)
-3. Read `changes/<name>/proposal.md` for context
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
+
+!`find changes/$1/specs -name "*.md" -exec cat {} + 2>/dev/null || echo "No specs found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
+
+If lane is not `full`, redirect user to appropriate command.
 
 ### Research Phase (Critical)
 
@@ -47,6 +55,8 @@ Before evaluating architecture fit, use the `research` skill to understand the c
    - Document what you learned about architecture
    - Identify specific code areas specs will touch
    - Note any patterns that seem relevant
+
+Update state.md `## Notes` with architectural findings and research insights.
 
 ### Architecture Assessment
 
@@ -64,7 +74,7 @@ If the specs slot easily into existing architecture (e.g., new endpoint, data to
 
 If the specs WOULD work but raise concerns:
 - Would require messy workarounds
-- Introduces inconsistent patterns  
+- Introduces inconsistent patterns
 - Creates technical debt
 - Requires primitives the codebase doesn't have
 
@@ -108,6 +118,8 @@ changes/<name>/
 
 Create as many files as needed. The goal is capturing the architectural exploration so it's not lost.
 
+Update state.md `## Notes` with architecture decisions and rationale.
+
 ### Updating Specs
 
 If discovery reveals the specs themselves need changes:
@@ -117,13 +129,9 @@ If discovery reveals the specs themselves need changes:
 
 ### Completion
 
-Work through architecture assessment collaboratively with the user. When they explicitly approve:
+When they explicitly approve the architecture findings:
 
-1. Log approval in state.md under `## Pending`:
-   ```
-   None - Architecture reviewed: [brief summary of findings/decisions]
-   ```
-2. Update state.md phase to `tasks`
-3. Suggest running `/sdd/tasks <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd/tasks <name>`
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

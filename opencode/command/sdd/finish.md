@@ -19,8 +19,13 @@ Close the change set and sync change-set specs to canonical.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `finish`
-2. Verify prerequisites: Reconciliation complete
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
+
+Verify prerequisites: Reconciliation complete (phase `reconcile`, status `complete`).
 
 ### Sync Change-Set Specs
 
@@ -55,10 +60,12 @@ Update `changes/<name>/state.md`:
 
 complete
 
-## Completed
+## Phase Status
 
-<timestamp>
+complete
 ```
+
+Add completion timestamp to notes or leave empty.
 
 ### Cleanup Options
 

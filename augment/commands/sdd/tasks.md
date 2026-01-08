@@ -5,9 +5,9 @@ argument-hint: <change-set-name>
 
 # Tasks
 
-Create implementation tasks for the change set. This command is for **full lane** only.
+Create implementation tasks for change set. This command is for **full lane** only.
 
-> **Note**: Vibe and bug lanes skip this command. They use `/sdd/plan` which combines research, tasking, and planning into a single `plan.md` file.
+> **Note**: Vibe and bug lanes skip this command. They use `/sdd:plan` which combines research, tasking, and planning into a single `plan.md` file.
 
 ## Arguments
 
@@ -15,18 +15,24 @@ Create implementation tasks for the change set. This command is for **full lane*
 
 ## Instructions
 
-> **SDD Process**: Read `changes/<name>/state.md` first to verify phase is `tasks`. If unsure about state management, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
 
-> **Research**: When understanding implementation patterns, delegate to `@librarian`. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+> **Research**: When needed, delegate to `@librarian` for codebase context. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+
+> **Spec Format**: Use guidance from `.augment/skills/spec-format.md` (project-local) or `~/.augment/skills/spec-format.md` (global) for requirement structure.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `tasks` and lane is `full`
-2. Read change-set specs from `changes/<name>/specs/**/*.md` (both `kind: new` and `kind: delta`)
-3. Read `changes/<name>/proposal.md` to understand high-level intent and goals
+1. Read `changes/<name>/state.md`
+2. Read `changes/<name>/proposal.md`
+3. Read change-set specs from `changes/<name>/specs/**/*.md` (both `kind: new` and `kind: delta`)
 4. Read any architectural thoughts in `changes/<name>/thoughts/`
 
-If lane is `vibe` or `bug`, redirect user to `/sdd/plan` instead.
+### Entry Check
+
+Apply state entry check logic from `.augment/skills/sdd-state-management.md`.
+
+If lane is `vibe` or `bug`, redirect user to `/sdd:plan` instead.
 
 ### Collaborative Tasking
 
@@ -39,6 +45,8 @@ This command is a **dialogue**, not a one-way generation.
 2. **Present Options**: If there are multiple valid ways to slice the work (e.g., horizontal vs vertical, foundation-first vs feature-first), present them to the user with trade-offs.
 3. **Invite Feedback**: Explicitly ask the user if they have specific preferences for task granularity or if there's a specific logical flow they want to follow to maintain system stability.
 4. **Iterate**: Only write `tasks.md` once a consensus on the strategy has been reached.
+
+Update state.md `## Notes` with task breakdown decisions and rationale.
 
 ### Task Structure
 
@@ -97,16 +105,9 @@ Each task should be:
 
 ### Completion
 
-Work through the task breakdown collaboratively with the user. 
+When they explicitly approve tasks:
 
-1. **Be Proactive**: If the grouping or ordering is ambiguous, propose a logical structure based on architectural best practices ("Foundations First", "Implementation Slices"). Explain the rationale behind your choices.
-2. **Ask for Clarification**: If a requirement is genuinely ambiguous or could be grouped in multiple valid ways with different trade-offs, ask the user for their preference.
-3. **Approval**: When the user explicitly approves:
-   - Log approval in state.md under `## Pending`:
-     ```
-     None - Tasks approved: [number] tasks defined
-     ```
-   - Update state.md phase to `plan`
-   - Suggest running `/sdd:plan <name>` to plan first task
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd:plan <name>` to plan first task
 
-Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

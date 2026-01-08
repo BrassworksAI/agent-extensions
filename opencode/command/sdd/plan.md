@@ -20,11 +20,13 @@ Research the codebase and create an implementation plan.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `plan`
-2. Determine lane (full, vibe, or bug)
-3. Read context:
-   - **Full lane**: Read `tasks.md`, identify current task
-   - **Vibe/Bug lane**: Read `context.md`
+!`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
+
+!`cat changes/$1/tasks.md 2>/dev/null || echo "No tasks found"`
+
+### Entry Check
+
+Apply state entry check logic from `sdd-state-management` skill.
 
 ---
 
@@ -34,7 +36,7 @@ For full lane, plan one task at a time.
 
 ### Identify Current Task
 
-1. Read `changes/<name>/tasks.md`
+1. Read `changes/<name>/tasks.md` (already injected above)
 2. If a task is already `[o]` (In Progress), assume it is the current task and continue planning it.
 3. Otherwise, pick the first `[ ]` (Pending) task as the current task.
 4. Read any existing plans in `changes/<name>/plans/`
@@ -56,11 +58,13 @@ Use the `research` skill to understand:
 
 If you might introduce new dependencies, APIs, or framework features, also do quick online research to confirm current best practices and version-specific details.
 
+Update state.md `## Notes` with research findings and planning progress.
+
 ### Collaborative Planning
 
 This command is a **dialogue**, not a one-way generation.
 
-1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and the approach you’re leaning toward.
+1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and the approach you're leaning toward.
 2. **Present Options**: If there are multiple reasonable approaches, present 2–3 with trade-offs.
 3. **Ask Targeted Questions**: Clarify any unknowns that materially affect the plan (scope boundaries, rollout strategy, time/complexity constraints).
 4. **Invite Feedback**: Ask the user if they want any changes to structure, granularity, or sequencing.
@@ -112,9 +116,8 @@ Only after the user indicates alignment, create `changes/<name>/plans/<NN>.md` (
 
 After the plan file is written, review it with the user. When they explicitly approve:
 
-1. Update `changes/<name>/state.md` phase to `implement`
-2. If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`), not `## Pending`.
-3. Suggest `/sdd/implement <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest `/sdd/implement <name>`
 
 Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 
@@ -136,7 +139,7 @@ Use the `research` skill to understand:
 
 This command is a **dialogue**, not a one-way generation.
 
-1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and the approach you’re leaning toward.
+1. **Think Out Loud**: Before writing any plan file, summarize what you learned from research and the approach you're leaning toward.
 2. **Present Options**: If there are multiple reasonable approaches, present 2–3 with trade-offs.
 3. **Ask Targeted Questions**: Clarify any unknowns that materially affect the plan.
 4. **Invite Feedback**: Ask the user if they want to adjust scope or sequencing.
@@ -195,9 +198,8 @@ For vibe/bug lanes:
 
 After the plan file is written, review it with the user. When they explicitly approve:
 
-1. Update `changes/<name>/state.md` phase to `implement`
-2. If an approval record is needed, capture it in a separate artifact (e.g., `changes/<name>/thoughts/decisions.md`), not `## Pending`.
-3. Suggest `/sdd/implement <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest `/sdd/implement <name>`
 
 Don't advance until the user clearly signals approval. Questions, feedback, or acknowledgments don't count as approval.
 

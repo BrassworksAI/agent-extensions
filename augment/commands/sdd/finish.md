@@ -1,11 +1,11 @@
 ---
-description: Close the change set and sync specs
+description: Close change set and sync specs
 argument-hint: <change-set-name>
 ---
 
 # Finish
 
-Close the change set and sync change-set specs to canonical.
+Close change set and sync change-set specs to canonical.
 
 ## Arguments
 
@@ -13,12 +13,19 @@ Close the change set and sync change-set specs to canonical.
 
 ## Instructions
 
-> **SDD Process**: Read `changes/<name>/state.md` first to verify phase is `finish`. If unsure about state management, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
+> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
+
+> **Spec Format**: Use guidance from `.augment/skills/spec-format.md` (project-local) or `~/.augment/skills/spec-format.md` (global) for spec structure.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `finish`
-2. Verify prerequisites: Reconciliation complete
+1. Read `changes/<name>/state.md`
+
+### Entry Check
+
+Apply state entry check logic from `.augment/skills/sdd-state-management.md`.
+
+Verify prerequisites: Reconciliation complete (phase `reconcile`, status `complete`).
 
 ### Sync Change-Set Specs
 
@@ -35,14 +42,14 @@ kind: new | delta
 
 3. Sync behavior:
 
-- **`kind: new`**: copy/move the spec content into canonical under `specs/` at the same relative path.
-- **`kind: delta`**: merge the delta into the existing canonical spec.
+- **`kind: new`**: copy/move spec content into canonical under `specs/` at same relative path.
+- **`kind: delta`**: merge delta into existing canonical spec.
   - Apply `### ADDED / ### MODIFIED / ### REMOVED` buckets (topics under `####`).
   - MODIFIED uses adjacent `Before/After` to locate and update text.
 
-4. Verify canonical reflects the intended changes.
+4. Verify canonical reflects intended changes.
 
-**Note:** delta merging will eventually be automated; for now apply merges carefully and review with the user.
+**Note:** Delta merging will eventually be automated; for now apply merges carefully and review with user.
 
 ### Update State
 
@@ -53,10 +60,12 @@ Update `changes/<name>/state.md`:
 
 complete
 
-## Completed
+## Phase Status
 
-<timestamp>
+complete
 ```
+
+Add completion timestamp to notes or leave empty.
 
 ### Cleanup Options
 

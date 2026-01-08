@@ -15,16 +15,20 @@ Explore the problem space collaboratively to develop a seed document.
 
 > **SDD Process**: If unsure about phase progression or state management, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
 
-> **Research**: When grounding ideation in reality, delegate to `@librarian`. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+> **Research**: When grounding ideation in reality, delegate to `@librarian`. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` for guidance.
 
 ### Setup
 
-1. Read `changes/<name>/state.md` - verify phase is `ideation` or initialize if new
+1. Read `changes/<name>/state.md`
 2. Check for existing `changes/<name>/seed.md`
+
+### Entry Check
+
+Apply state entry check logic from `.augment/skills/sdd-state-management.md`.
 
 ### Research Phase (As Needed)
 
-During ideation, research can help ground ideas in reality. **Delegate to @librarian** when you need to understand:
+During ideation, research can help ground ideas in reality. **Delegate to `@librarian`** when you need to understand:
 
 - Does something similar already exist in the codebase?
 - What constraints does the current architecture impose?
@@ -39,11 +43,11 @@ Use research to inform ideation, not constrain it:
 
 This is a **collaborative conversation**. Your job is to:
 
-1. **Understand the problem**: Ask clarifying questions about what the user wants to build
+1. **Understand problem**: Ask clarifying questions about what the user wants to build
 2. **Explore constraints**: What are the boundaries? What's out of scope?
 3. **Surface assumptions**: What's being taken for granted?
 4. **Identify risks**: What could go wrong?
-5. **Document incrementally**: Update seed.md as understanding develops
+5. **Document incrementally**: Update seed.md and state.md `## Notes` as understanding develops
 
 ### Seed Document Structure
 
@@ -79,7 +83,7 @@ What could derail this.
 
 ### Critique
 
-When the seed feels complete, suggest the user run `/sdd/tools/critique seed`:
+When the seed feels complete, suggest the user run `/sdd:tools/critique seed`:
 
 - Identifies contradictions and missing cases
 - Flags risks that aren't acknowledged
@@ -89,7 +93,9 @@ If critique identifies serious issues, work with user to address them.
 
 ### Completion
 
-When seed is solid and user approves:
+When seed is solid and user explicitly approves:
 
-1. Update state.md phase to `proposal`
-2. Suggest running `/sdd/proposal <name>`
+1. Update state.md: `## Phase Status: complete`, clear `## Notes`
+2. Suggest running `/sdd:proposal <name>`
+
+Do not log completion in `## Pending` (that section is for unresolved blockers/decisions only).

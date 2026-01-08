@@ -5,7 +5,7 @@ argument-hint: <change-name>
 
 # Initialize Change Set
 
-Create a new SDD change set with the given name.
+Create a new SDD change set with given name.
 
 > **SDD Process**: If you're unsure how state management works, read `.augment/skills/sdd-state-management.md` (project-local) or `~/.augment/skills/sdd-state-management.md` (global).
 
@@ -29,17 +29,23 @@ Create a new SDD change set with the given name.
    ```markdown
    # SDD State: <name>
 
-   ## Phase
-
-   ideation
-
    ## Lane
 
    (not yet selected)
 
+   ## Phase
+
+   ideation
+
+   ## Phase Status
+
+   in_progress
+
    ## Pending
 
     - Select lane (full/vibe/bug) during proposal
+
+   ## Notes
    ```
 5. **Initialize proposal.md** with empty template:
    ```markdown
