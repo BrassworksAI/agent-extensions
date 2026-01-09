@@ -4,8 +4,14 @@ description: Execute the implementation plan
 agent: sdd/build
 ---
 
-<skill>sdd-state-management</skill>
-<skill>research</skill>
+# Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `sdd-state-management`
+- `research`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without them.
 
 # Implement
 

@@ -5,6 +5,15 @@ argument-hint: <agent-description>
 
 # Create Agent
 
+## Required Skills (Must Load)
+
+Before doing anything else, you MUST read and follow these skill files:
+
+- `.augment/skills/keep-current.md`
+- `~/.augment/skills/keep-current.md`
+
+If required skill content is not available (cannot be found/read), you MUST stop and ask the user how to proceed. Do NOT continue without the required guidance.
+
 Create a new Augment CLI agent from a plain-English specification.
 
 ## Arguments

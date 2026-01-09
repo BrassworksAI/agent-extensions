@@ -4,8 +4,14 @@ description: Bug investigation and fix - triage, research, plan, fix
 agent: sdd/plan
 ---
 
-<skill>sdd-state-management</skill>
-<skill>research</skill>
+# Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `sdd-state-management`
+- `research`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without them.
 
 # Bug Fix
 

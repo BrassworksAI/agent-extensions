@@ -5,6 +5,15 @@ argument-hint: <command-description>
 
 # Create Command
 
+## Required Skills (Must Load)
+
+Before doing anything else, you MUST read and follow these skill files:
+
+- `.augment/skills/bun-shell-commands.md`
+- `~/.augment/skills/bun-shell-commands.md`
+
+If required skill content is not available (cannot be found/read), you MUST stop and ask the user how to proceed. Do NOT continue without the required guidance.
+
 Create a new Augment CLI command from a plain-English description.
 
 ## Arguments

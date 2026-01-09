@@ -5,6 +5,15 @@ argument-hint: [proposal|specs|plan|seed]
 
 # Critique
 
+## Required Skills (Must Load)
+
+Before doing anything else, you MUST read and follow these skill files:
+
+- `.augment/skills/research.md`
+- `~/.augment/skills/research.md`
+
+If required skill content is not available (cannot be found/read), you MUST stop and ask the user how to proceed. Do NOT continue without the required guidance.
+
 Provide thoughtful critique of work in the current context for gaps, contradictions, and risks.
 
 ## Arguments

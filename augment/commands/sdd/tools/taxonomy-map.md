@@ -5,6 +5,15 @@ argument-hint: <change-set-name>
 
 # Taxonomy Mapping
 
+## Required Skills (Must Load)
+
+Before doing anything else, you MUST read and follow these skill files:
+
+- `.augment/skills/research.md`
+- `~/.augment/skills/research.md`
+
+If required skill content is not available (cannot be found/read), you MUST stop and ask the user how to proceed. Do NOT continue without the required guidance.
+
 Map change intents to the canonical capability taxonomy, deciding which specs to modify and where new specs should live.
 
 ## Arguments

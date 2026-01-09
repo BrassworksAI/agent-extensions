@@ -4,9 +4,15 @@ description: Write change-set specifications for change
 agent: sdd/plan
 ---
 
-<skill>sdd-state-management</skill>
-<skill>spec-format</skill>
-<skill>research</skill>
+# Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `sdd-state-management`
+- `spec-format`
+- `research`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without them.
 
 # Specs
 
@@ -18,11 +24,19 @@ Write change-set specifications for the change set (`kind: new` and `kind: delta
 
 ## Instructions
 
-### Setup
+### Setup (Injected Context)
+
+The following commands print the authoritative documents into the chat as context:
 
 !`cat changes/$1/state.md 2>/dev/null || echo "State file not found"`
 
 !`cat changes/$1/proposal.md 2>/dev/null || echo "No proposal found"`
+
+You MUST treat the printed contents as the primary source of truth for this run.
+
+- Do NOT waste cycles re-searching for `changes/$1/state.md` or `changes/$1/proposal.md` when they are already shown.
+- Do NOT ask the user to paste them again unless the output says they were not found.
+- You MUST update `changes/$1/state.md` as instructed by `sdd-state-management` (notes, phase status, pending decisions).
 
 ### Entry Check
 
@@ -30,9 +44,30 @@ Apply state entry check logic from `sdd-state-management` skill.
 
 If lane is not `full`, redirect user to appropriate command.
 
+### Collaborative Discovery (Required)
+
+Spec writing is a **collaborative** process. You MUST NOT immediately start writing specification files.
+
+Before any spec text is written, you MUST:
+
+1. **Demonstrate understanding of the domain**
+   - Summarize the user’s goal, actors, workflows, and constraints in your own words.
+   - Identify assumptions and explicitly mark them as assumptions.
+
+2. **Demonstrate understanding of the capability taxonomy**
+   - Explain how you believe the change maps into the existing capability hierarchy.
+   - Call out any unclear boundaries (what is in-scope vs out-of-scope).
+
+3. **Run a user back-and-forth loop**
+   - Ask clarifying questions when anything is ambiguous.
+   - Propose concrete options when decisions are needed (tradeoffs, boundary choices).
+   - WAIT for explicit user answers/approval before proceeding.
+
+Only after the user confirms (or corrects) the understanding above may you proceed to Research/Taxonomy/Spec writing.
+
 ### Research Phase
 
-Before writing specs, use the `research` skill:
+After the collaborative discovery is confirmed, use the `research` skill:
 
 1. **Research to understand**:
    - Current spec structure and taxonomy
@@ -45,13 +80,15 @@ Before writing specs, use the `research` skill:
 
 ### Taxonomy Mapping
 
-With research in hand, suggest the user run `/sdd/tools/taxonomy-map <name>`:
+With research in hand, suggest the user run `/sdd/tools/taxonomy-map <name>` and confirm the result with them:
 
 - Determines where new capabilities should live in the spec hierarchy
 - Recommends brownfield (existing specs) vs greenfield (new specs)
 - Provides boundary decisions and group structure
 
 ### Writing Change Set Specs
+
+Only after the user explicitly approves the domain summary and taxonomy mapping:
 
 Create specs in `changes/<name>/specs/` following the `spec-format` skill. Specs may be nested by domain/subdomain under that folder (e.g. `changes/<name>/specs/auth/login.md`).
 Remember that change set specs have YAML frontmatter `kind: new | delta`.

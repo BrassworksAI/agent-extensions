@@ -3,6 +3,14 @@ description: Create a new OpenCode agent from a plain-English spec
 agent: build
 ---
 
+## Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `keep-current`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without it.
+
 Before executing, read this reference for up to date agent docs: https://opencode.ai/docs/agents/
 
 ## MCP Tools Available (in this OpenCode config)

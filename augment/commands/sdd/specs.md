@@ -13,11 +13,42 @@ Write change-set specifications for change set (`kind: new` and `kind: delta`).
 
 ## Instructions
 
-> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
+### Required Skills (Must Load)
 
-> **Research**: When needed, delegate to `@librarian` for codebase context. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+Before doing anything else, you MUST read and follow these skill files:
 
-> **Spec Format**: Use guidance from `.augment/skills/spec-format.md` (project-local) or `~/.augment/skills/spec-format.md` (global) for EARS syntax and structure.
+- `.augment/skills/sdd-state-management.md`
+- `.augment/skills/spec-format.md`
+- `.augment/skills/research.md`
+
+If any of these are missing project-locally, fall back to the user/global locations:
+
+- `~/.augment/skills/sdd-state-management.md`
+- `~/.augment/skills/spec-format.md`
+- `~/.augment/skills/research.md`
+
+If required skill content is not available (cannot be found/read), you MUST stop and ask the user how to proceed. Do NOT continue without the required guidance.
+
+### Collaborative Discovery (Required)
+
+Spec writing is a **collaborative** process. You MUST NOT immediately start writing specification files.
+
+Before any spec text is written, you MUST:
+
+1. **Demonstrate understanding of the domain**
+   - Summarize the user’s goal, actors, workflows, and constraints in your own words.
+   - Identify assumptions and explicitly mark them as assumptions.
+
+2. **Demonstrate understanding of the capability taxonomy**
+   - Explain how you believe the change maps into the existing capability hierarchy.
+   - Call out any unclear boundaries (what is in-scope vs out-of-scope).
+
+3. **Run a user back-and-forth loop**
+   - Ask clarifying questions when anything is ambiguous.
+   - Propose concrete options when decisions are needed (tradeoffs, boundary choices).
+   - WAIT for explicit user answers/approval before proceeding.
+
+Only after the user confirms (or corrects) the understanding above may you proceed to Research/Taxonomy/Spec writing.
 
 ### Setup
 
@@ -53,6 +84,8 @@ With research in hand, suggest user run `/sdd:tools:taxonomy-map <name>`:
 - Provides boundary decisions and group structure
 
 ### Writing Change Set Specs
+
+Only after the user explicitly approves the domain summary and taxonomy mapping:
 
 Create specs in `changes/<name>/specs/` following spec format guidance. Specs may be nested by domain/subdomain under that folder (e.g. `changes/<name>/specs/auth/login.md`).
 Remember that change set specs have YAML frontmatter `kind: new | delta`.

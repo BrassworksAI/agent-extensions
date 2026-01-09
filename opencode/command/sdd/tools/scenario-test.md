@@ -5,6 +5,14 @@ description: Roleplay as a user persona to stress-test proposals and designs
 
 # Scenario Test
 
+## Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `research`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without it.
+
 Test a proposal or design by inhabiting a realistic user persona and attempting to complete real work.
 
 ## Arguments

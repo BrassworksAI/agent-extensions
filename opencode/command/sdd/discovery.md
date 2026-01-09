@@ -4,10 +4,16 @@ description: Discover high-level architectural requirements for change-set specs
 agent: sdd/plan
 ---
 
-<skill>sdd-state-management</skill>
-<skill>research</skill>
-<skill>architecture-fit-check</skill>
-<skill>architecture-workshop</skill>
+# Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `sdd-state-management`
+- `research`
+- `architecture-fit-check`
+- `architecture-workshop`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without them.
 
 # Discovery
 

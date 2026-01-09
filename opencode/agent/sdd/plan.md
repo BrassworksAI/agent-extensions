@@ -3,16 +3,22 @@ name: sdd/plan
 description: SDD planning and artifact authoring - specs, proposals, tasks, and plans
 color: "#BFB8AD"
 permission:
+  "*": allow
   edit:
     "*": deny
     "changes/*.md": allow
   write:
     "*": deny
     "changes/*.md": allow
-  
 ---
 
-<skill>sdd-state-management</skill>
+# Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `sdd-state-management`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the agent or otherwise provide the missing skill content. Do NOT proceed without it.
 
 # SDD Plan
 

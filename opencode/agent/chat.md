@@ -142,7 +142,13 @@ permission:
   todowrite: deny
 ---
 
-<skill>research</skill>
+# Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `research`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the agent or otherwise provide the missing skill content. Do NOT proceed without it.
 
 # Chat
 

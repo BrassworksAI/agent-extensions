@@ -5,6 +5,14 @@ description: Critique proposal, specs, or plan for gaps and contradictions
 
 # Critique
 
+## Required Skills (Must Load)
+
+You MUST load and follow these skills before doing anything else:
+
+- `research`
+
+If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without it.
+
 Provide thoughtful critique of work in the current context for gaps, contradictions, and risks.
 
 ## Arguments
