@@ -48,22 +48,22 @@ If lane is not `full`, redirect user to appropriate command.
 
 Spec writing is a **collaborative** process. You MUST NOT immediately start writing specification files.
 
-Before any spec text is written, you MUST:
+Before any spec text is written, you MUST run a brief **collaborative alignment loop**:
 
-1. **Demonstrate understanding of the domain**
+1. **Domain understanding (show your work)**
    - Summarize the user’s goal, actors, workflows, and constraints in your own words.
    - Identify assumptions and explicitly mark them as assumptions.
 
-2. **Demonstrate understanding of the capability taxonomy**
+2. **Capability taxonomy understanding (map intent to structure)**
    - Explain how you believe the change maps into the existing capability hierarchy.
    - Call out any unclear boundaries (what is in-scope vs out-of-scope).
 
-3. **Have a short collaborative dialogue**
-   - Ask clarifying questions only when something is materially ambiguous.
-   - Propose concrete options when decisions are needed (tradeoffs, boundary choices).
-   - Continue once the user confirms (or corrects) the understanding.
+3. **Back-and-forth confirmation (required)**
+   - Present your understanding as a set of concrete statements and decisions.
+   - Offer a small set of options for any open decision (with tradeoffs).
+   - Pause and wait for the user to confirm or correct.
 
-Only after the user confirms (or corrects) the understanding above may you proceed to Research/Taxonomy/Spec writing.
+Only after the user explicitly confirms (or corrects) the understanding above may you proceed to Research/Taxonomy/Spec writing.
 
 ### Research Phase
 
