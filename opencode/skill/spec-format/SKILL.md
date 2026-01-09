@@ -127,6 +127,24 @@ kind: new | delta
 ---
 ```
 
+### Optional frontmatter fields
+
+Change-set specs MAY include additional YAML frontmatter fields when helpful. This is intentionally extensible for future tooling.
+
+#### `depends_on` (optional)
+
+Use `depends_on` to express spec-to-spec dependencies in a machine-readable form:
+
+```yaml
+---
+kind: new
+depends_on:
+  - specs/<domain>/<...>/<capability>.md
+---
+```
+
+Prefer listing canonical spec paths under `specs/` even when the dependency is being modified in the current change set.
+
 ### `kind: new`
 
 Use `kind: new` when the spec does not exist in canonical yet. Write it like a normal spec.

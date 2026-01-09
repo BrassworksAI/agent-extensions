@@ -37,9 +37,23 @@ Read:
 - Does it need a new spec? (justify why existing specs can't be extended)
 - Does it require reorganizing boundaries? (taxonomy refactor)
 
+Also classify the intent so boundaries stay clean (use natural language, no rigid taxonomy required):
+- **Entry points**: user-facing or system-facing “surfaces” where the capability is experienced (UI screens, APIs, CLIs, artifacts, jobs).
+- **Cross-cutting mechanisms**: behaviors that affect multiple entry points (caching/offline, ranking, prefetch, auth-gating, routing, logging).
+- **Core domain model**: authored data, metadata, transforms, indexing inputs, validation.
+- **Global invariants/policies**: rules that must be identical across multiple specs (canonical identifiers/URLs, exclusion rules, not-found semantics, resolution rules).
+
 ### 3. Decide Group Structure
 
 For each affected spec, determine if it should be flat or grouped.
+
+### 4. Depth Is Unbounded (N-level taxonomy)
+
+Taxonomy depth is intentionally unbounded. Use as many path segments as needed to keep boundaries cohesive, and prefer the shallowest depth that still preserves clean ownership.
+
+Examples:
+- `docs/specs/form/authoring/custom-question-types.md`
+- `docs/specs/form/rendering/pdf-viewer.md`
 
 ## Output
 
@@ -53,16 +67,18 @@ Return this structure:
 #### Mapped to Existing Specs
 
 - Intent: <Short description from change intents>
-  - Target: `docs/specs/<domain>/<capability>.md`
-  - Delta path: `changes/<change-name>/specs/<domain>/<capability>.md`
+  - Intent kind: Entry points | Cross-cutting mechanisms | Core domain model | Global invariants/policies
+  - Target: `docs/specs/<domain>/<...>/<capability>.md`
+  - Delta path: `changes/<change-name>/specs/<domain>/<...>/<capability>.md`
   - Change type: Added / Modified / Removed requirements
   - Why this fits: <Boundary rationale — why this belongs in this existing spec>
 
 #### New Specs Required
 
 - Intent: <Short description>
-  - New delta path: `changes/<change-name>/specs/<domain>/<capability>.md`
-  - Future canonical path: `docs/specs/<domain>/<capability>.md`
+  - Intent kind: Entry points | Cross-cutting mechanisms | Core domain model | Global invariants/policies
+  - New delta path: `changes/<change-name>/specs/<domain>/<...>/<capability>.md`
+  - Future canonical path: `docs/specs/<domain>/<...>/<capability>.md`
   - Justification: <Why no existing spec can be extended without violating boundaries>
 
 #### Taxonomy Refactors (if any)
@@ -85,7 +101,10 @@ Return this structure:
 
 ### Dependencies
 
-- `<spec path>` depends on `<other spec path>`: <reason>
+- `<spec path>`:
+  - depends_on:
+    - `<other spec path>`
+    - `<other spec path>`
 - ...
 ```
 
