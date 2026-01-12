@@ -21,11 +21,11 @@ Discovery is NOT about planning implementation details. It's about:
 
 ## Instructions
 
-> **SDD Process**: Read `.augment/skills/sdd-state-management.md` for state management guidance.
+> **SDD Process (Required)**: You MUST locate and read the state management guidance. Try project-local first: `.augment/skills/sdd-state-management.md`. If it does not exist, you MUST fall back to the global location: `~/.augment/skills/sdd-state-management.md`.
 
-> **Research**: When needed, delegate to `@librarian` for codebase context. See `.augment/skills/research.md` (project-local) or `~/.augment/skills/research.md` (global) for guidance.
+> **Research (Required When Delegating)**: If you need to delegate to `@librarian` for codebase context, you MUST locate and follow the delegation guidance. Try `.augment/skills/research.md` first; if it does not exist, you MUST try `~/.augment/skills/research.md`.
 
-> **Architecture**: Use guidance from `.augment/skills/architecture-fit-check.md` and `.augment/skills/architecture-workshop.md` (project-local) or `~/.augment/skills/architecture-fit-check.md` and `~/.augment/skills/architecture-workshop.md` (global).
+> **Architecture (Required)**: You MUST locate and use the architecture guidance. Try project-local first: `.augment/skills/architecture-fit-check.md` and `.augment/skills/architecture-workshop.md`. If either file is missing locally, you MUST try the corresponding global file(s): `~/.augment/skills/architecture-fit-check.md` and `~/.augment/skills/architecture-workshop.md`.
 
 ### Setup
 
