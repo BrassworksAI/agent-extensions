@@ -2,8 +2,8 @@
 set -e
 
 # Agent Extensions Install (macOS/Linux)
-# Creates symlinks to the local repo's folders
-# This allows you to edit files and push changes back to the repo
+# Creates global symlinks and local copies of the repo's folders
+# Local copies avoid repo-specific symlinks checked into git
 
 # Colors (if terminal supports them)
 if [ -t 1 ]; then
@@ -132,11 +132,77 @@ install_symlinks() {
   return 0
 }
 
+# Install copies to a target directory
+# Arguments: $1 = target root, $2 = payload dir, $3 = label for messages
+install_copies() {
+  TARGET_ROOT="$1"
+  PAYLOAD_DIR="$2"
+  LABEL="$3"
+
+  if [ ! -d "$PAYLOAD_DIR" ]; then
+    warn "Payload directory '$PAYLOAD_DIR' not found, skipping $LABEL"
+    return 1
+  fi
+
+  info "Installing $LABEL to: $TARGET_ROOT"
+
+  # Build file list and detect conflicts
+  CONFLICTS=""
+  CONFLICT_COUNT=0
+
+  cd "$PAYLOAD_DIR"
+  FILES="$(find . -type f | sed 's|^\./||')"
+  cd - > /dev/null
+
+  for file in $FILES; do
+    dest="$TARGET_ROOT/$file"
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+      CONFLICTS="$CONFLICTS$file\n"
+      CONFLICT_COUNT=$((CONFLICT_COUNT + 1))
+    fi
+  done
+
+  if [ "$CONFLICT_COUNT" -gt 0 ]; then
+    warn "Found $CONFLICT_COUNT existing file(s) that will be overwritten:"
+    printf "%b" "$CONFLICTS"
+    echo ""
+    if ! confirm "Continue and overwrite these files?"; then
+      warn "Installation cancelled."
+      return 1
+    fi
+  fi
+
+  # Create copies
+  info "Copying files for $LABEL..."
+
+  for file in $FILES; do
+    src="$PAYLOAD_DIR/$file"
+    dest="$TARGET_ROOT/$file"
+    dest_dir="$(dirname "$dest")"
+
+    # Create parent directories if needed
+    if [ ! -d "$dest_dir" ]; then
+      mkdir -p "$dest_dir"
+    fi
+
+    # Remove existing file/symlink if present
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+      rm "$dest"
+    fi
+
+    # Copy file
+    cp -p "$src" "$dest" || error "Failed to copy $file"
+  done
+
+  success "Files copied for $LABEL at: $TARGET_ROOT"
+  return 0
+}
+
 # Main
 main() {
   echo ""
-  echo "  Agent Extensions Install (Symlink Mode)"
-  echo "  ========================================"
+  echo "  Agent Extensions Install"
+  echo "  ========================"
   echo ""
 
   # Determine script location to find repo root
@@ -175,7 +241,7 @@ main() {
 
   # Choose install mode
   echo ""
-  echo "Where would you like to install symlinks?"
+  echo "Where would you like to install?"
   echo "  1) Global (user config directory)"
   echo "  2) Local (current repo)"
   echo "  3) Both global and local"
@@ -221,11 +287,11 @@ main() {
     echo ""
   fi
 
-  # Install OpenCode locally if requested
+  # Install OpenCode locally if requested (copy)
   if [ -n "$INSTALL_OPENCODE" ] && [ -n "$INSTALL_LOCAL" ]; then
     OPENCODE_PAYLOAD="$SCRIPT_DIR/opencode"
     OPENCODE_TARGET="$GIT_ROOT/.opencode"
-    if install_symlinks "$OPENCODE_TARGET" "$OPENCODE_PAYLOAD" "OpenCode (local)"; then
+    if install_copies "$OPENCODE_TARGET" "$OPENCODE_PAYLOAD" "OpenCode (local)"; then
       INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
     fi
     echo ""
@@ -241,11 +307,11 @@ main() {
     echo ""
   fi
 
-  # Install Augment locally if requested
+  # Install Augment locally if requested (copy)
   if [ -n "$INSTALL_AUGMENT" ] && [ -n "$INSTALL_LOCAL" ]; then
     AUGMENT_PAYLOAD="$SCRIPT_DIR/augment"
     AUGMENT_TARGET="$GIT_ROOT/.augment"
-    if install_symlinks "$AUGMENT_TARGET" "$AUGMENT_PAYLOAD" "Augment (local)"; then
+    if install_copies "$AUGMENT_TARGET" "$AUGMENT_PAYLOAD" "Augment (local)"; then
       INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
     fi
     echo ""
@@ -255,12 +321,12 @@ main() {
     error "No installations completed"
   fi
 
-  success "Install complete! (Symlink mode)"
+  success "Install complete!"
   echo ""
   info "Source files at: $SCRIPT_DIR"
   echo ""
-  echo "Any edits you make to the symlinked files will modify the repo files."
-  echo "You can commit and push changes directly."
+  echo "Global installs use symlinks to the repo."
+  echo "Local installs copy files into the repo."
   echo ""
 }
 

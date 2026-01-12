@@ -16,23 +16,23 @@ Install at least one of:
 - [OpenCode](https://opencode.ai/docs/#install)
 - [Augment CLI](https://www.augmentcode.com/)
 
-### macOS / Linux (Symlink Install)
+### macOS / Linux
 
 ```sh
 git clone git@github.com:BrassworksAI/agent-extensions.git && cd agent-extensions
 ./install.sh
 ```
 
-This installs via symlinks so edits to the repo are immediately reflected. macOS/Linux only.
+Global installs use symlinks to the repo; local installs copy files into the repo. macOS/Linux only.
 
-### Windows (Symlink Install)
+### Windows
 
 ```powershell
 git clone git@github.com:BrassworksAI/agent-extensions.git; cd agent-extensions
 .\install.ps1
 ```
 
-This installs via symlinks so edits to the repo are immediately reflected.
+Global installs use symlinks to the repo; local installs copy files into the repo.
 
 ### Install Locations
 
@@ -88,7 +88,7 @@ irm https://raw.githubusercontent.com/BrassworksAI/agent-extensions/main/uninsta
 
 ## Development Install
 
-Symlink install is now the default. Run the install script from your clone:
+Run the install script from your clone:
 
 ```sh
 git clone git@github.com:BrassworksAI/agent-extensions.git && cd agent-extensions
@@ -107,8 +107,8 @@ agent-extensions/
 │   ├── agents/         # Agent definitions
 │   ├── commands/       # Command definitions
 │   └── skills/         # Skill files
-├── install.sh          # macOS/Linux symlink installer
-├── install.ps1         # Windows symlink installer
+├── install.sh          # macOS/Linux installer (global symlinks, local copies)
+├── install.ps1         # Windows installer (global symlinks, local copies)
 ├── uninstall.sh        # macOS/Linux uninstaller
 └── uninstall.ps1       # Windows uninstaller
 ```

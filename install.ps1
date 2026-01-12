@@ -1,6 +1,6 @@
 # Agent Extensions Install (Windows PowerShell)
-# Creates symlinks to the local repo's folders
-# This allows you to edit files and push changes back to the repo
+# Creates global symlinks and local copies of the repo's folders
+# Local copies avoid repo-specific symlinks checked into git
 
 $ErrorActionPreference = "Stop"
 
@@ -97,10 +97,74 @@ function Install-Symlinks {
     return $true
 }
 
+function Install-Copies {
+    param(
+        [string]$TargetRoot,
+        [string]$PayloadDir,
+        [string]$Label
+    )
+
+    if (-not (Test-Path $PayloadDir)) {
+        Write-Warn "Payload directory '$PayloadDir' not found, skipping $Label"
+        return $false
+    }
+
+    Write-Info "Installing $Label to: $TargetRoot"
+
+    $files = Get-ChildItem -Path $PayloadDir -Recurse -File | ForEach-Object {
+        $_.FullName.Substring($PayloadDir.Length + 1)
+    }
+
+    $conflicts = @()
+    foreach ($file in $files) {
+        $dest = Join-Path $TargetRoot $file
+        if (Test-Path $dest) {
+            $conflicts += $file
+        }
+    }
+
+    if ($conflicts.Count -gt 0) {
+        Write-Host ""
+        Write-Warn "Found $($conflicts.Count) existing file(s) that will be overwritten:"
+        Write-Host ""
+        $conflicts | Select-Object -First 20 | ForEach-Object { Write-Host $_ }
+        if ($conflicts.Count -gt 20) {
+            Write-Host "  ... and $($conflicts.Count - 20) more"
+        }
+        Write-Host ""
+        if (-not (Confirm-YesNo "Overwrite ALL conflicting files for $Label?")) {
+            Write-Warn "Skipping $Label install"
+            return $false
+        }
+        Write-Host ""
+    }
+
+    Write-Info "Copying files for $Label..."
+
+    foreach ($file in $files) {
+        $src = Join-Path $PayloadDir $file
+        $dest = Join-Path $TargetRoot $file
+        $destDir = Split-Path $dest -Parent
+
+        if (-not (Test-Path $destDir)) {
+            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+        }
+
+        if (Test-Path $dest) {
+            Remove-Item $dest -Force
+        }
+
+        Copy-Item -Path $src -Destination $dest -Force
+    }
+
+    Write-Success "Files copied for $Label at: $TargetRoot"
+    return $true
+}
+
 function Main {
     Write-Host ""
-    Write-Host "  Agent Extensions Install (Symlink Mode)"
-    Write-Host "  ========================================"
+    Write-Host "  Agent Extensions Install"
+    Write-Host "  ========================"
     Write-Host ""
 
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -126,7 +190,7 @@ function Main {
     }
 
     Write-Host ""
-    Write-Host "Where would you like to install symlinks?"
+    Write-Host "Where would you like to install?"
     Write-Host "  1) Global (user config directory)"
     Write-Host "  2) Local (current repo)"
     Write-Host "  3) Both global and local"
@@ -164,7 +228,7 @@ function Main {
     if ($InstallOpenCode -and $InstallLocal) {
         $opencodePayload = Join-Path $scriptDir "opencode"
         $opencodeTarget = Join-Path $gitRoot ".opencode"
-        if (Install-Symlinks -TargetRoot $opencodeTarget -PayloadDir $opencodePayload -Label "OpenCode (local)") {
+        if (Install-Copies -TargetRoot $opencodeTarget -PayloadDir $opencodePayload -Label "OpenCode (local)") {
             $installedCount++
         }
         Write-Host ""
@@ -182,7 +246,7 @@ function Main {
     if ($InstallAugment -and $InstallLocal) {
         $augmentPayload = Join-Path $scriptDir "augment"
         $augmentTarget = Join-Path $gitRoot ".augment"
-        if (Install-Symlinks -TargetRoot $augmentTarget -PayloadDir $augmentPayload -Label "Augment (local)") {
+        if (Install-Copies -TargetRoot $augmentTarget -PayloadDir $augmentPayload -Label "Augment (local)") {
             $installedCount++
         }
         Write-Host ""
@@ -190,12 +254,12 @@ function Main {
 
     if ($installedCount -eq 0) { Write-Err "No installations completed" }
 
-    Write-Success "Install complete! (Symlink mode)"
+    Write-Success "Install complete!"
     Write-Host ""
     Write-Info "Source files at: $scriptDir"
     Write-Host ""
-    Write-Host "Any edits you make to the symlinked files will modify the repo files."
-    Write-Host "You can commit and push changes directly."
+    Write-Host "Global installs use symlinks to the repo."
+    Write-Host "Local installs copy files into the repo."
     Write-Host ""
 }
 

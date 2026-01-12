@@ -70,7 +70,7 @@ remove_opencode_files() {
   target="$1"
   removed=0
 
-  # OpenCode file list - exact files installed
+  # OpenCode file list - exact files installed (keep in sync with repo contents)
   files="
     agent/sdd/forge.md
     agent/sdd/plan.md
@@ -96,6 +96,7 @@ remove_opencode_files() {
     command/sdd/tools/scenario-test.md
     command/sdd/tools/taxonomy-map.md
     command/sdd/tools/prime-specs.md
+    command/tool/commit.md
     command/create/agent.md
     command/create/command.md
     skill/spec-format/SKILL.md
@@ -104,17 +105,20 @@ remove_opencode_files() {
     skill/architecture-fit-check/SKILL.md
     skill/architecture-workshop/SKILL.md
     skill/bun-shell-commands/SKILL.md
+    skill/design-case-study-generator/SKILL.md
+    skill/design-case-study-generator/references/pitch-card-template.md
+    skill/design-case-study-generator/references/demo-skeleton.md
+    skill/design-case-study-generator/references/tokens-css-emitter.md
+    skill/design-case-study-generator/references/token-schema-guidance.md
+    skill/design-case-study-generator/references/case-study-template.md
     skill/keep-current/SKILL.md
-    skill/skill-creator/SKILL.md
-    skill/skill-creator/deno.json
-    skill/skill-creator/deno.lock
-    skill/skill-creator/scripts/deps.ts
-    skill/skill-creator/scripts/init_skill.ts
-    skill/skill-creator/scripts/quick_validate.ts
-    skill/skill-creator/references/deno-runtime.md
-    skill/skill-creator/references/output-patterns.md
-    skill/skill-creator/references/script_rules.md
-    skill/skill-creator/references/workflows.md
+    skill/opencode-skill-creator/SKILL.md
+    skill/opencode-skill-creator/references/bun-script-rules.md
+    skill/opencode-skill-creator/references/skill-template.md
+    skill/opencode-skill-creator/references/script-workflows.md
+    skill/opencode-skill-creator/references/bun-runtime.md
+    skill/opencode-skill-creator/references/script-output-patterns.md
+    skill/opencode-skill-creator/references/opencode-skill-rules.md
   "
 
   for file in $files; do
@@ -125,9 +129,10 @@ remove_opencode_files() {
 
   # Clean up empty directories (leaf to root)
   dirs="
-    skill/skill-creator/references
-    skill/skill-creator/scripts
-    skill/skill-creator
+    skill/design-case-study-generator/references
+    skill/design-case-study-generator
+    skill/opencode-skill-creator/references
+    skill/opencode-skill-creator
     skill/spec-format
     skill/sdd-state-management
     skill/research
@@ -136,6 +141,7 @@ remove_opencode_files() {
     skill/bun-shell-commands
     skill/keep-current
     skill
+    command/tool
     command/sdd/tools
     command/sdd/fast
     command/sdd
@@ -157,7 +163,7 @@ remove_augment_files() {
   target="$1"
   removed=0
 
-  # Augment file list - exact files installed
+  # Augment file list - exact files installed (keep in sync with repo contents)
   files="
     agents/librarian.md
     commands/sdd/init.md
@@ -179,6 +185,8 @@ remove_augment_files() {
     commands/sdd/tools/scenario-test.md
     commands/sdd/tools/taxonomy-map.md
     commands/sdd/tools/prime-specs.md
+    commands/sdd/skill-discovery.md
+    commands/tool/commit.md
     commands/create/agent.md
     commands/create/command.md
     skills/sdd-state-management.md
@@ -198,6 +206,7 @@ remove_augment_files() {
   # Clean up empty directories (leaf to root)
   dirs="
     skills
+    commands/tool
     commands/sdd/tools
     commands/sdd/fast
     commands/sdd
