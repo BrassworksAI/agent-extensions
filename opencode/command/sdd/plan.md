@@ -4,15 +4,20 @@ description: Research, plan, and prepare for implementation
 agent: sdd/plan
 ---
 
-# Required Skills (Must Load)
+# Required Skills (Must Load First)
 
-You MUST load and follow these skills before doing anything else:
+Skill-loading is step zero. **Before any other instruction in this file** (including state reads, entry/gate checks, or research), you MUST load and follow these skills:
 
 - `sdd-state-management`
 - `research`
 - `keep-current`
 
-If any required skill content is missing or not available in context, you MUST stop and ask the user to re-run the command or otherwise provide the missing skill content. Do NOT proceed without them.
+If a required skill fails to load or is missing from context:
+- Continue with best effort (do not refuse to work).
+- Tell the user which skill(s) are missing and what that limits.
+- Ask the user to re-run the command or otherwise provide the missing skill content.
+
+Do not perform state entry/gate checks until after you have attempted to load the required skills.
 
 # Plan
 

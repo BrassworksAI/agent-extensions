@@ -8,9 +8,11 @@ permission:
   edit:
     "*": deny
     "changes/*.md": allow
+    "docs/_scratch/*.md": allow
   write:
     "*": deny
     "changes/*.md": allow
+    "docs/_scratch/*.md": allow
 ---
 
 # Required Skills (Must Load)

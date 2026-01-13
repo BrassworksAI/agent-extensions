@@ -12,19 +12,24 @@ permission:
     "*": deny
     "docs/**": allow
     "changes/**": allow
-    "**/*.md": allow
-    "**/*.html": allow
-    "**/*.css": allow
-    "**/*.js": allow
+    "design-system/*.json": allow
+    "design-system/*.md": allow
+    "design-system/*.html": allow
+    "design-system/*.css": allow
+    "design-system/*.js": allow
   write:
     "*": deny
     "docs/**": allow
     "changes/**": allow
-    "**/*.md": allow
-    "**/*.html": allow
-    "**/*.css": allow
-    "**/*.js": allow
-  bash: deny
+    "design-system/*.json": allow
+    "design-system/*.md": allow
+    "design-system/*.html": allow
+    "design-system/*.css": allow
+    "design-system/*.js": allow
+  bash:
+    "*": deny
+    "node -c*" : allow
+    "git*": ask
   todoread: deny
   todowrite: deny
 ---
