@@ -67,7 +67,7 @@ install_symlinks() {
   CONFLICT_COUNT=0
 
   cd "$PAYLOAD_DIR"
-  FILES="$(find . -type f | sed 's|^\./||')"
+  FILES="$(find . \( -name '.DS_Store' -o -name 'Thumbs.db' \) -prune -o -type f -print | sed 's|^\./||')"
   cd - > /dev/null
 
   for file in $FILES; do
@@ -151,7 +151,7 @@ install_copies() {
   CONFLICT_COUNT=0
 
   cd "$PAYLOAD_DIR"
-  FILES="$(find . -type f | sed 's|^\./||')"
+  FILES="$(find . \( -name '.DS_Store' -o -name 'Thumbs.db' \) -prune -o -type f -print | sed 's|^\./||')"
   cd - > /dev/null
 
   for file in $FILES; do

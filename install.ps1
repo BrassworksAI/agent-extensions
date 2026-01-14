@@ -40,9 +40,9 @@ function Install-Symlinks {
 
     Write-Info "Installing $Label to: $TargetRoot"
 
-    $files = Get-ChildItem -Path $PayloadDir -Recurse -File | ForEach-Object {
-        $_.FullName.Substring($PayloadDir.Length + 1)
-    }
+    $files = Get-ChildItem -Path $PayloadDir -Recurse -File |
+        Where-Object { $_.Name -notin @(".DS_Store", "Thumbs.db") } |
+        ForEach-Object { $_.FullName.Substring($PayloadDir.Length + 1) }
 
     $conflicts = @()
     foreach ($file in $files) {
@@ -111,9 +111,9 @@ function Install-Copies {
 
     Write-Info "Installing $Label to: $TargetRoot"
 
-    $files = Get-ChildItem -Path $PayloadDir -Recurse -File | ForEach-Object {
-        $_.FullName.Substring($PayloadDir.Length + 1)
-    }
+    $files = Get-ChildItem -Path $PayloadDir -Recurse -File |
+        Where-Object { $_.Name -notin @(".DS_Store", "Thumbs.db") } |
+        ForEach-Object { $_.FullName.Substring($PayloadDir.Length + 1) }
 
     $conflicts = @()
     foreach ($file in $files) {
