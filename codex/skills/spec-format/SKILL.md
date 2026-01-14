@@ -121,6 +121,18 @@ Requirements use EARS (Easy Approach to Requirements Syntax) patterns:
 
 All change set specs live in `changes/<name>/specs/` and MUST include YAML frontmatter:
 
+### Validation (required)
+
+After you `write` or `edit` any change-set spec under `changes/<name>/specs/**/*.md`, you **MUST** run the validator script against the exact file you changed.
+
+- Run: `node codex/skills/spec-format/scripts/validate-change-spec.mjs <change-spec-path>`
+
+If validation fails:
+
+- You MUST fix the spec content.
+- You MUST re-run the validator.
+- Repeat until it prints `OK`.
+
 ```markdown
 ---
 kind: new | delta
