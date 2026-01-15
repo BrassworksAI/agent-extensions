@@ -1,130 +1,55 @@
 ---
 description: Smart commits with semantic grouping and conventional commit format
-argument-hint: [additional context]
 ---
 
 # Smart Commit
 
-Analyze staged and unstaged changes to create well-structured conventional commits.
+Create conventional commits from staged/unstaged changes. `$ARGUMENTS` provides optional context.
 
-## Arguments
+## Current Git State
 
-- `$ARGUMENTS` - Optional additional context (e.g., "focus on API changes first", "skip test files")
+### Branch
+!`git branch --show-current`
 
-## Instructions
+### Status
+!`git status --short`
 
-### 1. Gather Git State
+### Staged Changes
+!`git diff --cached --stat`
 
-Run these commands to understand the current state:
+### Unstaged Changes
+!`git diff --stat`
 
-```bash
-# Current branch
-git branch --show-current
+### Full Diff
+!`git diff HEAD`
 
-# Status overview
-git status --short
+### Recent Commits (style reference)
+!`git log --oneline -10`
 
-# Staged changes
-git diff --cached --stat
+## Rules
 
-# Unstaged changes
-git diff --stat
+**Format:** `<type>(<scope>): <description>`
 
-# Full diff for semantic analysis
-git diff HEAD
+**Types:** `feat` | `fix` | `refactor` | `docs` | `test` | `chore`
 
-# Recent commits for style reference
-git log --oneline -10
-```
+**Scope:** Module affected (`auth`, `api`, `ui`, `db`, etc.) - match existing patterns
 
-### 2. Analyze Changes Semantically
+**Message style:**
+- Single sentence only, no body
+- Describe what the system does now (not what you did)
+- Used in changelogs - write for developers
 
-Review the diff output and identify:
-
-- **Cohesive changes**: Single purpose, single commit
-- **Multi-concern changes**: Multiple features/fixes that should be separate commits
-
-Group related changes by:
-- Feature or capability
-- Bug fix
-- Module or system affected
-
-### 3. Conventional Commit Format
-
-Use this format for all commits:
-
-```
-<type>(<scope>): <description>
-```
-
-#### Allowed Types
-
-| Type | When to use |
-|------|-------------|
-| `feat` | New feature or capability |
-| `fix` | Bug fix |
-| `refactor` | Code restructuring without behavior change |
-| `docs` | Documentation only |
-| `test` | Adding or updating tests |
-| `chore` | Build, tooling, or maintenance tasks |
-
-#### Scope Guidelines
-
-- Scope should reflect the **system/module** affected (e.g., `auth`, `api`, `ui`, `db`)
-- Keep scopes consistent with existing commit history (check `git log`)
-- Omit scope only for cross-cutting changes
-
-### 4. Commit Message Style
-
-- **Single sentence only** - no additional text, body, or clarifying details
-- Write in terms of what the **system now does**, not what you did
-- Messages will be used in changelogs
-
-**Good examples:**
+**Examples:**
 - `feat(auth): support OAuth2 refresh tokens`
 - `fix(api): prevent duplicate webhook deliveries`
 - `refactor(db): consolidate connection pooling logic`
 
-**Bad examples:**
-- `feat(auth): added code for tokens` (implementation-focused)
-- `fix: fixed bug` (no context)
-- `update files` (meaningless)
+**Avoid:** `feat(auth): added code for tokens` · `fix: fixed bug` · `update files`
 
-### 5. Execute Commits
+## Execute
 
-**Determine optimal git command:**
-- Check if the commit will include ALL files (staged + unstaged)
-- If yes, use the shorthand approach (see below)
-- If no, stage specific files manually
-
-**Single commit** (cohesive changes):
-
-**Option 1: All files being added (optimized)**
-```bash
-# If all untracked files + all modified files should be in the commit
-git add -A && git commit -m "<type>(<scope>): <description>"
-
-# OR if only tracked files changed (no new files)
-git commit -a -m "<type>(<scope>): <description>"
-```
-
-**Option 2: Specific files only**
-```bash
-git add <relevant-files>
-git commit -m "<type>(<scope>): <description>"
-```
-
-**Multiple commits** (multi-concern changes):
-1. Stage files for first logical group
-2. Commit with appropriate message
-3. Repeat for each group
-
-### 6. Verify
-
-Run `git log --oneline -5` to confirm commits were created correctly.
-
-## Output
-
-- Summary of changes analyzed
-- Commit(s) created with their messages
-- Verification output showing the new commit(s)
+1. Group changes by concern - one commit per feature/fix
+2. For each commit:
+   - All files: `git add -A && git commit -m "<type>(<scope>): <description>"` (or `git commit -a -m "..."`)
+   - Specific files: `git add <files> && git commit -m "<type>(<scope>): <description>"`
+3. Verify: `git log --oneline -5`
