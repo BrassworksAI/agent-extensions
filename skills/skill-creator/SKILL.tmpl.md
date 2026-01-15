@@ -23,16 +23,34 @@ When used, this skill helps produce:
 
 - A new skill folder containing a valid `SKILL.md`
 - A clear, discovery-friendly `description`
-- Optional supporting docs in `references/` to keep `SKILL.md` concise
+- Optional `references/` and `scripts/` only when needed
+
+## How skills work (progressive disclosure)
+
+This skill follows the Agent Skills model:
+
+- **Discovery**: agents load only `name` + `description` for all skills.
+- **Activation**: when this skill is selected, the agent reads `SKILL.md`.
+- **Execution**: the agent reads `references/` files or runs `scripts/` only when needed.
+
+Design new skills the same way: keep the main file high-signal, and push deep details into files that are read only on the branch that needs them.
 
 ## Core rules
 
 - Skills are discovered by **frontmatter only**: `name` + `description`.
-- `SKILL.md` must start with YAML frontmatter. See `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/skill-rules.md`.
 - Skill `name` must match the directory name and pass naming constraints.
-- Prefer progressive disclosure:
-  - Keep `SKILL.md` short and actionable.
-  - Put long or rarely-needed details in `references/`.
+- Default to a single-file skill.
+- Add `references/` only when it reduces token load or avoids confusion.
+- Add `scripts/` only for deterministic, mechanical, or fragile steps.
+
+### Minimal spec constraints (inline)
+
+- `name`:
+  - 1–64 characters
+  - lowercase letters/numbers/hyphens only
+  - no leading/trailing `-`, no `--`
+  - must match the skill directory name
+- Recall: `description` is used for discovery. It should say what the skill does and when to use it, and include concrete trigger keywords.
 
 ## Workflow
 
@@ -68,19 +86,49 @@ Rules for **Other**:
 
 Before creating files, verify:
 
-- `name` matches rules (see `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/skill-rules.md`)
+- `name` satisfies the constraints above
 - The directory name will exactly match `name`
 - `description` is 1–1024 characters and describes when to use the skill
 
 ### 4) Author `SKILL.md`
 
-Start from `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/skill-template.md` and fill it in.
+Write the new `SKILL.md` directly. Use this structure as a starting point (adapt as needed):
+
+```markdown
+---
+name: <skill-name>
+description: <One sentence describing when this skill should be used>
+---
+
+# <Skill Title>
+
+## Collaboration
+
+- Ask the user for missing inputs.
+- Summarize intended outputs and file changes.
+- Wait for confirmation before creating or editing files.
+
+## Inputs I need
+
+- <question 1>
+- <question 2>
+
+## Workflow
+
+1. <Step 1>
+2. <Step 2>
+3. <Step 3>
+
+## Guardrails
+
+- <constraints>
+```
 
 Guidelines:
 
-- Do not include a "when to use me" body section; put that information in frontmatter `description`.
 - Prefer concise, step-based workflows.
-- If the workflow is complex, include a small checklist or gates.
+- Use gates/decision points when paths branch.
+- Keep the skill focused on what the user’s environment and repo actually require.
 
 ### 4a) Template files (`.tmpl.md`)
 
@@ -89,7 +137,7 @@ If your skill references scripts or supporting files using path variables, name 
 **When to use `.tmpl.md`:**
 
 - The skill bundles scripts that need to be invoked with a known install path
-- Reference files point to other files within the skill using path variables
+- The skill bundles `references/` files and needs stable cross-install paths
 - Any file that contains `{{{SKILL_INSTALL_PATH}}}`, `{{{SKILL_LOCAL_PATH}}}`, or `{{{SKILL_GLOBAL_PATH}}}`
 
 **How it works:**
@@ -107,45 +155,46 @@ If your skill references scripts or supporting files using path variables, name 
 | `{{{SKILL_LOCAL_PATH}}}` | Project-local skill directory | `.opencode/skill` |
 | `{{{SKILL_GLOBAL_PATH}}}` | Global skill directory | `~/.config/opencode/skill` |
 
-**Example usage in a skill:**
-
-Referencing a script:
-```markdown
-Run the validator:
-`bun {{{SKILL_INSTALL_PATH}}}/my-skill/scripts/validate.ts <path>`
-```
-
-Referencing a file in `references/`:
-```markdown
-See `{{{SKILL_INSTALL_PATH}}}/my-skill/references/api-conventions.md` for naming rules.
-```
-
 **Conflict detection:**
 
 If both `SKILL.md` and `SKILL.tmpl.md` exist in a skill directory, the install will fail with an error. Choose one or the other.
 
-### 5) Add optional `references/`
+### 5) Add `references/` (branch only)
 
-Only add `references/` files when they keep the main `SKILL.md` smaller and more usable.
+Default: do not add `references/`.
 
-Good candidates:
+Add `references/` only when it keeps `SKILL.md` smaller and more usable (e.g. approaching ~500 lines, domain-specific docs, long examples).
 
-- Company-specific conventions
-- API references
-- Codebase-specific patterns
-- Templates that are too long for the main skill body
+If you decide you need references, first read:
 
-**How to link to references:**
+- `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/references-guide.md`
 
-When your skill points to files in `references/`, use the full templated path:
+When linking to bundled reference files from `SKILL.md`, use an install-stable path:
 
 ```markdown
-See `{{{SKILL_INSTALL_PATH}}}/my-skill/references/api-conventions.md` for details.
+See `{{{SKILL_INSTALL_PATH}}}/my-skill/references/<doc>.md`.
 ```
 
-This ensures the agent can locate the file regardless of install location. If your skill links to any `references/` files this way, name the skill file `SKILL.tmpl.md` (see section 4a).
+### 6) Add `scripts/` (branch only, Node-first)
 
-If you are considering bundling scripts in the new skill, use `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/bun-runtime.md` to decide if scripts are worth it.
+Default: do not add `scripts/`.
+
+Add scripts only for deterministic, mechanical steps that benefit from automation (validation, scaffolding, transforms).
+
+If you decide you need scripts:
+
+1. Read script conventions:
+   - `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/scripts-overview.md`
+
+2. Pick runtime (Node-first):
+   - `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/scripts-runtime-node-first.md`
+
+3. Use `.mjs` scripts and the Node standard library only (`node:*` imports).
+
+4. Validate scripts parse/compile before you rely on them:
+
+   - Node: `node -c scripts/<script>.mjs`
+   - Bun (fallback runner): `bun --check scripts/<script>.mjs`
 
 ## How to write a good `description`
 
@@ -154,24 +203,10 @@ A strong `description` makes the discovery decision obvious.
 Patterns that work well:
 
 - Start with an action verb: “Design…”, “Generate…”, “Review…”, “Refactor…”, “Draft…”, “Validate…”
-- Include the artifact produced: “...a `SKILL.md`…”, “...a release checklist…”, “...a migration plan…”
-- Include the context boundary: “...for this tool…”, “...for our monorepo…”, “...without changing runtime behavior…”
+- Include the artifact produced: “...a `SKILL.md`…”, “...a migration plan…”, “...a checklist…”
+- Include discovery triggers: what user phrases or contexts should cause this skill to activate
 
 Examples:
 
-- “Create a scoped `SKILL.md` and references for consistent API endpoint changes in this repo.”
-- “Draft agent skills for repeatable workflows, keeping `SKILL.md` concise and using `references/` for details.”
-
-## References
-
-- Skill rules: `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/skill-rules.md`
-- Skill template: `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/skill-template.md`
-
-## References (Bun scripts, optional)
-
-Only relevant if the skill you are creating will bundle scripts.
-
-- Bun runtime: `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/bun-runtime.md`
-- Bun script rules: `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/bun-script-rules.md`
-- Script output patterns: `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/script-output-patterns.md`
-- Script workflows: `{{{SKILL_INSTALL_PATH}}}/skill-creator/references/script-workflows.md`
+- “Creates a scoped `SKILL.md` for consistent API endpoint changes in this repo. Use when adding or modifying API routes or handlers.”
+- “Drafts agent skills for repeatable workflows, keeping `SKILL.md` concise and using `references/` only for deep details.”

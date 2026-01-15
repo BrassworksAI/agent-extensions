@@ -116,12 +116,9 @@ remove_opencode_files() {
     skill/research/SKILL.md
     skill/sdd-state-management/SKILL.md
     skill/skill-creator/SKILL.md
-    skill/skill-creator/references/bun-runtime.md
-    skill/skill-creator/references/bun-script-rules.md
-    skill/skill-creator/references/script-output-patterns.md
-    skill/skill-creator/references/script-workflows.md
-    skill/skill-creator/references/skill-rules.md
-    skill/skill-creator/references/skill-template.md
+    skill/skill-creator/references/references-guide.md
+    skill/skill-creator/references/scripts-overview.md
+    skill/skill-creator/references/scripts-runtime-node-first.md
     skill/spec-format/SKILL.md
     skill/spec-format/scripts/validate-change-spec.ts
   "
@@ -276,12 +273,9 @@ remove_codex_files() {
     skills/research/SKILL.md
     skills/sdd-state-management/SKILL.md
     skills/skill-creator/SKILL.md
-    skills/skill-creator/references/bun-runtime.md
-    skills/skill-creator/references/bun-script-rules.md
-    skills/skill-creator/references/script-output-patterns.md
-    skills/skill-creator/references/script-workflows.md
-    skills/skill-creator/references/skill-rules.md
-    skills/skill-creator/references/skill-template.md
+    skills/skill-creator/references/references-guide.md
+    skills/skill-creator/references/scripts-overview.md
+    skills/skill-creator/references/scripts-runtime-node-first.md
     skills/spec-format/SKILL.md
     skills/spec-format/scripts/validate-change-spec.ts
   "
