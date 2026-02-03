@@ -123,9 +123,9 @@ func TestNotes(t *testing.T) {
 
 func TestLanePhases(t *testing.T) {
 	tests := []struct {
-		lane   Lane
-		first  string
-		count  int
+		lane  Lane
+		first string
+		count int
 	}{
 		{LaneFull, "proposal", 8},
 		{LaneVibe, "context", 5},

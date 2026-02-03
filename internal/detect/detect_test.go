@@ -8,7 +8,9 @@ import (
 
 func TestDetectTerminalTheme_COLORFGBG_Dark(t *testing.T) {
 	original := os.Getenv("COLORFGBG")
-	defer os.Setenv("COLORFGBG", original)
+	defer func() {
+		os.Setenv("COLORFGBG", original)
+	}()
 
 	// Dark backgrounds (0-6, 8)
 	darkValues := []string{"15;0", "15;1", "15;8", "7;0"}
@@ -23,7 +25,9 @@ func TestDetectTerminalTheme_COLORFGBG_Dark(t *testing.T) {
 
 func TestDetectTerminalTheme_COLORFGBG_Light(t *testing.T) {
 	original := os.Getenv("COLORFGBG")
-	defer os.Setenv("COLORFGBG", original)
+	defer func() {
+		os.Setenv("COLORFGBG", original)
+	}()
 
 	// Light backgrounds (7, 15)
 	lightValues := []string{"0;7", "0;15", "8;15"}
