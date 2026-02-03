@@ -231,7 +231,10 @@ func runSddStatus(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	tasks, _ := sdd.LoadTasks(changeDir)
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
 
 	renderer := sdd.NewStatusRenderer(state, tasks)
 	renderer.Render()
@@ -255,7 +258,9 @@ func runSddPhaseNext(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("already at final phase")
 	}
 
-	state.SetPhase(nextPhase)
+	if err := state.SetPhase(nextPhase); err != nil {
+		return err
+	}
 	if err := state.Save(changeDir); err != nil {
 		return err
 	}
