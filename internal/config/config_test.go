@@ -14,14 +14,12 @@ func TestLoadToolsConfig(t *testing.T) {
     global_path: ~/.test-tool
     local_path: .test-tool
     conventions:
-      skills: skills/{name}/SKILL.md
       commands: commands/{name}.md
   another-tool:
     name: Another Tool
     global_path: ~/.another
     local_path: .another
     conventions:
-      skills: skills/{name}.md
       commands: prompts/{name}.md
 `
 	tmpDir := t.TempDir()
@@ -53,9 +51,6 @@ func TestLoadToolsConfig(t *testing.T) {
 	if tool.LocalPath != ".test-tool" {
 		t.Errorf("expected local_path '.test-tool', got %q", tool.LocalPath)
 	}
-	if tool.Conventions.Skills != "skills/{name}/SKILL.md" {
-		t.Errorf("expected skills convention 'skills/{name}/SKILL.md', got %q", tool.Conventions.Skills)
-	}
 	if tool.Conventions.Commands != "commands/{name}.md" {
 		t.Errorf("expected commands convention 'commands/{name}.md', got %q", tool.Conventions.Commands)
 	}
@@ -68,7 +63,6 @@ func TestLoadToolsConfigFromFS(t *testing.T) {
     global_path: ~/.fs-tool
     local_path: .fs-tool
     conventions:
-      skills: skills/{name}/SKILL.md
       commands: commands/{name}.md
 `
 	fsys := fstest.MapFS{
@@ -182,40 +176,11 @@ func TestTool_ResolveLocalPath(t *testing.T) {
 }
 
 func TestConventions_SkillPath(t *testing.T) {
-	tests := []struct {
-		name      string
-		pattern   string
-		skillName string
-		want      string
-	}{
-		{
-			name:      "directory-based skill",
-			pattern:   "skills/{name}/SKILL.md",
-			skillName: "my-skill",
-			want:      "skills/my-skill/SKILL.md",
-		},
-		{
-			name:      "single-file skill",
-			pattern:   "skills/{name}.md",
-			skillName: "my-skill",
-			want:      "skills/my-skill.md",
-		},
-		{
-			name:      "custom directory",
-			pattern:   "custom/skills/{name}/SKILL.md",
-			skillName: "test",
-			want:      "custom/skills/test/SKILL.md",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			conv := Conventions{Skills: tt.pattern}
-			got := conv.SkillPath(tt.skillName)
-			if got != tt.want {
-				t.Errorf("SkillPath() = %q, want %q", got, tt.want)
-			}
-		})
+	conv := Conventions{}
+	got := conv.SkillPath("my-skill")
+	want := "skills/my-skill/SKILL.md"
+	if got != want {
+		t.Errorf("SkillPath() = %q, want %q", got, want)
 	}
 }
 

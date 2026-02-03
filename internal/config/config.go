@@ -18,15 +18,12 @@ type Tool struct {
 }
 
 type Conventions struct {
-	Skills   string `yaml:"skills"`
 	Commands string `yaml:"commands"`
 }
 
 type ToolsConfig struct {
 	Tools map[string]Tool `yaml:"tools"`
 }
-
-
 
 func LoadToolsConfig(path string) (*ToolsConfig, error) {
 	data, err := os.ReadFile(path)
@@ -56,8 +53,6 @@ func LoadToolsConfigFromFS(fsys fs.FS, path string) (*ToolsConfig, error) {
 	return &cfg, nil
 }
 
-
-
 func (t *Tool) ResolveGlobalPath() string {
 	path := t.GlobalPath
 	if strings.HasPrefix(path, "~/") {
@@ -72,7 +67,7 @@ func (t *Tool) ResolveLocalPath(projectRoot string) string {
 }
 
 func (c *Conventions) SkillPath(name string) string {
-	return strings.ReplaceAll(c.Skills, "{name}", name)
+	return "skills/" + name + "/SKILL.md"
 }
 
 func (c *Conventions) CommandPath(name string) string {

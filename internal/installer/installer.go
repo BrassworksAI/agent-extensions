@@ -154,16 +154,7 @@ func (i *Installer) installSkill(name, cacheDir, targetBase string, conv config.
 	destPath := conv.SkillPath(name)
 	dest := filepath.Join(targetBase, destPath)
 
-	// For single-file skills (e.g., Augment style: skills/{name}.md)
-	if filepath.Ext(destPath) == ".md" && filepath.Base(destPath) == name+".md" {
-		cacheSkillFile := filepath.Join(cacheDest, "SKILL.md")
-		if _, err := os.Stat(cacheSkillFile); err == nil {
-			return createSymlink(cacheSkillFile, dest)
-		}
-		return fmt.Errorf("SKILL.md not found in %s", cacheDest)
-	}
-
-	// For directory-based skills, create the directory and symlink individual files
+	// Symlink individual files from cache to destination directory
 	destDir := filepath.Dir(dest)
 	return i.symlinkSkillFiles(cacheDest, destDir)
 }

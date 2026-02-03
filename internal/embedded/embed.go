@@ -5,9 +5,10 @@ import (
 	"io/fs"
 )
 
-// Content will be populated at build time using -ldflags or by copying files
-// For now, we use a generate script to copy files before build
+// Content embeds tools.yaml and repository/ for distribution in the binary.
+// Run `go generate ./...` or `sh scripts/embed.sh` before building to update.
 //
+//go:generate sh ../../scripts/embed.sh
 //go:embed content
 var Content embed.FS
 

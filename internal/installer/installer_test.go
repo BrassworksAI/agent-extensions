@@ -18,13 +18,6 @@ var testToolsYAML = `tools:
     conventions:
       skills: skills/{name}/SKILL.md
       commands: commands/{name}.md
-  single-file:
-    name: SingleFile
-    global_path: {GLOBAL}/single-file
-    local_path: .single-file
-    conventions:
-      skills: skills/{name}.md
-      commands: commands/{name}.md
   prompts-style:
     name: PromptsStyle
     global_path: {GLOBAL}/prompts-style
@@ -33,8 +26,6 @@ var testToolsYAML = `tools:
       skills: skills/{name}/SKILL.md
       commands: prompts/{name}.md
 `
-
-
 
 func createTestRegistry(t *testing.T, globalBase string) *registry.Registry {
 	t.Helper()
@@ -50,13 +41,6 @@ func createTestRegistry(t *testing.T, globalBase string) *registry.Registry {
     local_path: .dir-based
     conventions:
       skills: skills/{name}/SKILL.md
-      commands: commands/{name}.md
-  single-file:
-    name: SingleFile
-    global_path: ` + globalBase + `/single-file
-    local_path: .single-file
-    conventions:
-      skills: skills/{name}.md
       commands: commands/{name}.md
   prompts-style:
     name: PromptsStyle
@@ -125,7 +109,7 @@ func TestInstaller_cacheDir(t *testing.T) {
 
 // TestInstallMatrix tests all tool × scope combinations
 func TestInstallMatrix(t *testing.T) {
-	tools := []string{"dir-based", "single-file", "prompts-style"}
+	tools := []string{"dir-based", "prompts-style"}
 	scopes := []Scope{ScopeGlobal, ScopeLocal, ScopeBoth}
 
 	for _, tool := range tools {
@@ -187,15 +171,9 @@ func verifyInstallation(t *testing.T, reg *registry.Registry, inst *Installer, t
 			skillPath := tool.Conventions.SkillPath(skill)
 			fullPath := filepath.Join(targetBase, skillPath)
 
-			if filepath.Ext(skillPath) == ".md" && filepath.Base(skillPath) == skill+".md" {
-				// Single-file skill
-				verifySymlink(t, fullPath, "SKILL.md")
-				verifySymlinkContent(t, fullPath, "# Skill")
-			} else {
-				// Directory-based skill - check the directory contains symlinked files
-				skillDir := filepath.Dir(fullPath)
-				verifyDirWithSymlinkedFiles(t, skillDir)
-			}
+			// All skills are directory-based - check the directory contains symlinked files
+			skillDir := filepath.Dir(fullPath)
+			verifyDirWithSymlinkedFiles(t, skillDir)
 		}
 	}
 }
@@ -317,7 +295,7 @@ func searchString(s, substr string) bool {
 
 // TestUninstallMatrix tests all tool × scope uninstall combinations
 func TestUninstallMatrix(t *testing.T) {
-	tools := []string{"dir-based", "single-file", "prompts-style"}
+	tools := []string{"dir-based", "prompts-style"}
 	scopes := []Scope{ScopeGlobal, ScopeLocal, ScopeBoth}
 
 	for _, tool := range tools {
@@ -397,15 +375,10 @@ func verifyUninstallation(t *testing.T, reg *registry.Registry, toolName string,
 			skillPath := tool.Conventions.SkillPath(skill)
 			fullPath := filepath.Join(targetBase, skillPath)
 
-			if filepath.Ext(skillPath) == ".md" && filepath.Base(skillPath) == skill+".md" {
-				if _, err := os.Lstat(fullPath); err == nil {
-					t.Errorf("skill file still exists at %s", fullPath)
-				}
-			} else {
-				skillDir := filepath.Dir(fullPath)
-				if _, err := os.Lstat(skillDir); err == nil {
-					t.Errorf("skill directory still exists at %s", skillDir)
-				}
+			// All skills are directory-based
+			skillDir := filepath.Dir(fullPath)
+			if _, err := os.Lstat(skillDir); err == nil {
+				t.Errorf("skill directory still exists at %s", skillDir)
 			}
 		}
 
@@ -432,7 +405,7 @@ func TestUninstall_NotInstalled(t *testing.T) {
 	}
 
 	// Uninstall from a tool that was never installed to
-	result, err := inst.Uninstall("single-file", ScopeGlobal)
+	result, err := inst.Uninstall("prompts-style", ScopeGlobal)
 	if err != nil {
 		t.Fatalf("Uninstall failed: %v", err)
 	}
@@ -445,7 +418,7 @@ func TestUninstall_NotInstalled(t *testing.T) {
 		t.Errorf("expected 0 skills removed, got %d", result.Skills)
 	}
 
-	// Uninstall from the tool that was actually installed
+	// Uninstall from the tool that was actually installed to
 	result, err = inst.Uninstall("dir-based", ScopeGlobal)
 	if err != nil {
 		t.Fatalf("Uninstall failed: %v", err)
@@ -660,42 +633,6 @@ func TestToolConventions_DirBasedSkills(t *testing.T) {
 
 	if fileInfo.Mode()&os.ModeSymlink == 0 {
 		t.Error("SKILL.md should be a symlink")
-	}
-}
-
-func TestToolConventions_SingleFileSkills(t *testing.T) {
-	globalDir := t.TempDir()
-	projectRoot := t.TempDir()
-	reg := createTestRegistry(t, globalDir)
-	inst := New(reg, projectRoot)
-
-	_, err := inst.Install("single-file", ScopeGlobal)
-	if err != nil {
-		t.Fatalf("Install failed: %v", err)
-	}
-
-	tool, _ := reg.GetTool("single-file")
-	targetBase := tool.ResolveGlobalPath()
-
-	// For single-file tool, skills should be at skills/{name}.md (file symlink)
-	skillFile := filepath.Join(targetBase, "skills", "skill-one.md")
-	info, err := os.Lstat(skillFile)
-	if err != nil {
-		t.Fatalf("skill file not found: %v", err)
-	}
-
-	if info.Mode()&os.ModeSymlink == 0 {
-		t.Error("skill should be a symlink")
-	}
-
-	// The symlink should resolve to SKILL.md content
-	data, err := os.ReadFile(skillFile)
-	if err != nil {
-		t.Fatalf("failed to read skill file: %v", err)
-	}
-
-	if !contains(string(data), "# Skill One") {
-		t.Error("skill file should contain skill content")
 	}
 }
 
