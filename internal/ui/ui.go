@@ -99,12 +99,8 @@ func (u *UI) Confirm(prompt string) (bool, error) {
 }
 
 func (u *UI) Spin(title string, fn func() error) error {
-	args := []string{"spin", "--spinner", "dot", "--title", title}
-	args = append(args, "--spinner.foreground", u.Theme.Primary)
-	args = append(args, "--title.foreground", u.Theme.Muted)
-	args = append(args, "--")
-
-	// For spin, we need to run the function in a subprocess
+	// TODO: Implement gum spin subprocess
+	// For now, just run the function directly with a simple indicator
 	// For now, just run the function directly with a simple indicator
 	fmt.Printf("%s... ", title)
 	err := fn()
