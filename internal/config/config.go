@@ -18,7 +18,9 @@ type Tool struct {
 }
 
 type Conventions struct {
-	Commands string `yaml:"commands"`
+	Commands       string `yaml:"commands"`
+	GlobalCommands string `yaml:"global_commands,omitempty"`
+	LocalCommands  string `yaml:"local_commands,omitempty"`
 }
 
 type ToolsConfig struct {
@@ -70,6 +72,14 @@ func (c *Conventions) SkillPath(name string) string {
 	return "skills/" + name + "/SKILL.md"
 }
 
-func (c *Conventions) CommandPath(name string) string {
-	return strings.ReplaceAll(c.Commands, "{name}", name)
+func (c *Conventions) CommandPath(name string, isGlobal bool) string {
+	var pattern string
+	if isGlobal && c.GlobalCommands != "" {
+		pattern = c.GlobalCommands
+	} else if !isGlobal && c.LocalCommands != "" {
+		pattern = c.LocalCommands
+	} else {
+		pattern = c.Commands
+	}
+	return strings.ReplaceAll(pattern, "{name}", name)
 }

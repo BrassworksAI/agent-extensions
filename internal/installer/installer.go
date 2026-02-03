@@ -96,7 +96,7 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 
 		// Install commands
 		for _, cmd := range commands {
-			if err := i.installCommand(cmd, cache, target, tool.Conventions); err != nil {
+			if err := i.installCommand(cmd, cache, target, tool.Conventions, s == ScopeGlobal); err != nil {
 				result.Errors = append(result.Errors, fmt.Errorf("command %s: %w", cmd, err))
 			} else {
 				result.Commands++
@@ -116,7 +116,7 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 	return result, nil
 }
 
-func (i *Installer) installCommand(name, cacheDir, targetBase string, conv config.Conventions) error {
+func (i *Installer) installCommand(name, cacheDir, targetBase string, conv config.Conventions, isGlobal bool) error {
 	if !i.Registry.CommandExists(name) {
 		return fmt.Errorf("command not found: %s", name)
 	}
@@ -134,7 +134,7 @@ func (i *Installer) installCommand(name, cacheDir, targetBase string, conv confi
 	}
 
 	// Symlink from tool location to cache
-	destPath := conv.CommandPath(name)
+	destPath := conv.CommandPath(name, isGlobal)
 	dest := filepath.Join(targetBase, destPath)
 
 	return createSymlink(cacheDest, dest)
@@ -267,7 +267,7 @@ func (i *Installer) Uninstall(toolName string, scope Scope) (*InstallResult, err
 
 		// Uninstall commands
 		for _, cmd := range commands {
-			destPath := tool.Conventions.CommandPath(cmd)
+			destPath := tool.Conventions.CommandPath(cmd, s == ScopeGlobal)
 			dest := filepath.Join(target, destPath)
 			if _, err := os.Lstat(dest); err == nil {
 				if err := os.RemoveAll(dest); err == nil {

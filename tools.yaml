@@ -36,10 +36,11 @@ tools:
 
   windsurf:
     name: Windsurf
-    global_path: ~/.codeium/windsurf
-    local_path: .windsurf
+    global_path: ~/.codeium/windsurf/
+    local_path: .windsurf/
     conventions:
       commands: workflows/{name}.md
+      global_commands: global_workflows/{name}.md
 
   cline:
     name: Cline

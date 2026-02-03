@@ -9,32 +9,11 @@ import (
 	"github.com/shanepadgett/agent-extensions/internal/registry"
 )
 
-// Test tools with different conventions
-var testToolsYAML = `tools:
-  dir-based:
-    name: DirBased
-    global_path: {GLOBAL}/dir-based
-    local_path: .dir-based
-    conventions:
-      skills: skills/{name}/SKILL.md
-      commands: commands/{name}.md
-  prompts-style:
-    name: PromptsStyle
-    global_path: {GLOBAL}/prompts-style
-    local_path: .prompts-style
-    conventions:
-      skills: skills/{name}/SKILL.md
-      commands: prompts/{name}.md
-`
-
 func createTestRegistry(t *testing.T, globalBase string) *registry.Registry {
 	t.Helper()
 
-	// Replace placeholder with actual temp directory
-	toolsYAML := testToolsYAML
-	toolsYAML = filepath.ToSlash(toolsYAML)
-	// We need absolute path, not tilde
-	toolsYAML = `tools:
+	// Build custom YAML for this test
+	toolsYAML := `tools:
   dir-based:
     name: DirBased
     global_path: ` + globalBase + `/dir-based
@@ -161,7 +140,7 @@ func verifyInstallation(t *testing.T, reg *registry.Registry, inst *Installer, t
 
 		// Verify commands
 		for _, cmd := range commands {
-			cmdPath := filepath.Join(targetBase, tool.Conventions.CommandPath(cmd))
+			cmdPath := filepath.Join(targetBase, tool.Conventions.CommandPath(cmd, s == ScopeGlobal))
 			verifySymlink(t, cmdPath, cmd+".md")
 			verifySymlinkContent(t, cmdPath, "# Command")
 		}
@@ -216,32 +195,6 @@ func verifySymlinkContent(t *testing.T, path, expectedContains string) {
 	content := string(data)
 	if expectedContains != "" && !contains(content, expectedContains) {
 		t.Errorf("content at %s does not contain %q", path, expectedContains)
-	}
-}
-
-func verifySymlinkIsDir(t *testing.T, path string) {
-	t.Helper()
-
-	info, err := os.Lstat(path)
-	if err != nil {
-		t.Errorf("path not found at %s: %v", path, err)
-		return
-	}
-
-	if info.Mode()&os.ModeSymlink == 0 {
-		t.Errorf("%s is not a symlink", path)
-		return
-	}
-
-	// Verify it resolves to a directory
-	targetInfo, err := os.Stat(path)
-	if err != nil {
-		t.Errorf("broken symlink at %s: %v", path, err)
-		return
-	}
-
-	if !targetInfo.IsDir() {
-		t.Errorf("%s does not resolve to a directory", path)
 	}
 }
 
@@ -364,7 +317,7 @@ func verifyUninstallation(t *testing.T, reg *registry.Registry, toolName string,
 
 		// Verify commands are removed
 		for _, cmd := range commands {
-			cmdPath := filepath.Join(targetBase, tool.Conventions.CommandPath(cmd))
+			cmdPath := filepath.Join(targetBase, tool.Conventions.CommandPath(cmd, s == ScopeGlobal))
 			if _, err := os.Lstat(cmdPath); err == nil {
 				t.Errorf("command still exists at %s", cmdPath)
 			}
@@ -560,12 +513,12 @@ func TestEmptyDirectoryCleanup(t *testing.T) {
 
 	// Verify directories exist
 	commandsDir := filepath.Join(targetBase, "commands")
-	if _, err := os.Stat(commandsDir); err != nil {
-		t.Errorf("commands directory should exist: %v", err)
+	if _, statErr := os.Stat(commandsDir); statErr != nil {
+		t.Errorf("commands directory should exist: %v", statErr)
 	}
 	skillsDir := filepath.Join(targetBase, "skills")
-	if _, err := os.Stat(skillsDir); err != nil {
-		t.Errorf("skills directory should exist: %v", err)
+	if _, statErr := os.Stat(skillsDir); statErr != nil {
+		t.Errorf("skills directory should exist: %v", statErr)
 	}
 
 	// Uninstall
@@ -679,7 +632,7 @@ func BenchmarkInstall(b *testing.B) {
 
 		reg, _ := registry.New(fsys)
 		inst := New(reg, projectRoot)
-		inst.Install("bench-tool", ScopeGlobal)
+		_, _ = inst.Install("bench-tool", ScopeGlobal)
 	}
 }
 
@@ -704,9 +657,9 @@ func BenchmarkUninstall(b *testing.B) {
 
 		reg, _ := registry.New(fsys)
 		inst := New(reg, projectRoot)
-		inst.Install("bench-tool", ScopeGlobal)
+		_, _ = inst.Install("bench-tool", ScopeGlobal)
 
 		b.ResetTimer()
-		inst.Uninstall("bench-tool", ScopeGlobal)
+		_, _ = inst.Uninstall("bench-tool", ScopeGlobal)
 	}
 }

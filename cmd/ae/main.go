@@ -299,7 +299,8 @@ func runList(cmd *cobra.Command, args []string) error {
 	}
 
 	u.Header("\nInstallation Status")
-	fmt.Println("G=global  L=local  GL=both\n")
+	fmt.Println("G=global  L=local  GL=both")
+	fmt.Println()
 
 	for _, toolKey := range tools {
 		tool, _ := reg.GetTool(toolKey)
@@ -310,11 +311,10 @@ func runList(cmd *cobra.Command, args []string) error {
 
 		// Check if any command is installed
 		for _, c := range commands {
-			cmdPath := tool.Conventions.CommandPath(c)
-			if _, err := os.Stat(filepath.Join(globalPath, cmdPath)); err == nil {
+			if _, err := os.Stat(filepath.Join(globalPath, tool.Conventions.CommandPath(c, true))); err == nil {
 				status.global = true
 			}
-			if _, err := os.Stat(filepath.Join(localPath, cmdPath)); err == nil {
+			if _, err := os.Stat(filepath.Join(localPath, tool.Conventions.CommandPath(c, false))); err == nil {
 				status.local = true
 			}
 		}
@@ -417,7 +417,7 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 		globalPath := tool.ResolveGlobalPath()
 
 		// Check commands dir
-		cmdDir := filepath.Join(globalPath, filepath.Dir(tool.Conventions.CommandPath("test")))
+		cmdDir := filepath.Join(globalPath, filepath.Dir(tool.Conventions.CommandPath("test", true)))
 		if entries, err := os.ReadDir(cmdDir); err == nil {
 			for _, entry := range entries {
 				fullPath := filepath.Join(cmdDir, entry.Name())
@@ -474,8 +474,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 		// Check if installed globally (check first command)
 		globalInstalled := false
 		for _, c := range commands {
-			cmdPath := tool.Conventions.CommandPath(c)
-			if _, err := os.Stat(filepath.Join(globalPath, cmdPath)); err == nil {
+			if _, err := os.Stat(filepath.Join(globalPath, tool.Conventions.CommandPath(c, true))); err == nil {
 				globalInstalled = true
 				break
 			}
@@ -484,8 +483,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 		// Check if installed locally
 		localInstalled := false
 		for _, c := range commands {
-			cmdPath := tool.Conventions.CommandPath(c)
-			if _, err := os.Stat(filepath.Join(localPath, cmdPath)); err == nil {
+			if _, err := os.Stat(filepath.Join(localPath, tool.Conventions.CommandPath(c, false))); err == nil {
 				localInstalled = true
 				break
 			}

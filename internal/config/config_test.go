@@ -214,7 +214,7 @@ func TestConventions_CommandPath(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			conv := Conventions{Commands: tt.pattern}
-			got := conv.CommandPath(tt.commandName)
+			got := conv.CommandPath(tt.commandName, false)
 			if got != tt.want {
 				t.Errorf("CommandPath() = %q, want %q", got, tt.want)
 			}
