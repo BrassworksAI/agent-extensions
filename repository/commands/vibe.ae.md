@@ -34,9 +34,8 @@ Vibe lane is your partner for getting through SDD without the ceremony. Think co
 3. **Explore Together**: Dive in. Prototype freely, create documents when insights emerge, capture thoughts. Collaboratively refine into at least a light proposal leading to research and planning. No wrong turn if you document learning.
 
 4. **Keep Context Alive**: Continuously update state and context:
-   - Use `ae sdd notes set` to capture decisions and next steps
-   - Use `ae sdd pending add` to track open questions
    - Update `context.md` as intent evolves
+   - Update state notes in state.toml to capture decisions and next steps
    - Captures progress for seamless continuation—never lose the thread
 
 5. **Deliver Sanity, Not Ceremony**: Build plans, run validations. Ensure exploration converges on sane software. Inform user specifications captured during `reconcile` if kept—until then, focus on vibe, not paperwork.

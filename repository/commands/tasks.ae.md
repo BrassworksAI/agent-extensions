@@ -27,34 +27,26 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
    - How you'll map spec requirements to tasks
    - Why you're grouping them this way
    - What task order maintains system stability
-   Ask for feedback on granularity and flow.
+   - Ask for feedback on granularity and flow.
 
-5. Update state notes with decisions: `ae sdd notes set "<breakdown rationale>"`
-
-6. Create tasks using the skill's task management approach:
-
-   ```bash
-   ae sdd task add <short-name>
-   ```
-
-   Then edit `tasks.toml` to add for each task:
+5. Create tasks by editing `tasks.toml` to add for each task:
    - Title (short, descriptive)
    - Description (what the task accomplishes)
    - Requirements (mapped from spec lines using EARS syntax)
    - Status: pending
 
-7. **Task ordering principles**:
+6. **Task ordering principles**:
    - Foundations first (models, types, codegen)
    - Then vertical implementation slices
    - Then integration
    - Then validation
 
-8. **Task constraints**:
+7. **Task constraints**:
    - Every task must be completable in one session
    - Independently testable
    - Leave the system in a committable state
 
-9. When approved, update phase status per skill guidelines and suggest `/sdd/plan <name>`.
+8. When approved, update phase status per skill guidelines and suggest `/sdd/plan <name>`.
 
 ## Examples
 

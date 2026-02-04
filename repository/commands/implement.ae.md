@@ -41,7 +41,7 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 6. Run validation steps from plan, verify acceptance criteria, ensure tests pass.
 
 7. **Full lane completion**:
-   - Mark current task complete: `ae sdd task complete <short-name>`
+   - Mark current task done in tasks.toml
    - If tasks remain, suggest `/sdd/plan <name>` for next task
    - If no tasks remain, update phase status per skill and suggest `/sdd/reconcile <name>`
 

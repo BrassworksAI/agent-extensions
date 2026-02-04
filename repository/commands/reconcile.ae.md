@@ -90,9 +90,7 @@ Examples that typically don't require specs:
 - User decisions on each discrepancy
 - Final determination: reconciled, requires work, or trivial
 
-1. Update state notes with reconciliation summary: `ae sdd notes set "<summary>"`
-
-2. When fully reconciled and approved, update phase status per skill guidelines and suggest `/sdd/finish <name>`.
+When fully reconciled and approved, update phase status per skill guidelines and suggest `/sdd/finish <name>`.
 
 ## Examples
 

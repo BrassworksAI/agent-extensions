@@ -32,9 +32,7 @@ Analyze high-level architectural requirements for implementing change-set specs 
      - Explore solutions (light-touch vs. architectural)
      - Reach consensus with the user on approach
 
-4. Document findings:
-   - Capture explorations, tradeoffs, and decisions in `changes/<name>/thoughts/`
-   - Update state notes with key architectural insights using `ae sdd notes set`
+4. Document findings: Capture explorations, tradeoffs, and decisions in `changes/<name>/thoughts/`
 
 5. Complete the phase per skill guidelines (mark status complete, clear notes, suggest next phase).
 

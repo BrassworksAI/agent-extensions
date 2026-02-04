@@ -39,9 +39,7 @@ description: Fast-track bug investigation and fix initialization
    - Root cause (from research)
    - High-level fix approach
 
-6. Update state notes with findings: `ae sdd notes set "<summary>"`
-
-7. **Next Steps**: Instruct the user to run `/sdd/plan` to start the fix.
+6. **Next Steps**: Instruct the user to run `/sdd/plan` to start the fix.
 
 ## Success Criteria
 

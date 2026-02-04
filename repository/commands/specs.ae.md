@@ -30,7 +30,6 @@ Write change-set specifications for the change set.
 5. With approval, create specs in `changes/<name>/specs/` using `spec-format` skill:
    - Specs may be nested by domain
    - Use EARS syntax for requirements
-   - Update state notes with progress: `ae sdd notes set "<progress>"`
    - Review specs for atomic, testable, implementation-agnostic requirements
 
 6. Suggest `/sdd/tools/critique specs` when complete for review.

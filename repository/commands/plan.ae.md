@@ -24,10 +24,9 @@ Research the codebase and create an implementation plan. Full lane plans one tas
 
 3. **Full lane**:
    - Identify current or next task using task status
-   - Start task: `ae sdd task start <short-name>`
+   - Mark task in_progress in tasks.toml
    - Read task details and all `thoughts/` (discovery outputs)
    - Research codebase for patterns, paths, integration, tests
-   - Update state notes with findings: `ae sdd notes set "<summary>"`
 
 4. **Vibe/Bug lane**:
    - Read `thoughts/` if they exist
