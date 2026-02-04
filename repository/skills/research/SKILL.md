@@ -1,149 +1,127 @@
 ---
 name: research
-description: When and how to research the codebase via the librarian agent
+description: Research and discover codebase information by breaking tasks into focused steps. Use when you need to understand existing patterns, find relevant files, locate integration points, or trace how something works before making changes.
 ---
 
-# Research - Codebase Discovery via Librarian
+# Research - Codebase Discovery
 
-This skill covers when and how to use the librarian agent for codebase research and discovery.
+Guidance for effective codebase research.
 
 ## When to Research
 
-Research the codebase when you need to:
+Research when you need to:
 
-- **Understand existing patterns** before proposing new ones
-- **Find integration points** for new functionality
-- **Locate relevant files** for a change
-- **Understand how something works** before modifying it
-- **Verify assumptions** about codebase structure
-- **Find similar implementations** to follow established patterns
+- **Understand patterns** before proposing changes
+- **Find relevant files** for a task
+- **Locate integration points** for new functionality
+- **Trace flows** before modifying them
+- **Verify assumptions** about structure
+- **Find similar implementations** to follow
 
-## The Librarian
+## Research Strategy
 
-The `librarian` agent is the universal research agent. It:
+### Break Into Focused Steps
 
-- Clarifies what you're looking for
-- Performs fast reconnaissance and deep codebase analysis exhaustively
-- Returns structured, comprehensive findings
-- Determines when research is complete
+Decompose research into small, specific questions:
 
-When doing SDD work, prefer using the `librarian` agent for codebase research so you follow existing patterns and avoid missed context.
-
-## How to Consult Librarian
-
-Consult the `librarian` agent with a clear research prompt (the runtime will route this appropriately):
-
-```text
-<your research question>
+```markdown
+❌ "How does authentication work?"
+✅ "Where are login routes defined?"
+✅ "How are passwords hashed?"
+✅ "Where are JWT tokens validated?"
 ```
 
-### Good Research Prompts
+Each question should:
 
-Be specific about what you need:
+- Have a clear, verifiable answer
+- Focus on one aspect at a time
+- Be answerable through code inspection
 
-```text
-# Finding files/locations
-"Where are the authentication handlers in this codebase?"
+### Use Available Tools
 
-# Understanding patterns
-"How does this codebase handle error responses? Show me the pattern."
+Search the codebase with available tools:
 
-# Finding integration points
-"I need to add a new API endpoint for user preferences. Where should it go and what patterns should it follow?"
+1. **Start with semantic search** - Ask the context engine for concepts
+2. **Find files by pattern** - Use glob for known naming conventions
+3. **Search for strings** - Use grep for specific terms
+4. **Read key files** - Examine implementation directly
 
-# Understanding flows
-"Trace how a request flows from the API route to the database for user creation."
+### Delegate Background Tasks (When Supported)
 
-# Finding similar implementations
-"Find examples of form validation in this codebase so I can follow the same pattern."
+If your tools support parallel/background execution:
+
+1. **Identify parallel research paths** - What can be investigated independently?
+2. **Launch focused searches** - Each search answers one specific question
+3. **Synthesize findings** - Combine results into coherent understanding
+
+Example:
+
+```markdown
+Search 1: "Where are user models defined?"
+Search 2: "Where is authentication middleware?"  
+Search 3: "How are session tokens stored?"
 ```
 
-### What Librarian Returns
+## Research Patterns
 
-Librarian provides:
+### Finding Files/Locations
 
-1. **Summary** - Direct answer to your question
-2. **Key Sources** - Important file paths with annotations
-3. **Explanation** - How pieces connect
-4. **Evidence** - Specific citations (`path/file:line`)
-5. **Next Steps** - What to investigate further (if needed)
+```markdown
+"Where are [X] handlers defined?"
+"Find files related to [feature]"
+"Locate [pattern] implementations"
+```
 
-## Research Patterns by Phase
+### Understanding Patterns
 
-### During Proposal
+```markdown
+"How does this codebase handle [X]?"
+"Show me error handling patterns"
+"Find examples of [technique]"
+```
 
-Research to understand:
+### Tracing Flows
 
-- Does similar functionality exist?
-- What would this change interact with?
-- Are there patterns to follow or constraints to respect?
+```markdown
+"Trace: API route → controller → service → database"
+"How does a request become a response?"
+"Where is [X] transformed to [Y]?"
+```
 
-### During Specs
+### Finding Integration Points
 
-Research to understand:
+```markdown
+"Where should [new feature] hook in?"
+"What files would [change] affect?"
+```
 
-- Where do existing specs live?
-- What's the current spec taxonomy?
-- Are there related capabilities already specified?
+## Documenting Findings
 
-### During Discovery
+Capture discoveries concisely:
 
-Research to understand:
+```markdown
+## Finding: Authentication Flow
 
-- How does the proposed change fit existing architecture?
-- What code will be affected?
-- Are there conflicts with existing patterns?
-
-### During Planning
-
-Research to understand:
-
-- Exact file paths for changes
-- Current implementation details
-- Test patterns to follow
-- Integration points
-
-### During Implementation
-
-Research when you encounter:
-
-- Unexpected code structure
-- Need to understand a dependency
-- Unclear how to integrate with existing code
-
-## Iterating with Librarian
-
-If librarian's first response doesn't fully answer your question:
-
-1. **Ask a follow-up** - Be more specific about what's missing
-2. **Narrow the scope** - Focus on one aspect at a time
-3. **Provide context** - Share what you learned so far
-
-Example iteration:
-
-```text
-# First query
-"How does authentication work in this codebase?"
-
-# Librarian returns high-level overview
-
-# Follow-up query
-"Thanks. Now specifically, how are JWT tokens validated? I need to add a new claim check."
+- Entry: `src/routes/auth.js:15`
+- Validation: `src/middleware/auth.js:42`
+- Storage: `src/models/user.js:88`
 ```
 
 ## When NOT to Research
 
-Skip librarian when:
+Skip research when:
 
-- You already know the file paths and patterns
-- The change is isolated and well-understood
-- You're following an existing plan that already did the research
-- The task is purely about SDD artifacts (state.md, proposal.md, etc.)
+- File paths are already known
+- Change is isolated and understood
+- Following an existing researched plan
+- Task is purely about artifacts (state.md, plan.md, etc.)
 
 ## Research First, Then Act
 
-For any non-trivial codebase change:
+For non-trivial changes:
 
-1. **Research first** - Understand before modifying
-2. **Document findings** - Capture relevant paths and patterns in your plan
-3. **Then implement** - With confidence about where and how
+1. **Decompose** - Break into specific questions
+2. **Execute** - Search and investigate
+3. **Synthesize** - Combine findings into understanding
+4. **Document** - Capture paths and patterns
+5. **Implement** - With confidence
