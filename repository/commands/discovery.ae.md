@@ -8,7 +8,7 @@ Analyze high-level architectural requirements for implementing change-set specs 
 
 ## Required Skills
 
-- `spec-driven-development`
+- `spec-driven-development` (state management, phase gates)
 - `research`
 - `architecture-fit-check`
 - `architecture-workshop`
@@ -20,26 +20,36 @@ Analyze high-level architectural requirements for implementing change-set specs 
 
 ## Instructions
 
-Discovery answers how a change fits into or extends the existing architecture.
+1. Load `spec-driven-development` skill and read current state from `changes/<name>/state.toml`. Apply state entry check per skill guidelines. If lane is not `full` or phase doesn't permit discovery, redirect the user.
 
-1. **Setup**: Run `cat changes/<name>/state.md`, `proposal.md`, and any existing specs in `changes/<name>/specs`.
-2. **Entry Check**: Apply state entry check logic from `spec-driven-development`. If the lane is not `full`, redirect the user.
-3. **Research Phase**: Use the `research` skill to understand current architectural patterns, affected code areas, and existing implementations. Update `state.md` with findings.
-4. **Architecture Assessment**: Use `architecture-fit-check`. If it's a "Clean Fit," note it and move to the tasks phase.
-5. **Daedalus Mode (Complex Case)**: If concerns exist (e.g., technical debt, messy workarounds), adopt the master architect persona. Explain concerns, explore solutions (light-touch vs. architectural), and reach consensus with the user.
-6. **Capture Thoughts**: Document explorations, tradeoffs, and decisions in `changes/<name>/thoughts/`.
+2. Read `proposal.md` and any existing specs in `changes/<name>/specs/`.
+
+3. Discovery answers how a change fits into or extends the existing architecture:
+   - Use `research` skill to understand current architectural patterns
+   - Use `architecture-fit-check` to assess alignment
+   - If concerns exist (technical debt, messy workarounds), enter Daedalus Mode:
+     - Explain concerns clearly
+     - Explore solutions (light-touch vs. architectural)
+     - Reach consensus with the user on approach
+
+4. Document findings:
+   - Capture explorations, tradeoffs, and decisions in `changes/<name>/thoughts/`
+   - Update state notes with key architectural insights using `ae sdd notes set`
+
+5. Complete the phase per skill guidelines (mark status complete, clear notes, suggest next phase).
 
 ## Success Criteria
 
-- Architectural findings and research insights are documented in `state.md` notes.
-- If complex, decision rationale is captured in `changes/<name>/thoughts/`.
-- `state.md` is updated to `## Phase Status: complete`.
+- Architecture fit assessed and documented
+- Any concerns captured in thoughts/ directory
+- Phase completed per spec-driven-development skill
+- User ready to proceed to tasks phase
 
 ## Usage Examples
 
 ### Do
 
-- "This change slots cleanly into the existing `Notification` pattern."
+- "This change slots cleanly into the existing Notification pattern."
 - "Implementing this directly would create circular dependencies. Should we introduce an event bus instead?"
 
 ### Don't

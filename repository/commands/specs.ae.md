@@ -6,6 +6,12 @@ description: Write change-set specifications for change
 
 Write change-set specifications for the change set.
 
+## Required Skills
+
+- `spec-driven-development` (state management, phase gates)
+- `spec-format`
+- `research`
+
 ## Inputs
 
 > [!IMPORTANT]
@@ -13,15 +19,23 @@ Write change-set specifications for the change set.
 
 ## Instructions
 
-Load `spec-driven-development`, `spec-format`, and `research` skills. Read state.md and proposal.md. If lane is not `full`, redirect to appropriate command.
+1. Load `spec-driven-development`, `spec-format`, and `research` skills. Read state from `changes/<name>/state.toml` and `proposal.md`. Apply state entry check per skill guidelines.
 
-Spec writing is collaborative. Don't start writing immediately. First, summarize the goal, actors, workflows, and constraints in your own words. Explain how the change maps to the existing capability hierarchy. Present concrete statements and decisions. Offer options for open decisions. Pause and wait for user confirmation.
+2. **Lane check**: If lane is not `full`, redirect to appropriate command per skill guidelines.
 
-After confirmation, use research skill to understand current spec structure, related capabilities, naming conventions, and build context for spec writing. When taxonomy decisions are needed, defer to the `derive-taxonomy` skill and confirm the result with the user.
+3. Spec writing is collaborative. Don't start writing immediately. First, summarize the goal, actors, workflows, and constraints in your own words. Explain how the change maps to the existing capability hierarchy. Present concrete statements and decisions. Offer options for open decisions. Pause and wait for user confirmation.
 
-With approval, create specs in `changes/<name>/specs/` using `spec-format` skill. Specs may be nested by domain. Use EARS syntax for requirements. Update state.md `## Notes` with progress and decisions. Review specs for atomic, testable, implementation-agnostic requirements using appropriate EARS patterns. Suggest `/sdd/tools/critique specs` when complete.
+4. After confirmation, use `research` skill to understand current spec structure, related capabilities, naming conventions, and build context for spec writing. When taxonomy decisions are needed, defer to the `derive-taxonomy` skill and confirm the result with the user.
 
-When approved, update state.md: `## Phase Status: complete`, clear `## Notes`, suggest `/sdd/discovery <name>`.
+5. With approval, create specs in `changes/<name>/specs/` using `spec-format` skill:
+   - Specs may be nested by domain
+   - Use EARS syntax for requirements
+   - Update state notes with progress: `ae sdd notes set "<progress>"`
+   - Review specs for atomic, testable, implementation-agnostic requirements
+
+6. Suggest `/sdd/tools/critique specs` when complete for review.
+
+7. When approved, update phase status per skill guidelines and suggest `/sdd/discovery <name>`.
 
 ## Examples
 
@@ -29,9 +43,11 @@ When approved, update state.md: `## Phase Status: complete`, clear `## Notes`, s
 
 ```text
 Input: None (change: "password-reset")
-Output: "Your goal is to allow users to reset passwords via email. Actors: user, admin. Workflow: request email → click link → set new password. Correct?"
+Output: "Your goal is to allow users to reset passwords via email. 
+        Actors: user, admin. Workflow: request email → click link → set new password. Correct?"
        User confirms.
-       Output: "This maps to auth/password spec boundary. Writing delta spec at changes/password-reset/specs/auth/password.md..."
+       Output: "This maps to auth/password spec boundary. 
+                Writing delta spec at changes/password-reset/specs/auth/password.md..."
 ```
 
 **Lane check redirects:**

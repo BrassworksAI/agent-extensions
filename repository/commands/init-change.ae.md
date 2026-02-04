@@ -8,15 +8,29 @@ Create a new SDD change set to track progress.
 
 ## Required Skills
 
-You MUST load `spec-driven-development` before proceeding. Stop and ask if unavailable.
+- `spec-driven-development` (state management, lane setup)
 
 ## Workflow
 
 1. **Validate**: Ensure name is kebab-case (lowercase, no spaces).
+
 2. **Conflict Check**: Verify `changes/<name>/` doesn't exist.
+
 3. **Scaffold**:
-    - `changes/<name>/state.md`: Initialize with lane (pending), phase (init), and status (complete).
-4. **Confirm**: Suggest next step (draft proposal).
+
+   ```bash
+   ae sdd init <name> --lane full
+   ```
+
+   This creates `changes/<name>/state.toml` with:
+   - lane: full
+   - phase: proposal
+   - status: in_progress
+   - created_at: current timestamp
+
+4. Create `changes/<name>/proposal.md` with initial structure (problem statement placeholder).
+
+5. **Confirm**: List created files and suggest next step (draft proposal with `/sdd/proposal`).
 
 ## Usage Examples
 
@@ -26,8 +40,9 @@ You MUST load `spec-driven-development` before proceeding. Stop and ask if unava
 ## Success Criteria
 
 - [ ] Directory `changes/<name>/` exists.
-- [ ] `state.md` and `proposal.md` are initialized correctly.
-- [ ] User is informed of the next steps.
+- [ ] `state.toml` initialized correctly via `ae sdd init`.
+- [ ] `proposal.md` created with initial structure.
+- [ ] User informed of next steps.
 
 ## Deliverable
 

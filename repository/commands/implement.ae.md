@@ -6,6 +6,11 @@ description: Execute the implementation plan
 
 Execute the current implementation plan. Follow the plan step by step, validate as you go, keep the repo green.
 
+## Required Skills
+
+- `spec-driven-development` (state/task management, lane detection)
+- `research`
+
 ## Inputs
 
 > [!IMPORTANT]
@@ -13,19 +18,37 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 
 ## Instructions
 
-Load `spec-driven-development` and `research` skills. Read state.md and tasks.md. Apply state entry check.
+1. Load `spec-driven-development` skill and read state from `changes/<name>/state.toml`. Apply state entry check per skill guidelines.
 
-Determine lane and load plan: full lane reads tasks.md to find current task ([o] or first [ ]), then loads corresponding plan from plans/; vibe/bug lane reads plan.md (single combined plan).
+2. Read tasks from `changes/<name>/tasks.toml` if full lane.
 
-Execute the plan step by step. Validate after significant changes, keep repo green, document deviations. Use research skill for unexpected code structure, dependency questions, or integration uncertainty. Don't guess when you can research.
+3. Determine lane and load plan:
+   - **Full lane**: Identify current task (in_progress status). Read corresponding plan from `changes/<name>/plans/`
+   - **Vibe/Bug lane**: Read `changes/<name>/plan.md` (single combined plan)
 
-Handle issues: minor adjustments—proceed and document deviation; major issues—stop and discuss with user; spec issues (full lane)—flag for reconciliation.
+4. Execute the plan step by step:
+   - Follow steps exactly as written
+   - Validate after significant changes
+   - Keep repo green
+   - Use `research` skill for unexpected code structure or integration questions
+   - Document any deviations from plan
 
-After implementation, run validation steps from plan, verify acceptance criteria, ensure tests pass.
+5. Handle issues:
+   - **Minor adjustments**: Proceed and document deviation
+   - **Major issues**: Stop and discuss with user
+   - **Spec issues** (full lane): Flag for reconciliation
 
-**Full lane completion**: When user approves, mark current task ([o]) as complete ([x]) in tasks.md. If tasks remain, update state.md: `## Phase Status: complete`, clear `## Notes`, suggest `/sdd/plan <name>`. If no tasks remain, suggest `/sdd/reconcile <name>`.
+6. Run validation steps from plan, verify acceptance criteria, ensure tests pass.
 
-**Vibe/bug lane completion**: Discuss next steps. If throwing away—done, no state update. If keeping—update state: `## Phase Status: complete`, suggest `/sdd/reconcile <name>`. Reconcile is optional for vibe/bug.
+7. **Full lane completion**:
+   - Mark current task complete: `ae sdd task complete <short-name>`
+   - If tasks remain, suggest `/sdd/plan <name>` for next task
+   - If no tasks remain, update phase status per skill and suggest `/sdd/reconcile <name>`
+
+8. **Vibe/Bug lane completion**:
+   - Discuss next steps with user
+   - If keeping work: update phase status per skill and suggest `/sdd/reconcile <name>` (optional)
+   - If throwing away: done, no state update needed
 
 ## Examples
 
@@ -48,3 +71,4 @@ Output: "Following plan.md to patch router/routes.ts."
        Implementation complete, tests pass.
        User: "Great, keep this work."
        Output: "Updated state complete. Suggest /sdd/reconcile if you want to capture specs."
+```

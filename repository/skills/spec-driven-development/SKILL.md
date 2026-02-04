@@ -41,7 +41,7 @@ Reconcile and finish are optional for vibe/bug lanes unless changes must be refl
 - `proposal`: `proposal.md` (external doc allowed; state tracks phase)
 - `specs`: `changes/<name>/specs/**/*.md` (follow the `spec-format` skill for spec structure)
 - `discovery`: `changes/<name>/thoughts/*.md`
-- `tasks`: `changes/<name>/tasks.md`
+- `tasks`: `changes/<name>/tasks.toml`
 - `plan`: `changes/<name>/plans/NN.md`
 - `implement`: code changes
 - `reconcile`: reconciliation report
@@ -101,6 +101,117 @@ requirements = [
 | `ae sdd pending clear <index>` | Remove pending item |
 | `ae sdd notes set "content"` | Update notes |
 
+## Managing State and Tasks
+
+This section provides the definitive guidance for all state and task operations. All SDD commands must follow these patterns.
+
+### Reading State and Tasks
+
+Always read both files at the start of any SDD command:
+
+1. Read `changes/<name>/state.toml` to get current phase, status, lane, notes, and pending items
+2. Read `changes/<name>/tasks.toml` to get task list and current task status
+3. Use `ae sdd status [name]` for a styled overview (optional)
+
+### Phase Management
+
+**Set phase to in_progress:**
+
+```bash
+ae sdd phase set <phase-name>
+```
+
+**Mark phase complete:**
+
+```bash
+ae sdd phase set <phase-name>  # Ensures phase is current
+# Then update status in state.toml or via completion workflow
+```
+
+When a phase finishes, always update `status = "complete"` in state.toml and clear the notes section. Do not auto-advance to the next phase.
+
+### Task Management (Full Lane)
+
+**Add a new task:**
+
+```bash
+ae sdd task add <short-name>
+```
+
+Then edit `tasks.toml` to add title, description, and requirements.
+
+**Start working on a task:**
+
+```bash
+ae sdd task start <short-name>
+```
+
+This sets `status = "in_progress"` for the task.
+
+**Complete a task:**
+
+```bash
+ae sdd task complete <short-name>
+```
+
+This sets `status = "complete"` for the task.
+
+**Task Status Flow:**
+
+- `pending` → `in_progress` → `complete`
+- Only one task should be `in_progress` at a time
+- Tasks should be completable in a single session
+
+### Notes Management
+
+Update notes to capture decisions, blockers, and context:
+
+```bash
+ae sdd notes set "Your notes here"
+```
+
+Keep notes concise but informative enough that a new chat can resume work quickly. Clear notes when marking a phase complete.
+
+### Pending Items
+
+Track blockers and waiting items:
+
+```bash
+ae sdd pending add "Waiting for API review"
+```
+
+Remove items when resolved:
+
+```bash
+ae sdd pending clear 0  # Removes first item
+```
+
+Keep only unresolved items. Do not use pending as an approval log.
+
+### Common Workflows
+
+**Starting a new phase:**
+
+1. Read current state.toml
+2. Confirm phase transition is valid per Phase Gates
+3. `ae sdd phase set <new-phase>`
+4. Update notes with phase objectives
+
+**Completing work in a phase:**
+
+1. Complete all phase deliverables
+2. For full lane: ensure all tasks are `complete`
+3. Clear notes in state.toml
+4. Set `status = "complete"` in state.toml
+5. Suggest next command per Phase Gates
+
+**Resuming after interruption:**
+
+1. Read state.toml for current phase/status
+2. Read tasks.toml for task progress
+3. Check notes for context
+4. Continue from current state
+
 ## Phase Gates (Full Lane)
 
 | From | To | Gate |
@@ -134,3 +245,12 @@ When a phase finishes, set `status = complete` but do not auto-advance.
 ## Notes
 
 Keep `notes.content` updated with decisions, progress, and blockers so a new chat can resume quickly.
+
+## Required Skills Reference
+
+When using this skill in commands:
+
+- List `spec-driven-development` as a required skill for state/task management
+- Follow the Managing State and Tasks section for all file operations
+- Never manually edit state.toml or tasks.toml structure directly
+- Always use the CLI commands or specific field updates as documented above

@@ -6,6 +6,10 @@ description: Create implementation tasks from specs (full lane)
 
 Create implementation tasks for the change set. Full lane only—vibe/bug lanes skip this and use `/sdd/plan`.
 
+## Required Skills
+
+- `spec-driven-development` (state management, lane detection, task operations)
+
 ## Inputs
 
 > [!IMPORTANT]
@@ -13,30 +17,66 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
 
 ## Instructions
 
-Load `spec-driven-development` skill. Read state, proposal, specs, and thoughts from the change set. If lane is `vibe` or `bug`, redirect to `/sdd/plan`.
+1. Load `spec-driven-development` skill. Read state from `changes/<name>/state.toml`. Apply state entry check per skill guidelines.
 
-This is a dialogue. Before writing tasks.md, present your breakdown thinking: how you'll map spec requirements, why you're grouping them this way, and what task order maintains system stability. Ask for feedback on granularity and flow. Update state.md `## Notes` with decisions.
+2. **Lane check**: If lane is `vibe` or `bug`, redirect to `/sdd/plan` per skill guidelines.
 
-Create `changes/<name>/tasks.md` with checkbox tracking: `[ ]` pending, `[o]` in progress, `[x]` complete. Do not number tasks. Each task includes a short title, a description, and requirements mapped to spec lines. Order tasks: foundations first (models, types, codegen), vertical implementation slices, integration, validation. Every task must be completable in one session, independently testable, and leave the system in a committable state.
+3. Read proposal, specs from `changes/<name>/specs/`, and thoughts from `changes/<name>/thoughts/`.
+
+4. This is a dialogue. Before creating tasks, present your breakdown thinking:
+   - How you'll map spec requirements to tasks
+   - Why you're grouping them this way
+   - What task order maintains system stability
+   Ask for feedback on granularity and flow.
+
+5. Update state notes with decisions: `ae sdd notes set "<breakdown rationale>"`
+
+6. Create tasks using the skill's task management approach:
+
+   ```bash
+   ae sdd task add <short-name>
+   ```
+
+   Then edit `tasks.toml` to add for each task:
+   - Title (short, descriptive)
+   - Description (what the task accomplishes)
+   - Requirements (mapped from spec lines using EARS syntax)
+   - Status: pending
+
+7. **Task ordering principles**:
+   - Foundations first (models, types, codegen)
+   - Then vertical implementation slices
+   - Then integration
+   - Then validation
+
+8. **Task constraints**:
+   - Every task must be completable in one session
+   - Independently testable
+   - Leave the system in a committable state
+
+9. When approved, update phase status per skill guidelines and suggest `/sdd/plan <name>`.
 
 ## Examples
 
-**Full lane, single tasks.md:**
+**Full lane, task breakdown dialogue:**
 
 ```text
 Input: None (full lane, single change "user-reg")
 Output: Present breakdown: "I'll scaffold DB models first, then vertical slices. 3 tasks total."
-       User approves. Create tasks.md with [ ] foundation, [ ] implementation, [ ] validation.
+       User approves. Create tasks via ae sdd task add for: foundation, implementation, validation.
 ```
 
-**Task shape sample (no numbering):**
+**Task shape sample:**
 
-```text
-[ ] Title: Foundation - DB models and migrations
-    Description: Add user tables and migrations to support registration.
-    Requirements:
-    - When a new user is created, the system shall persist profile fields.
-    - When validation fails, the system shall return field errors.
+```toml
+[task.foundation]
+title = "Foundation - DB models and migrations"
+description = "Add user tables and migrations to support registration."
+status = "pending"
+requirements = [
+  "When a new user is created, the system shall persist profile fields.",
+  "When validation fails, the system shall return field errors."
+]
 ```
 
 **Wrong lane detected:**

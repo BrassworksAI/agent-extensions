@@ -6,7 +6,7 @@ description: Fast-track bug investigation and fix initialization
 
 ## Required Skills
 
-- `spec-driven-development`
+- `spec-driven-development` (state management, lane/phase flow)
 - `research`
 
 ## Inputs
@@ -20,18 +20,35 @@ description: Fast-track bug investigation and fix initialization
 ## Instructions
 
 1. **Resolution**: Check for existing change sets. If multiple exist, ask the user if this is a new issue or related to an existing one.
+
 2. **Triage**: Determine if this is an **Actual Bug** (code fails to meet existing specs/intent) or a **Behavioral Change** (new capability requested). If it's a change, redirect the user to the full lane (`/sdd/init`).
-3. **Research**: Use the `research` skill to locate the problem, trace the execution path, and identify the root cause. Compare findings against existing specs.
-4. **Initialize**: Create the `changes/<name>/` directory if it doesnt exist.
-   - **state.md**: Set lane to `bug`, phase to `plan`, and status to `in_progress`.
-   - **context.md**: Document the problem, expected behavior, root cause, and high-level fix approach.
-5. **Next Steps**: Instruct the user to run `/sdd/plan` to start the fix.
+
+3. **Initialize** (if new): Create the change set using the bug lane:
+
+   ```bash
+   ae sdd init <name> --lane bug
+   ```
+
+   This creates `state.toml` with lane=bug, phase=plan, status=in_progress.
+
+4. **Research**: Use the `research` skill to locate the problem, trace the execution path, and identify the root cause. Compare findings against existing specs.
+
+5. **Document**: Create `changes/<name>/context.md` with:
+   - Problem description
+   - Expected behavior
+   - Root cause (from research)
+   - High-level fix approach
+
+6. Update state notes with findings: `ae sdd notes set "<summary>"`
+
+7. **Next Steps**: Instruct the user to run `/sdd/plan` to start the fix.
 
 ## Success Criteria
 
-- Change set initialized with correct `bug` lane configuration.
-- Root cause is clearly documented in `context.md`.
-- User is ready to proceed to the planning phase.
+- Bug triaged correctly (actual bug vs behavioral change)
+- Change set initialized with correct `bug` lane configuration
+- Root cause documented in `context.md`
+- Phase ready for planning
 
 ## Usage Examples
 

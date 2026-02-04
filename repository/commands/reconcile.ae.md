@@ -6,6 +6,11 @@ description: Ensure bi-directional match between specs and implementation
 
 Perform bi-directional reconciliation between change set specs and implementation. The final guard to ensure spec-driven development was truly followed. Verify both: (1) all specs are fully implemented, and (2) all implementation changes have corresponding spec coverage for business logic requirements.
 
+## Required Skills
+
+- `spec-driven-development` (state management, completion workflow)
+- `spec-format`
+
 ## Inputs
 
 > [!IMPORTANT]
@@ -13,9 +18,11 @@ Perform bi-directional reconciliation between change set specs and implementatio
 
 ## Instructions
 
-Load `spec-driven-development` and `spec-format` skills. Read state.md and tasks.md. Apply state entry check.
+1. Load `spec-driven-development` and `spec-format` skills. Read state and apply state entry check per skill guidelines.
 
-Get the implementation diff for the change set. Execute bi-directional reconciliation:
+2. Read tasks from `changes/<name>/tasks.toml` if full lane.
+
+3. Get the implementation diff for the change set. Execute bi-directional reconciliation:
 
 ### Forward Reconciliation (Specs → Implementation)
 
@@ -53,7 +60,7 @@ Examples that typically don't require specs:
 - Comment-only changes
 - Whitespace/formatting adjustments
 
-Present findings to the user in a structured way:
+1. Present findings to the user:
 
 **Forward reconciliation results:**
 
@@ -67,25 +74,25 @@ Present findings to the user in a structured way:
 - Unspecced business logic found: [list with details]
 - No new business logic: [statement]
 
-Get user input:
+1. Get user input:
 
 - Add missing specs for implementation changes
 - Remove specs not applicable to this change
 - Modify specs to match actual implementation
 - Mark items as out-of-scope (if applicable)
 
-If specs/ doesn't exist, perform backward reconciliation and analyze whether implementation adds/removes business logic worth specifying. Present analysis and ask user to capture specs. If yes, create specs/ and write change-set specs (kind: new and/or delta). If no, document that specs were not created (trivial changes or out-of-scope).
+1. If specs/ doesn't exist, perform backward reconciliation and analyze whether implementation adds/removes business logic worth specifying. Present analysis and ask user to capture specs. If yes, create specs/ and write change-set specs (kind: new and/or delta). If no, document that specs were not created.
 
-Document bi-directional reconciliation findings in `changes/<name>/reconciliation.md` including:
+2. Document bi-directional reconciliation findings in `changes/<name>/reconciliation.md` including:
 
 - Forward reconciliation audit results
 - Backward reconciliation audit results
 - User decisions on each discrepancy
 - Final determination: reconciled, requires work, or trivial
 
-Update state.md `## Notes` with reconciliation summary and any pending work. Use spec-format skill to write specs when needed—describe added capabilities, removed capabilities, and behavioral changes.
+1. Update state notes with reconciliation summary: `ae sdd notes set "<summary>"`
 
-When fully reconciled and approved, update state.md: `## Phase Status: complete`, clear `## Notes`, suggest `/sdd/finish <name>`. Note: finish moves kind:new specs and merges kind:delta specs into canonical.
+2. When fully reconciled and approved, update phase status per skill guidelines and suggest `/sdd/finish <name>`.
 
 ## Examples
 

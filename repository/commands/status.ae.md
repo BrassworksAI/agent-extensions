@@ -6,6 +6,10 @@ description: Show status of SDD change set
 
 Show the status of an SDD change set.
 
+## Required Skills
+
+- `spec-driven-development` (state interpretation, status rendering)
+
 ## Inputs
 
 > [!IMPORTANT]
@@ -13,11 +17,15 @@ Show the status of an SDD change set.
 
 ## Instructions
 
-Load the `spec-driven-development` skill for state handling conventions.
+1. Load the `spec-driven-development` skill for state handling conventions.
 
-Read `changes/<change-set-name>/state.md` and `changes/<change-set-name>/tasks.md` to get the current state. Report: phase, status, lane, status notes, and next action based on the phase-status mapping. If in `plan` or `implement` phase, include task progress breakdown (done, active, pending).
+2. Read `changes/<change-set-name>/state.toml` and `changes/<change-set-name>/tasks.toml` to get the current state.
 
-Output format shows change set metadata, status notes, and the specific command to run next based on current phase and status.
+3. Report: phase, status, lane, status notes, and next action based on the phase-status mapping from the skill.
+
+4. If in `plan` or `implement` phase, include task progress breakdown using task status values (done, active, pending) from tasks.toml.
+
+5. Output format shows change set metadata, status notes, and the specific command to run next based on current phase and status per skill guidelines.
 
 ## Examples
 
@@ -25,7 +33,7 @@ Output format shows change set metadata, status notes, and the specific command 
 
 ```text
 Input: None (only one change: "login-auth")
-Output: Report phase/discovery/status, show [x] [o] [ ] task counts, suggest "/sdd/tasks login-auth"
+Output: Report phase/discovery/status, show complete/in_progress/pending task counts, suggest "/sdd/tasks login-auth"
 ```
 
 **Multiple change sets exist:**

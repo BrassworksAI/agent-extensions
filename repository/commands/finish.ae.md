@@ -4,9 +4,7 @@ description: Close a change set and sync its specs to canonical
 
 ### Required Skills (Must Load)
 
-Load and follow these skills before doing anything else:
-
-- `spec-driven-development`
+- `spec-driven-development` (state management, completion workflow)
 - `merge-change-specs`
 
 # Finish Change Set
@@ -18,11 +16,9 @@ Close the change set and sync specs to canonical.
 > [!IMPORTANT]
 > Resolve the change set by running `ls changes/ | grep -v archive/`. If exactly one directory exists, use it. Only prompt the user when multiple change sets are present.
 
-- **Change set name**: Resolve by running `ls -1 changes` ignoring `archive/`. If exactly one directory remains, use it as `<change-set-name>`. Only prompt the user when multiple change sets are present.
-
 ## Instructions
 
-1. **Verify prerequisites**: Apply state entry check from `spec-driven-development`. Confirm phase is `reconcile` and status is `complete`.
+1. **Verify prerequisites**: Load `spec-driven-development` skill and read state. Confirm phase is `reconcile` and status is `complete` per skill guidelines.
 
 2. **Sync specs**: Use the `merge-change-specs` skill to:
    - Run a dry run preview showing which specs will be created/modified
@@ -30,7 +26,7 @@ Close the change set and sync specs to canonical.
    - Wait for user approval
    - Apply the merge to canonical `specs/`
 
-3. **Update state**: Set phase and status to `complete` in `changes/<name>/state.md`.
+3. **Update state**: Mark phase and status as complete per skill guidelines.
 
 4. **Cleanup** (separate approval):
    - Keep artifacts intact

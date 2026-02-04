@@ -15,19 +15,22 @@ Explain Spec-Driven Development (SDD) concepts, workflows, or specific phases to
 ## Instructions
 
 1. **Identify Intent**: Ask if they want a general overview or a specific deep-dive.
+
 2. **Why SDD?**: SDD ensures quality through **Clarity** (thinking before coding), **Traceability** (code maps to intent), and **Confidence** (reconciliation).
+
 3. **Workflow Logic**: Explain the lanes and step purposes:
    - **Full**: High-confidence features. `init` (isolate) > `specs` (contract) > `discovery` (validate) > `tasks` (roadmap) > `plan` (strategy) > `implement`.
    - **Vibe/Bug**: Rapid fixes/prototypes. `implement` first to explore, then `reconcile` to capture specs once the solution is proven.
+
 4. **The Change Set**: Explain the directory structure:
 
    ```text
    changes/<name>/
-     state.md      # Lane/phase tracker
-     specs/        # Change-set 'Contract'
-     thoughts/     # Capture insights for planning
-     tasks.md      # Implementation 'Roadmap'
-     plans/        # Per-task 'Strategy'
+     state.toml      # Lane/phase tracker
+     specs/          # Change-set 'Contract'
+     thoughts/       # Capture insights for planning
+     tasks.toml      # Implementation 'Roadmap'
+     plans/          # Per-task 'Strategy'
    ```
 
 5. **Command Reference**:
@@ -45,7 +48,12 @@ Explain Spec-Driven Development (SDD) concepts, workflows, or specific phases to
    | `/sdd/reconcile` | Verify code | Audit diff against specs |
    | `/sdd/finish` | Close & merge | Finalize specs and cleanup |
 
-6. **Accuracy**: Use `research` for repo-specific implementation details.
+6. **State Management**: Reference the `spec-driven-development` skill for:
+   - How state.toml tracks phase, status, lane
+   - How tasks.toml tracks implementation tasks
+   - Available CLI commands for state operations
+
+7. **Accuracy**: Use `research` for repo-specific implementation details.
 
 ## Success Criteria
 
