@@ -6,7 +6,7 @@ description: Close a change set and sync its specs to canonical
 
 Load and follow these skills before doing anything else:
 
-- `sdd-state-management`
+- `spec-driven-development`
 - `merge-change-specs`
 
 # Finish Change Set
@@ -22,7 +22,7 @@ Close the change set and sync specs to canonical.
 
 ## Instructions
 
-1. **Verify prerequisites**: Apply state entry check from `sdd-state-management`. Confirm phase is `reconcile` and status is `complete`.
+1. **Verify prerequisites**: Apply state entry check from `spec-driven-development`. Confirm phase is `reconcile` and status is `complete`.
 
 2. **Sync specs**: Use the `merge-change-specs` skill to:
    - Run a dry run preview showing which specs will be created/modified

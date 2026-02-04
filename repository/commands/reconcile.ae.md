@@ -13,7 +13,7 @@ Perform bi-directional reconciliation between change set specs and implementatio
 
 ## Instructions
 
-Load `sdd-state-management` and `spec-format` skills. Read state.md and tasks.md. Apply state entry check.
+Load `spec-driven-development` and `spec-format` skills. Read state.md and tasks.md. Apply state entry check.
 
 Get the implementation diff for the change set. Execute bi-directional reconciliation:
 

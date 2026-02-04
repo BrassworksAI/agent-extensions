@@ -6,7 +6,7 @@ description: Fast-track bug investigation and fix initialization
 
 ## Required Skills
 
-- `sdd-state-management`
+- `spec-driven-development`
 - `research`
 
 ## Inputs

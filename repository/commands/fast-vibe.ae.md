@@ -6,7 +6,7 @@ description: Collaborative vibe coding sessions that free you from spec ceremony
 
 ## Required Skills
 
-- `sdd-state-management`
+- `spec-driven-development`
 
 ## Inputs
 

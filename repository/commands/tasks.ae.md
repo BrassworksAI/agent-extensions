@@ -13,7 +13,7 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
 
 ## Instructions
 
-Load `sdd-state-management` skill. Read state, proposal, specs, and thoughts from the change set. If lane is `vibe` or `bug`, redirect to `/sdd/plan`.
+Load `spec-driven-development` skill. Read state, proposal, specs, and thoughts from the change set. If lane is `vibe` or `bug`, redirect to `/sdd/plan`.
 
 This is a dialogue. Before writing tasks.md, present your breakdown thinking: how you'll map spec requirements, why you're grouping them this way, and what task order maintains system stability. Ask for feedback on granularity and flow. Update state.md `## Notes` with decisions.
 

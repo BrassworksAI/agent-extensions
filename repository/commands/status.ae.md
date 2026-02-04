@@ -13,7 +13,7 @@ Show the status of an SDD change set.
 
 ## Instructions
 
-Load the `sdd-state-management` skill for state handling conventions.
+Load the `spec-driven-development` skill for state handling conventions.
 
 Read `changes/<change-set-name>/state.md` and `changes/<change-set-name>/tasks.md` to get the current state. Report: phase, status, lane, status notes, and next action based on the phase-status mapping. If in `plan` or `implement` phase, include task progress breakdown (done, active, pending).
 

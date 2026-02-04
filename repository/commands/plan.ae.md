@@ -13,7 +13,7 @@ Research the codebase and create an implementation plan. Full lane plans one tas
 
 ## Instructions
 
-Load `sdd-state-management`, `research`, and `keep-current` skills. Read state.md and tasks.md. Apply state entry check.
+Load `spec-driven-development`, `research`, and `keep-current` skills. Read state.md and tasks.md. Apply state entry check.
 
 **Full lane**: Identify current task. If `[o]` exists, plan it (never replace without user approval). Otherwise, pick first `[ ]`, mark it `[o]`. Read task from tasks.md (which contains the spec) and all `thoughts/` (discovery outputs). Research codebase for patterns, paths, integration, tests. Update state.md notes.
 

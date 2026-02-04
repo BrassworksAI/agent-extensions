@@ -8,7 +8,7 @@ Create a new SDD change set to track progress.
 
 ## Required Skills
 
-You MUST load `sdd-state-management` before proceeding. Stop and ask if unavailable.
+You MUST load `spec-driven-development` before proceeding. Stop and ask if unavailable.
 
 ## Workflow
 

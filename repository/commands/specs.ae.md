@@ -13,7 +13,7 @@ Write change-set specifications for the change set.
 
 ## Instructions
 
-Load `sdd-state-management`, `spec-format`, and `research` skills. Read state.md and proposal.md. If lane is not `full`, redirect to appropriate command.
+Load `spec-driven-development`, `spec-format`, and `research` skills. Read state.md and proposal.md. If lane is not `full`, redirect to appropriate command.
 
 Spec writing is collaborative. Don't start writing immediately. First, summarize the goal, actors, workflows, and constraints in your own words. Explain how the change maps to the existing capability hierarchy. Present concrete statements and decisions. Offer options for open decisions. Pause and wait for user confirmation.
 

@@ -9,7 +9,7 @@ Explain Spec-Driven Development (SDD) concepts, workflows, or specific phases to
 ## Required Skills
 
 - `spec-format`
-- `sdd-state-management`
+- `spec-driven-development`
 - `research`
 
 ## Instructions

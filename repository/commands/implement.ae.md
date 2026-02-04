@@ -13,7 +13,7 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 
 ## Instructions
 
-Load `sdd-state-management` and `research` skills. Read state.md and tasks.md. Apply state entry check.
+Load `spec-driven-development` and `research` skills. Read state.md and tasks.md. Apply state entry check.
 
 Determine lane and load plan: full lane reads tasks.md to find current task ([o] or first [ ]), then loads corresponding plan from plans/; vibe/bug lane reads plan.md (single combined plan).
 
