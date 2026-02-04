@@ -1,67 +1,65 @@
 ---
 name: merge-change-specs
-description: Merge change-set specs in `changes/<name>/specs/` into canonical `specs/` deterministically.
+description: Use this is you are trying to merge change-set specs from `changes/<name>/specs/` into canonical `specs/`
 ---
 
 # Merge Change Specs
 
-## What this skill does
+Merges change-set specs into canonical specs with deterministic output.
 
-- Merges a change set at `changes/<name>/specs/**/*.md` into canonical `specs/**/*.md`.
-- Produces a deterministic JSON report of what would change / did change.
+## Usage
 
-## Inputs
+```bash
+node ./scripts/merge-change-specs.mjs --change <name> [--dry-run]
+```
 
-- Change set name (the `<name>` in `changes/<name>/`).
-- Should this be a dry run (no writes), or should it write to `specs/`?
+**Flags:**
 
-## How to run the script
-
-The implementation lives at `./scripts/merge-change-specs.mjs`.
-
-Supported flags:
-
-- `--change <name>` (or `-c <name>`) (required)
-- `--dry-run` (optional): compute and report changes without writing any files
-
-Examples:
-
-- Dry run first:
-- `node ./scripts/merge-change-specs.mjs --change auth-refresh --dry-run`
-- `node ./scripts/merge-change-specs.mjs --change auth-refresh`
-
-### Output format
-
-The script prints a single JSON object to stdout:
-
-- `change`: the change set name
-- `dryRun`: boolean
-- `counts.created|modified|skipped`
-- `created|modified|skipped`: arrays of canonical `specs/...` paths
-
-If anything is invalid or unsafe, the script exits non-zero and prints a human-readable error to stderr.
+- `--change <name>` (required): The change set name (directory under `changes/`)
+- `--dry-run` (optional): Preview changes without writing files
 
 ## Workflow
 
-1. Validate `changes/<name>/specs/` exists and contains `**/*.md`.
-2. For each change-set spec:
-   - Validate the markdown format using `spec-format` skill.
-   - Parse YAML frontmatter and determine `kind: new|delta`.
-   - Compute the canonical spec path by stripping `changes/<name>/specs/` and prefixing with `specs/`.
-3. Apply changes deterministically:
-   - `kind: new`: write canonical file as the change-set body (frontmatter removed).
-     - If the canonical file already exists, it is overwritten and reported as `modified`.
-   - `kind: delta`: patch the canonical spec by applying the delta file’s `### ADDED`, `### MODIFIED`, `### REMOVED` buckets under `## Requirements`.
-4. Emit a deterministic JSON summary (created/modified/skipped) and fail fast on errors.
+1. **Dry run first** - Always preview changes before applying:
 
-## Guardrails
+   ```bash
+   node ./scripts/merge-change-specs.mjs --change auth-refresh --dry-run
+   ```
 
-- Refuses unsafe `--change` values (absolute paths or `..`).
-- Fail fast if a `kind: delta` spec targets a missing canonical file.
-- Do not reorder unrelated canonical content; only apply targeted edits.
-- Keep ordering deterministic: stable traversal + stable output formatting.
+2. **Review the JSON output** - Check created/modified/skipped counts and file list
 
-## References
+3. **Execute if ready** - Run without `--dry-run` to apply:
 
-- Merge semantics: `/references/delta-merge-rules.md`
-- Spec format + validator: see the `spec-format` skill
+   ```bash
+   node ./scripts/merge-change-specs.mjs --change auth-refresh
+   ```
+
+## Output
+
+The script outputs a JSON object:
+
+```json
+{
+  "change": "auth-refresh",
+  "dryRun": true,
+  "counts": {
+    "created": 1,
+    "modified": 2,
+    "skipped": 0
+  },
+  "created": ["specs/auth/login.md"],
+  "modified": ["specs/auth/session.md", "specs/auth/logout.md"],
+  "skipped": []
+}
+```
+
+If validation fails or paths are unsafe, the script exits non-zero with errors to stderr.
+
+## Spec Format
+
+Change-set specs must follow the format defined in the `spec-format` skill:
+
+- YAML frontmatter with `kind: new` or `kind: delta`
+- Valid markdown structure per spec-format validation
+
+The script automatically validates each spec using the `spec-format` validator.

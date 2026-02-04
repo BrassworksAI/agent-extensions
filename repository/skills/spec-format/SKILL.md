@@ -135,7 +135,7 @@ All change set specs live in `changes/<name>/specs/` and MUST include YAML front
 
 After you `write` or `edit` any change-set spec under `changes/<name>/specs/**/*.md`, you **MUST** run the validator script against the exact file you changed.
 
-- Run: `node /scripts/validate-change-spec.ts <change-spec-path>`
+- Run: `node /scripts/validate-change-spec.mjs <change-spec-path>`
 
 If validation fails:
 
