@@ -29,7 +29,7 @@ description: Fast-track bug investigation and fix initialization
    ae sdd init <name> --lane bug
    ```
 
-   This creates `state.toml` with lane=bug, phase=plan, status=in_progress.
+   This creates `state.toml` with lane=bug, phase=triage, status=in_progress.
 
 4. **Research**: Use the `research` skill to locate the problem, trace the execution path, and identify the root cause. Compare findings against existing specs.
 

@@ -6,6 +6,10 @@ description: Critique proposal, specs, or plan for gaps and contradictions
 
 Provide thoughtful critique of work in the current context for gaps, contradictions, and risks.
 
+## Required Skills
+
+- `research`
+
 ## Inputs
 
 > [!IMPORTANT]

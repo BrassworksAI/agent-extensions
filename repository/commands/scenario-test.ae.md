@@ -6,6 +6,10 @@ description: Roleplay as a user persona to stress-test proposals and designs
 
 Test a proposal or design by inhabiting a realistic user persona and attempting to complete real work.
 
+## Required Skills
+
+- `research`
+
 ## Inputs
 
 > [!IMPORTANT]

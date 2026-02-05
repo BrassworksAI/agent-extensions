@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/shanepadgett/agent-extensions/internal/config"
@@ -75,6 +76,7 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 
 	commands := i.Registry.GetAllCommands()
 	skills := i.Registry.GetAllSkills()
+	requiresJSRuntime := i.anySkillUsesScripts(skills)
 
 	scopes := []Scope{scope}
 	if scope == ScopeBoth {
@@ -111,6 +113,10 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 				result.Skills++
 			}
 		}
+	}
+
+	if requiresJSRuntime && findJSRuntime() == "" {
+		result.Errors = append(result.Errors, fmt.Errorf("no JavaScript runtime found (node, bun, deno); skill scripts may fail"))
 	}
 
 	return result, nil
@@ -209,6 +215,37 @@ func (i *Installer) copySkillToCache(skillName, cacheDest string) error {
 
 		return writeFile(destPath, data)
 	})
+}
+
+func (i *Installer) anySkillUsesScripts(skills []string) bool {
+	for _, skill := range skills {
+		if i.skillHasScripts(skill) {
+			return true
+		}
+	}
+	return false
+}
+
+func (i *Installer) skillHasScripts(skill string) bool {
+	entries, err := i.Registry.ListSkillFiles(skill)
+	if err != nil {
+		return false
+	}
+	for _, entry := range entries {
+		if entry.IsDir() && entry.Name() == "scripts" {
+			return true
+		}
+	}
+	return false
+}
+
+func findJSRuntime() string {
+	for _, runtime := range []string{"node", "bun", "deno"} {
+		if _, err := exec.LookPath(runtime); err == nil {
+			return runtime
+		}
+	}
+	return ""
 }
 
 func createSymlink(src, dest string) error {

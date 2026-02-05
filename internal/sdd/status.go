@@ -90,8 +90,10 @@ func (r *StatusRenderer) renderTaskProgress() {
 
 	gumStyle(bar, "--foreground", "212")
 
-	for _, name := range r.Tasks.List() {
-		task := r.Tasks.Task[name]
+	for _, task := range r.Tasks.Task {
+		if task == nil {
+			continue
+		}
 		var symbol string
 		switch task.Status {
 		case TaskComplete:
@@ -100,6 +102,10 @@ func (r *StatusRenderer) renderTaskProgress() {
 			symbol = "◐"
 		default:
 			symbol = "○"
+		}
+		name := task.Name
+		if name == "" {
+			name = task.Title
 		}
 		fmt.Printf("%s %s\n", symbol, name)
 	}
@@ -141,10 +147,12 @@ func (r *StatusRenderer) renderNextAction() {
 			next = "Change set complete!"
 		}
 	} else {
-		_, currentTask := r.Tasks.CurrentTask()
+		name, currentTask := r.Tasks.CurrentTask()
 		if currentTask != nil {
-			taskName, _ := r.Tasks.CurrentTask()
-			next = fmt.Sprintf("ae sdd task complete %s", taskName)
+			if name == "" {
+				name = "current task"
+			}
+			next = fmt.Sprintf("Update tasks.toml to set %s status=complete", name)
 		} else {
 			next = fmt.Sprintf("Continue %s phase", r.State.Phase.Current)
 		}

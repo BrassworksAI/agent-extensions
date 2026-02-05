@@ -23,7 +23,7 @@ Show the status of an SDD change set.
 
 3. Report: phase, status, lane, status notes, and next action based on the phase-status mapping from the skill.
 
-4. If in `plan` or `implement` phase, include task progress breakdown using task status values (done, active, pending) from tasks.toml.
+4. If in `plan` or `implement` phase, include task progress breakdown using task status values (complete, in_progress, pending) from tasks.toml.
 
 5. Output format shows change set metadata, status notes, and the specific command to run next based on current phase and status per skill guidelines.
 

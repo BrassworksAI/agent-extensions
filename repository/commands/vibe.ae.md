@@ -29,6 +29,8 @@ Vibe lane is your partner for getting through SDD without the ceremony. Think co
    ae sdd init <name> --lane vibe
    ```
 
+   This creates `state.toml` with lane=vibe, phase=context, status=in_progress.
+
    Create `changes/<name>/context.md` with intent, initial thoughts, and curiosity.
 
 3. **Explore Together**: Dive in. Prototype freely, create documents when insights emerge, capture thoughts. Collaboratively refine into at least a light proposal leading to research and planning. No wrong turn if you document learning.

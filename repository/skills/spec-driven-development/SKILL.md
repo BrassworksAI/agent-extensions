@@ -28,10 +28,16 @@ Full lane sequence:
 proposal -> specs -> discovery -> tasks -> plan -> implement -> reconcile -> finish
 ```
 
-Vibe and bug sequences:
+Vibe sequence:
 
 ```text
 context -> plan -> implement -> [reconcile -> finish]
+```
+
+Bug sequence:
+
+```text
+triage -> plan -> implement -> [reconcile -> finish]
 ```
 
 Reconcile and finish are optional for vibe/bug lanes unless changes must be reflected in specs.
@@ -76,7 +82,8 @@ Decided to use JWT over sessions.
 Tasks live in `changes/<name>/tasks.toml`:
 
 ```toml
-[task.db-models]
+[[task]]
+name = "db-models"
 title = "Foundation - DB models and migrations"
 description = "Add user tables and migrations."
 status = "complete"  # pending | in_progress | complete
@@ -93,10 +100,6 @@ requirements = [
 | `ae sdd status [name]` | Show styled status UI |
 | `ae sdd phase next` | Advance to next phase |
 | `ae sdd phase set <phase>` | Set current phase |
-| `ae sdd task list` | List all tasks |
-| `ae sdd task add <short-name>` | Add new task |
-| `ae sdd task start <short-name>` | Start a task |
-| `ae sdd task complete <short-name>` | Complete a task |
 | `ae sdd pending add "item"` | Add pending item |
 | `ae sdd pending clear <index>` | Remove pending item |
 | `ae sdd notes set "content"` | Update notes |
@@ -132,29 +135,20 @@ When a phase finishes, always update `status = "complete"` in state.toml and cle
 
 ### Task Management (Full Lane)
 
-**Add a new task:**
+Tasks are edited directly in `changes/<name>/tasks.toml`. Keep tasks in the desired execution order; file order is the source of truth.
 
-```bash
-ae sdd task add <short-name>
+```toml
+[[task]]
+name = "db-models"
+title = "Foundation - DB models and migrations"
+description = "Add user tables and migrations."
+status = "pending"  # pending | in_progress | complete
+requirements = [
+  "When a new user is created, the system shall persist profile fields."
+]
 ```
 
-Then edit `tasks.toml` to add title, description, and requirements.
-
-**Start working on a task:**
-
-```bash
-ae sdd task start <short-name>
-```
-
-This sets `status = "in_progress"` for the task.
-
-**Complete a task:**
-
-```bash
-ae sdd task complete <short-name>
-```
-
-This sets `status = "complete"` for the task.
+Update task status by editing the `status` field.
 
 **Task Status Flow:**
 
@@ -252,5 +246,6 @@ When using this skill in commands:
 
 - List `spec-driven-development` as a required skill for state/task management
 - Follow the Managing State and Tasks section for all file operations
-- Never manually edit state.toml or tasks.toml structure directly
-- Always use the CLI commands or specific field updates as documented above
+- Never manually edit state.toml structure directly
+- Edit tasks.toml directly using the documented format
+- Use the documented commands or direct field updates as documented above

@@ -194,6 +194,9 @@ func TestTasksLifecycle(t *testing.T) {
 	if dbTask.Title != "DB Models" {
 		t.Errorf("expected title 'DB Models', got %s", dbTask.Title)
 	}
+	if dbTask.Name != "db-models" {
+		t.Errorf("expected name 'db-models', got %s", dbTask.Name)
+	}
 	if dbTask.Status != TaskPending {
 		t.Errorf("expected pending status, got %s", dbTask.Status)
 	}
@@ -280,8 +283,8 @@ func TestTasksList(t *testing.T) {
 		t.Fatalf("expected 3 items, got %d", len(list))
 	}
 
-	// Should be sorted
-	if list[0] != "alpha" || list[1] != "beta" || list[2] != "zebra" {
-		t.Errorf("list not sorted: %v", list)
+	// Should preserve insertion order
+	if list[0] != "zebra" || list[1] != "alpha" || list[2] != "beta" {
+		t.Errorf("list not in insertion order: %v", list)
 	}
 }

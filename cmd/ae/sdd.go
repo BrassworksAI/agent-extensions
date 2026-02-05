@@ -48,38 +48,6 @@ var sddPhaseSetCmd = &cobra.Command{
 	RunE:  runSddPhaseSet,
 }
 
-var sddTaskCmd = &cobra.Command{
-	Use:   "task",
-	Short: "Task management",
-}
-
-var sddTaskListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all tasks",
-	RunE:  runSddTaskList,
-}
-
-var sddTaskAddCmd = &cobra.Command{
-	Use:   "add <short-name>",
-	Short: "Add a new task",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runSddTaskAdd,
-}
-
-var sddTaskStartCmd = &cobra.Command{
-	Use:   "start <short-name>",
-	Short: "Start a task",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runSddTaskStart,
-}
-
-var sddTaskCompleteCmd = &cobra.Command{
-	Use:   "complete <short-name>",
-	Short: "Complete a task",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runSddTaskComplete,
-}
-
 var sddPendingCmd = &cobra.Command{
 	Use:   "pending",
 	Short: "Pending items management",
@@ -121,11 +89,6 @@ func init() {
 	sddPhaseCmd.AddCommand(sddPhaseNextCmd)
 	sddPhaseCmd.AddCommand(sddPhaseSetCmd)
 
-	sddTaskCmd.AddCommand(sddTaskListCmd)
-	sddTaskCmd.AddCommand(sddTaskAddCmd)
-	sddTaskCmd.AddCommand(sddTaskStartCmd)
-	sddTaskCmd.AddCommand(sddTaskCompleteCmd)
-
 	sddPendingCmd.AddCommand(sddPendingAddCmd)
 	sddPendingCmd.AddCommand(sddPendingClearCmd)
 
@@ -134,7 +97,6 @@ func init() {
 	sddCmd.AddCommand(sddInitCmd)
 	sddCmd.AddCommand(sddStatusCmd)
 	sddCmd.AddCommand(sddPhaseCmd)
-	sddCmd.AddCommand(sddTaskCmd)
 	sddCmd.AddCommand(sddPendingCmd)
 	sddCmd.AddCommand(sddNotesCmd)
 
@@ -291,125 +253,6 @@ func runSddPhaseSet(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("✓ Set phase to: %s\n", phase)
-	return nil
-}
-
-func runSddTaskList(cmd *cobra.Command, args []string) error {
-	changeDir, err := resolveChangeSet("")
-	if err != nil {
-		return err
-	}
-
-	tasks, err := sdd.LoadTasks(changeDir)
-	if err != nil {
-		return err
-	}
-
-	if len(tasks.Task) == 0 {
-		fmt.Println("No tasks defined")
-		return nil
-	}
-
-	for _, name := range tasks.List() {
-		task := tasks.Task[name]
-		var symbol string
-		switch task.Status {
-		case sdd.TaskComplete:
-			symbol = "✓"
-		case sdd.TaskInProgress:
-			symbol = "◐"
-		default:
-			symbol = "○"
-		}
-		fmt.Printf("%s %s: %s\n", symbol, name, task.Title)
-	}
-
-	return nil
-}
-
-func runSddTaskAdd(cmd *cobra.Command, args []string) error {
-	shortName := args[0]
-
-	if !isKebabCase(shortName) {
-		return fmt.Errorf("short-name must be kebab-case")
-	}
-
-	changeDir, err := resolveChangeSet("")
-	if err != nil {
-		return err
-	}
-
-	tasks, err := sdd.LoadTasks(changeDir)
-	if err != nil {
-		return err
-	}
-
-	task := &sdd.Task{
-		Title:        shortName,
-		Description:  "",
-		Status:       sdd.TaskPending,
-		Requirements: []string{},
-	}
-
-	if err := tasks.Add(shortName, task); err != nil {
-		return err
-	}
-
-	if err := tasks.Save(changeDir); err != nil {
-		return err
-	}
-
-	fmt.Printf("✓ Added task: %s\n", shortName)
-	return nil
-}
-
-func runSddTaskStart(cmd *cobra.Command, args []string) error {
-	shortName := args[0]
-
-	changeDir, err := resolveChangeSet("")
-	if err != nil {
-		return err
-	}
-
-	tasks, err := sdd.LoadTasks(changeDir)
-	if err != nil {
-		return err
-	}
-
-	if err := tasks.Start(shortName); err != nil {
-		return err
-	}
-
-	if err := tasks.Save(changeDir); err != nil {
-		return err
-	}
-
-	fmt.Printf("✓ Started task: %s\n", shortName)
-	return nil
-}
-
-func runSddTaskComplete(cmd *cobra.Command, args []string) error {
-	shortName := args[0]
-
-	changeDir, err := resolveChangeSet("")
-	if err != nil {
-		return err
-	}
-
-	tasks, err := sdd.LoadTasks(changeDir)
-	if err != nil {
-		return err
-	}
-
-	if err := tasks.Complete(shortName); err != nil {
-		return err
-	}
-
-	if err := tasks.Save(changeDir); err != nil {
-		return err
-	}
-
-	fmt.Printf("✓ Completed task: %s\n", shortName)
 	return nil
 }
 

@@ -55,13 +55,14 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
 ```text
 Input: None (full lane, single change "user-reg")
 Output: Present breakdown: "I'll scaffold DB models first, then vertical slices. 3 tasks total."
-       User approves. Create tasks via ae sdd task add for: foundation, implementation, validation.
+       User approves. Create tasks in tasks.toml for: foundation, implementation, validation.
 ```
 
 **Task shape sample:**
 
 ```toml
-[task.foundation]
+[[task]]
+name = "foundation"
 title = "Foundation - DB models and migrations"
 description = "Add user tables and migrations to support registration."
 status = "pending"
