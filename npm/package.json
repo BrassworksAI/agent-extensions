@@ -19,7 +19,7 @@
     "extensions"
   ],
   "bin": {
-    "ae": "bin/ae"
+    "ae": "scripts/run-ae.mjs"
   },
   "scripts": {
     "postinstall": "node scripts/download-binary.mjs"
