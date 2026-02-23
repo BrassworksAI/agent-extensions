@@ -1,0 +1,53 @@
+[tools]
+go = "1.25.6"
+goreleaser = "latest"
+bun = "latest"  # For npm wrapper build
+"go:golang.org/x/tools/cmd/deadcode" = "latest"
+
+[env]
+GOBIN = "{{config_root}}/bin"
+
+[tasks.embed]
+description = "Prepare embedded content"
+run = "./scripts/embed.sh"
+
+[tasks.build]
+description = "Build the ae CLI binary"
+depends = ["embed"]
+run = "go build -o bin/ae ./cmd/ae"
+
+[tasks.dev]
+description = "Build and run ae with args"
+run = "go run ./cmd/ae"
+
+[tasks.test]
+description = "Run all tests"
+run = "go test ./..."
+
+[tasks.lint]
+description = "Run golangci-lint"
+run = "golangci-lint run"
+
+[tasks.fmt]
+description = "Format Go code"
+run = "go fmt ./..."
+
+[tasks.tidy]
+description = "Tidy go modules"
+run = "go mod tidy"
+
+[tasks.release]
+description = "Build release binaries with GoReleaser"
+run = "goreleaser release --snapshot --clean"
+
+[tasks.install]
+description = "Install ae to GOBIN"
+run = "go install ./cmd/ae"
+
+[tasks.clean]
+description = "Remove build artifacts"
+run = "rm -rf bin/ dist/"
+
+[tasks.deadcode]
+description = "Find dead code using deadcode"
+run = "deadcode ./..."

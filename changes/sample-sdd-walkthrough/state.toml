@@ -1,0 +1,14 @@
+[change]
+  name = "sample-sdd-walkthrough"
+  lane = "full"
+  created_at = 2026-02-23T00:22:16.878149-05:00
+
+[phase]
+  current = "plan"
+  status = "in_progress"
+
+[pending]
+  items = ["Capture screenshot for docs"]
+
+[notes]
+  content = "Tasking walkthrough in progress"

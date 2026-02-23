@@ -1,0 +1,34 @@
+{
+  "name": "@shanepadgett/agent-extensions",
+  "version": "0.1.0",
+  "description": "CLI for coding agent extensions and sdd workflow",
+  "author": "Shane Padgett",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shanepadgett/agent-extensions.git"
+  },
+  "homepage": "https://github.com/shanepadgett/agent-extensions",
+  "keywords": [
+    "ai",
+    "agents",
+    "cli",
+    "claude",
+    "cursor",
+    "codex",
+    "extensions"
+  ],
+  "bin": {
+    "ae": "bin/ae"
+  },
+  "scripts": {
+    "postinstall": "node scripts/download-binary.mjs"
+  },
+  "files": [
+    "bin",
+    "scripts"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

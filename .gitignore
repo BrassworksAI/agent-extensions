@@ -19,3 +19,14 @@ Thumbs.db
 *.temp
 .osgrep
 .cache/
+
+# Local agent cache/output
+.agents/ae/
+.factory/
+
+# Go
+bin/
+dist/
+
+# Embedded content (generated at build time)
+internal/embedded/content/

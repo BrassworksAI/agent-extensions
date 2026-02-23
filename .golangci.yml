@@ -1,0 +1,36 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  disable:
+    - gocyclo
+    - gosec
+    - gocritic
+    - wsl
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+      exclude-functions:
+        # Common patterns where errors are typically safe to ignore
+        - os.RemoveAll
+        - (*os.File).Close
+        - fmt.Sscanf
+        - (*os/exec.Cmd).Run
+        - path/filepath.Rel
+        - os.Getwd
+        - os.UserHomeDir
+        - regexp.MatchString
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck

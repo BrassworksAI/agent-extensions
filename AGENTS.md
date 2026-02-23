@@ -1,21 +1,20 @@
-# Agent Extensions: Maintenance Rules
+# Agent Extensions
 
-This repository ships agent/command/skill payloads for multiple tools.
+Go CLI that installs commands, skills, and hooks for AI coding agents.
 
-## Installer / Uninstaller Maintenance
+## Quick Reference
 
-Any time you add, rename, or remove any file under:
-- `opencode/`
-- `augment/`
-- `codex/`
-- `skills/` (these get installed into OpenCode/Codex payloads)
+**Default to using `mise run <task>` for all operations.** Only use custom commands if a task is not available.
 
-You MUST:
-1. Evaluate both uninstall scripts (`uninstall.sh`, `uninstall.ps1`) to ensure they remove the exact payload files.
-2. Run `bun scripts/validate-uninstall.ts` and ensure it exits with status 0.
-3. If new leaf directories are introduced/removed, update the directory cleanup lists in uninstall scripts.
-4. Re-run `bun scripts/validate-uninstall.ts` after updates and verify it reports `OK` for all tools.
-
-Notes:
-- Global installs use symlinks; leaving a single untracked file/symlink behind will prevent the directory cleanup from removing that folder.
-- This repo intentionally does not remove user-owned OpenCode config (e.g. `~/.config/opencode/opencode.json`). Only the payload under the tool directories is in scope.
+| Task | Command | Description |
+|------|---------|-------------|
+| build | `mise run build` | Build the ae CLI binary (includes embed) |
+| embed | `mise run embed` | Prepare embedded content (tools.yaml + repository/) |
+| dev | `mise run dev` | Build and run ae with args |
+| test | `mise run test` | Run all tests |
+| lint | `mise run lint` | Run golangci-lint |
+| fmt | `mise run fmt` | Format Go code |
+| tidy | `mise run tidy` | Tidy go modules |
+| release | `mise run release` | Build release binaries with GoReleaser |
+| install | `mise run install` | Install ae to GOBIN |
+| clean | `mise run clean` | Remove build artifacts |

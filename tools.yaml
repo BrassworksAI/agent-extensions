@@ -1,0 +1,64 @@
+tools:
+  claude-code:
+    name: Claude Code
+    global_path: ~/.claude
+    local_path: .claude
+    conventions:
+      commands: commands/{name}.md
+
+  codex:
+    name: Codex
+    global_path: ~/.codex
+    local_path: .codex
+    conventions:
+      commands: prompts/{name}.md
+
+  opencode:
+    name: OpenCode
+    global_path: ~/.config/opencode
+    local_path: .opencode
+    conventions:
+      commands: command/{name}.md
+
+  augment:
+    name: Augment
+    global_path: ~/.augment
+    local_path: .augment
+    conventions:
+      commands: commands/{name}.md
+
+  cursor:
+    name: Cursor
+    global_path: ~/.cursor
+    local_path: .cursor
+    conventions:
+      commands: commands/{name}.md
+
+  windsurf:
+    name: Windsurf
+    global_path: ~/.codeium/windsurf/
+    local_path: .windsurf/
+    conventions:
+      commands: workflows/{name}.md
+      global_commands: global_workflows/{name}.md
+
+  cline:
+    name: Cline
+    global_path: ~/Documents/Cline
+    local_path: .clinerules
+    conventions:
+      commands: workflows/{name}.md
+
+  kilo-code:
+    name: Kilo Code
+    global_path: ~/.kilocode
+    local_path: .kilocode
+    conventions:
+      commands: workflows/{name}.md
+
+  droid:
+    name: Droid
+    global_path: ~/.factory
+    local_path: .factory
+    conventions:
+      commands: commands/{name}.md

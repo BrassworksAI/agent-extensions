@@ -1,0 +1,48 @@
+version: 2
+
+project_name: ae
+
+before:
+  hooks:
+    - ./scripts/embed.sh
+    - go mod tidy
+
+builds:
+  - id: ae
+    main: ./cmd/ae
+    binary: ae
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - id: default
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: shanepadgett
+    name: agent-extensions
+  draft: false
+  prerelease: auto
