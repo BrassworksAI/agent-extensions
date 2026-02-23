@@ -32,8 +32,26 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
 5. Create tasks by editing `tasks.toml` to add for each task:
    - Title (short, descriptive)
    - Description (what the task accomplishes)
-   - Requirements (mapped from spec lines using EARS syntax)
+   - `spec_requirements` entries grouped by source spec file
+   - Requirement strings mapped from spec lines using EARS syntax
    - Status: pending
+
+   Required structure:
+
+   ```toml
+   [[task]]
+   name = "task-name"
+   title = "Task title"
+   description = "What this task accomplishes"
+   status = "pending"
+
+   [[task.spec_requirements]]
+   spec = "changes/<name>/specs/<file>.md"
+   requirements = [
+     "When <condition>, the system SHALL <behavior>",
+     "If <trigger>, the system SHALL <behavior>"
+   ]
+   ```
 
 6. **Task ordering principles**:
    - Foundations first (models, types, codegen)
@@ -66,9 +84,18 @@ name = "foundation"
 title = "Foundation - DB models and migrations"
 description = "Add user tables and migrations to support registration."
 status = "pending"
+
+[[task.spec_requirements]]
+spec = "changes/user-reg/specs/registration.md"
 requirements = [
-  "When a new user is created, the system shall persist profile fields.",
-  "When validation fails, the system shall return field errors."
+  "When a new user is created, the system SHALL persist profile fields.",
+  "When validation fails, the system SHALL return field errors."
+]
+
+[[task.spec_requirements]]
+spec = "changes/user-reg/specs/security.md"
+requirements = [
+  "If password policy fails, the system SHALL reject account creation."
 ]
 ```
 

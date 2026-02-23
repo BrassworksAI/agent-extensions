@@ -6,7 +6,7 @@ description: Collaborative vibe coding sessions that free you from spec ceremony
 
 ## Required Skills
 
-- `spec-driven-development` (state management, lane flow)
+- `spec-driven-development` (load first; resolve/init change sets and manage lane/phase/task flow)
 - `research`
 
 ## Inputs
@@ -21,26 +21,26 @@ description: Collaborative vibe coding sessions that free you from spec ceremony
 
 Vibe lane is your partner for getting through SDD without the ceremony. Think collaborative vibe coding: throw ideas, prototype freely, create documents as insights emerge, let good ones stick. Goal: sane software, not perfect specs.
 
-1. **Resolution**: Check existing change sets. If one exists, proceed. If multiple, ask whether new or continuing. When continuing, inspect `state.toml` and `context.md` (if it exists). Ask where to resume if jump point unclear.
+1. **Load SDD Context**: Load `spec-driven-development`, resolve the active change set, and run `ae sdd status [name]`.
 
-2. **Initialize** (if new):
+2. **Create Change Set When Needed**: If no change set exists, initialize via CLI:
 
    ```bash
    ae sdd init <name> --lane vibe
    ```
 
-   This creates `state.toml` with lane=vibe, phase=context, status=in_progress.
+   Do not hand-roll scaffolding or use deprecated custom init commands.
 
    Create `changes/<name>/context.md` with intent, initial thoughts, and curiosity.
 
 3. **Explore Together**: Dive in. Prototype freely, create documents when insights emerge, capture thoughts. Collaboratively refine into at least a light proposal leading to research and planning. No wrong turn if you document learning.
 
 4. **Keep Context Alive**: Continuously update state and context:
-   - Update `context.md` as intent evolves
-   - Update state notes in state.toml to capture decisions and next steps
-   - Captures progress for seamless continuation—never lose the thread
+    - Update `context.md` as intent evolves
+    - Update notes and pending items with `ae sdd notes set` and `ae sdd pending add|clear`
+    - Captures progress for seamless continuation—never lose the thread
 
-5. **Deliver Sanity, Not Ceremony**: Build plans, run validations. Ensure exploration converges on sane software. Inform user specifications captured during `reconcile` if kept—until then, focus on vibe, not paperwork.
+5. **Deliver Sanity, Not Ceremony**: Build plans, run validations, and progress phase with `ae sdd phase complete --next` when ready. Ensure exploration converges on sane software.
 
 ## Success Criteria
 

@@ -152,7 +152,7 @@ func (r *StatusRenderer) renderNextAction() {
 		}
 	} else {
 		if r.Tasks == nil {
-			next = fmt.Sprintf("Continue %s phase", r.State.Phase.Current)
+			next = fmt.Sprintf("ae sdd phase complete  (current: %s)", r.State.Phase.Current)
 			styleText("Next: "+next, lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Italic(true))
 			return
 		}
@@ -167,8 +167,10 @@ func (r *StatusRenderer) renderNextAction() {
 			next = fmt.Sprintf("ae sdd task complete --next  (current: %s)", name)
 		} else if nextName, nextTask := r.Tasks.NextPendingTask(); nextTask != nil {
 			next = fmt.Sprintf("ae sdd task start  (next: %s)", nextName)
+		} else if r.State.Phase.Current == "implement" {
+			next = "ae sdd phase complete --next"
 		} else {
-			next = fmt.Sprintf("Continue %s phase", r.State.Phase.Current)
+			next = fmt.Sprintf("ae sdd phase complete  (current: %s)", r.State.Phase.Current)
 		}
 	}
 

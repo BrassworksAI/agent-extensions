@@ -1,251 +1,143 @@
 ---
 name: spec-driven-development
-description: Spec-Driven Development (SDD) workflow and state management. Use when guiding or executing SDD flows: selecting lanes (full/vibe/bug), moving through phases, managing change set artifacts (specs, tasks, plans, reconcile), updating SDD state and tasks TOML files, or using ae sdd CLI commands.
+description: Spec-Driven Development (SDD) workflow and state management. Use when guiding or executing SDD flows: selecting lanes (full/vibe/bug), moving phases, managing artifacts, running task progression commands, and keeping change state current through ae sdd CLI.
 ---
 
 # Spec-Driven Development
 
-Provide an end-to-end guide for running SDD change sets, including lane selection, phase flow, artifacts, and state tracking. Use this skill to orient a new chat to the current SDD state and to keep the workflow consistent.
+Use this skill as the source of truth for running SDD with `ae sdd` commands. Load it before `proposal`, `bug`, or `vibe` work so change-set resolution and command flow are consistent.
 
-## Quick Start
+## Core Rules
 
-1. Determine the lane: `full` (spec-first), `vibe` (fast exploration), or `bug` (fix).
-2. Read `changes/<name>/state.toml` and `changes/<name>/tasks.toml` if they exist.
-3. Confirm current phase and next intended action before doing work.
-4. Update state and tasks as work progresses.
+- Use CLI commands for state progression whenever possible.
+- Do not use custom init scaffolding; initialize with `ae sdd init`.
+- Keep one task `in_progress` at a time in full lane.
+- Keep `notes` and `pending` current so work can resume in a new chat.
 
 ## Lane Selection
 
-- **Full**: New features, architectural changes, or anything that needs formal specs.
-- **Vibe**: Exploration and rapid prototyping.
-- **Bug**: Defect fixes. If the request is a behavioral change, redirect to full lane.
+- **full**: New capabilities, non-trivial behavior changes, architecture work.
+- **vibe**: Exploration and prototyping that should still be tracked.
+- **bug**: Defect fixes against intended or specified behavior.
 
-## Phases And Flows
+If a bug request is actually a behavior change, switch to `full`.
 
-Full lane sequence:
+## Command Quick Start
+
+1. Resolve active change set (or create one):
+
+```bash
+ae sdd init <name> --lane <full|vibe|bug>
+```
+
+1. Check status before doing work:
+
+```bash
+ae sdd status [name]
+```
+
+1. Move to the right phase:
+
+```bash
+ae sdd phase set <phase>
+# or
+ae sdd phase complete --next
+```
+
+## Full Command Reference
+
+### Change Set and Phase Commands
+
+| Command | Purpose |
+|---|---|
+| `ae sdd init <name> --lane <full|vibe|bug>` | Create a new change set and initial state |
+| `ae sdd status [name]` | Show current lane, phase, tasks, notes, and pending |
+| `ae sdd phase complete [--next] [name]` | Mark current phase complete and optionally advance |
+| `ae sdd phase set <phase> [name]` | Set phase explicitly |
+| `ae sdd phase next [name]` | Move to next phase (requires current phase complete) |
+
+### Task Commands (Full Lane)
+
+| Command | Purpose |
+|---|---|
+| `ae sdd task list [name]` | Show ordered task list |
+| `ae sdd task current [name]` | Show current in-progress task |
+| `ae sdd task next [name]` | Show next pending task |
+| `ae sdd task start [name]` | Start next pending task (or named task when supported) |
+| `ae sdd task complete [name]` | Complete current in-progress task |
+| `ae sdd task complete --next [name]` | Complete current task and immediately start next |
+
+### Notes and Pending Commands
+
+| Command | Purpose |
+|---|---|
+| `ae sdd notes set "content" [name]` | Update resume context and decisions |
+| `ae sdd pending add "item" [name]` | Track unresolved blockers |
+| `ae sdd pending clear <index> [name]` | Remove resolved blocker |
+
+## Phase Flows
+
+Full lane:
 
 ```text
 proposal -> specs -> discovery -> tasks -> plan -> implement -> reconcile -> finish
 ```
 
-Vibe sequence:
+Vibe lane:
 
 ```text
 context -> plan -> implement -> [reconcile -> finish]
 ```
 
-Bug sequence:
+Bug lane:
 
 ```text
 triage -> plan -> implement -> [reconcile -> finish]
 ```
 
-Reconcile and finish are optional for vibe/bug lanes unless changes must be reflected in specs.
+For vibe and bug lanes, `reconcile` and `finish` are optional unless specs must be updated.
 
-## Artifacts By Phase (Full Lane)
+## Implement-Phase Rules (Full Lane)
 
-- `proposal`: `proposal.md` (external doc allowed; state tracks phase)
-- `specs`: `changes/<name>/specs/**/*.md` (follow the `spec-format` skill for spec structure)
-- `discovery`: `changes/<name>/thoughts/*.md`
-- `tasks`: `changes/<name>/tasks.toml`
-- `plan`: `changes/<name>/plans/NN.md`
-- `implement`: code changes
-- `reconcile`: reconciliation report
-- `finish`: merge or move specs to canonical
+- Start implementation tasks with `ae sdd task start`.
+- Keep task order in `tasks.toml`; order is execution priority.
+- Complete work using `ae sdd task complete` or `ae sdd task complete --next`.
+- `ae sdd phase next` from `implement` is guarded:
+  - blocked if any task is currently `in_progress`
+  - loops back to `plan` when tasks remain incomplete
+  - advances beyond `implement` only when all tasks are complete
 
-## State And Tasks Files
+## Phase Transition Guardrails
 
-State is tracked in `changes/<name>/state.toml`:
+- You must complete the current phase before moving to another phase.
+- `ae sdd phase next` fails when `phase.status != complete`.
+- `ae sdd phase set <phase>` fails for phase changes while the current phase is `in_progress`.
+- Use `ae sdd phase complete` when work is done, then run `ae sdd phase next`.
+- Use `ae sdd phase complete --next` to do both in one step.
 
-```toml
-[change]
-name = "my-feature"
-lane = "full"  # full | vibe | bug
-created_at = 2026-01-27T10:00:00Z
+## Artifact Expectations
 
-[phase]
-current = "plan"
-status = "in_progress"  # in_progress | complete | blocked
+- `changes/<name>/state.toml`: lane, phase, notes, pending
+- `changes/<name>/tasks.toml`: ordered tasks and status (full lane)
+- `changes/<name>/proposal.md`: proposal (full lane)
+- `changes/<name>/context.md`: exploratory context (vibe/bug as needed)
+- `changes/<name>/specs/**/*.md`: specs
+- `changes/<name>/plans/*.md`: implementation plans
 
-[pending]
-items = [
-  "Waiting on API design decision"
-]
+## Session Playbook
 
-[notes]
-content = """
-Working through auth endpoint design.
-Decided to use JWT over sessions.
-"""
-```
+At the start of any SDD command session:
 
-Tasks live in `changes/<name>/tasks.toml`:
+1. Run `ae sdd status [name]`.
+2. Confirm lane and phase.
+3. For full lane, inspect tasks with `ae sdd task list` and `ae sdd task current`.
+4. Execute the phase-appropriate command.
+5. Update notes and pending items before ending session.
 
-```toml
-[[task]]
-name = "db-models"
-title = "Foundation - DB models and migrations"
-description = "Add user tables and migrations."
-status = "complete"  # pending | in_progress | complete
-requirements = [
-  "When a new user is created, the system shall persist profile fields."
-]
-```
+## Quality Gates
 
-## CLI Commands
-
-| Command | Description |
-|---------|-------------|
-| `ae sdd init <name> --lane <full|vibe|bug>` | Create change set with state.toml |
-| `ae sdd status [name]` | Show styled status UI |
-| `ae sdd phase next` | Advance to next phase |
-| `ae sdd phase set <phase>` | Set current phase |
-| `ae sdd pending add "item"` | Add pending item |
-| `ae sdd pending clear <index>` | Remove pending item |
-| `ae sdd notes set "content"` | Update notes |
-
-## Managing State and Tasks
-
-This section provides the definitive guidance for all state and task operations. All SDD commands must follow these patterns.
-
-### Reading State and Tasks
-
-Always read both files at the start of any SDD command:
-
-1. Read `changes/<name>/state.toml` to get current phase, status, lane, notes, and pending items
-2. Read `changes/<name>/tasks.toml` to get task list and current task status
-3. Use `ae sdd status [name]` for a styled overview (optional)
-
-### Phase Management
-
-**Set phase to in_progress:**
-
-```bash
-ae sdd phase set <phase-name>
-```
-
-**Mark phase complete:**
-
-```bash
-ae sdd phase set <phase-name>  # Ensures phase is current
-# Then update status in state.toml or via completion workflow
-```
-
-When a phase finishes, always update `status = "complete"` in state.toml and clear the notes section. Do not auto-advance to the next phase.
-
-### Task Management (Full Lane)
-
-Tasks are edited directly in `changes/<name>/tasks.toml`. Keep tasks in the desired execution order; file order is the source of truth.
-
-```toml
-[[task]]
-name = "db-models"
-title = "Foundation - DB models and migrations"
-description = "Add user tables and migrations."
-status = "pending"  # pending | in_progress | complete
-requirements = [
-  "When a new user is created, the system shall persist profile fields."
-]
-```
-
-Update task status by editing the `status` field.
-
-**Task Status Flow:**
-
-- `pending` → `in_progress` → `complete`
-- Only one task should be `in_progress` at a time
-- Tasks should be completable in a single session
-
-### Notes Management
-
-Update notes to capture decisions, blockers, and context:
-
-```bash
-ae sdd notes set "Your notes here"
-```
-
-Keep notes concise but informative enough that a new chat can resume work quickly. Clear notes when marking a phase complete.
-
-### Pending Items
-
-Track blockers and waiting items:
-
-```bash
-ae sdd pending add "Waiting for API review"
-```
-
-Remove items when resolved:
-
-```bash
-ae sdd pending clear 0  # Removes first item
-```
-
-Keep only unresolved items. Do not use pending as an approval log.
-
-### Common Workflows
-
-**Starting a new phase:**
-
-1. Read current state.toml
-2. Confirm phase transition is valid per Phase Gates
-3. `ae sdd phase set <new-phase>`
-4. Update notes with phase objectives
-
-**Completing work in a phase:**
-
-1. Complete all phase deliverables
-2. For full lane: ensure all tasks are `complete`
-3. Clear notes in state.toml
-4. Set `status = "complete"` in state.toml
-5. Suggest next command per Phase Gates
-
-**Resuming after interruption:**
-
-1. Read state.toml for current phase/status
-2. Read tasks.toml for task progress
-3. Check notes for context
-4. Continue from current state
-
-## Phase Gates (Full Lane)
-
-| From | To | Gate |
-|------|----|------|
-| proposal | specs | Proposal approved |
-| specs | discovery | Change-set specs written (`kind: new|delta`) |
-| discovery | tasks | Architecture review complete |
-| tasks | plan | Tasks defined |
-| plan | implement | Plan approved |
-| implement | reconcile | All tasks complete |
-| reconcile | finish | Implementation matches specs |
-
-## Phase Management Rules
-
-Use flexible progression. Warn on big jumps but do not block the user.
-
-1. Natural progression: set phase `in_progress` and continue.
-2. Jump forward: confirm the skip, then update phase to target.
-3. Jump backward: confirm reset to `in_progress`.
-4. Re-enter complete phase: confirm, then set to `in_progress`.
-
-When a phase finishes, set `status = complete` but do not auto-advance.
-
-## Pending Semantics
-
-- Keep only unresolved items.
-- Remove resolved items (do not strike through).
-- Leave empty when nothing is pending.
-- Do not use pending as an approval log.
-
-## Notes
-
-Keep `notes.content` updated with decisions, progress, and blockers so a new chat can resume quickly.
-
-## Required Skills Reference
-
-When using this skill in commands:
-
-- List `spec-driven-development` as a required skill for state/task management
-- Follow the Managing State and Tasks section for all file operations
-- Never manually edit state.toml structure directly
-- Edit tasks.toml directly using the documented format
-- Use the documented commands or direct field updates as documented above
+- Use one active change set per thread of work.
+- Do not manually invent state structure in `state.toml`.
+- Keep pending list strictly unresolved items.
+- Keep notes concise and resume-oriented.
+- In full lane, do not leave multiple tasks `in_progress`.

@@ -1,77 +1,86 @@
 ---
-description: Explain SDD concepts and workflow
+description: Explain SDD concepts, workflow, and CLI-first usage
 ---
 
 # SDD Explain
 
-Explain Spec-Driven Development (SDD) concepts, workflows, or specific phases to help users navigate the system. This command serves as a technical mentor for SDD.
+Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this command to teach lane selection, phase flow, and how slash commands and `ae sdd` commands work together.
 
 ## Required Skills
 
-- `spec-format`
 - `spec-driven-development`
 - `research`
 
 ## Instructions
 
-1. **Identify Intent**: Ask if they want a general overview or a specific deep-dive.
+1. **Identify Intent**: Determine whether the user wants a quick overview, lane guidance, or a deep dive on one phase/command.
 
-2. **Why SDD?**: SDD ensures quality through **Clarity** (thinking before coding), **Traceability** (code maps to intent), and **Confidence** (reconciliation).
+2. **Why SDD**: Explain the three outcomes:
+   - **Clarity**: behavior is defined before implementation drift
+   - **Traceability**: tasks and code map back to specs
+   - **Confidence**: reconcile/validation checks prove intent matches implementation
 
-3. **Workflow Logic**: Explain the lanes and step purposes:
-   - **Full**: High-confidence features. `init` (isolate) > `specs` (contract) > `discovery` (validate) > `tasks` (roadmap) > `plan` (strategy) > `implement`.
-   - **Vibe/Bug**: Rapid fixes/prototypes. `implement` first to explore, then `reconcile` to capture specs once the solution is proven.
+3. **CLI-First Operating Model**:
+   - Change sets are initialized with `ae sdd init <name> --lane <full|vibe|bug>`.
+   - Progress is tracked with `ae sdd status [name]`, `ae sdd phase complete`, and `ae sdd phase next`.
+   - Full-lane implementation uses `ae sdd task list|start|complete|complete --next`.
+   - Slash commands (`/sdd/proposal`, `/sdd/specs`, `/sdd/tasks`, etc.) are workflow assistants; the CLI is the source of truth for state transitions.
 
-4. **The Change Set**: Explain the directory structure:
+4. **Lane Flows**:
+   - **Full**: `proposal -> specs -> discovery -> tasks -> plan -> implement -> reconcile -> finish`
+   - **Vibe**: `context -> plan -> implement -> [reconcile -> finish]`
+   - **Bug**: `triage -> plan -> implement -> [reconcile -> finish]`
+
+5. **Change Set Structure**:
 
    ```text
    changes/<name>/
-     state.toml      # Lane/phase tracker
-     specs/          # Change-set 'Contract'
-     thoughts/       # Capture insights for planning
-     tasks.toml      # Implementation 'Roadmap'
-     plans/          # Per-task 'Strategy'
+     state.toml      # lane, phase, notes, pending
+     proposal.md     # full lane proposal
+     context.md      # vibe/bug context when needed
+     specs/          # behavior contracts
+     thoughts/       # discovery notes
+     tasks.toml      # ordered tasks with spec_requirements
+     plans/          # implementation plans
    ```
 
-5. **Command Reference**:
+6. **Command Map**:
 
-   | Command | Purpose | Why use it? |
-   |---------|---------|-------------|
-   | `/sdd/init` | Start change set | Isolate work & track progress |
-   | `/sdd/fast/vibe` | Prototyping | Explore solutions without early specs |
-   | `/sdd/fast/bug` | Defect repair | Targeted fixes with triage |
-   | `/sdd/specs` | Define specs | Create the feature's source of truth |
-   | `/sdd/discovery` | Verify fit | Ensure specs align with architecture |
-   | `/sdd/tasks` | Generate tasks | Implementation checklist |
-   | `/sdd/plan` | Create plans | Strategy for a specific task |
-   | `/sdd/implement` | Execute plans | Turn strategy into code |
-   | `/sdd/reconcile` | Verify code | Audit diff against specs |
-   | `/sdd/finish` | Close & merge | Finalize specs and cleanup |
+   | Command | Use For |
+   |---|---|
+   | `ae sdd init` | Create a new change set |
+   | `ae sdd status` | See current lane/phase/tasks |
+   | `ae sdd phase complete [--next]` | Mark phase complete and optionally advance |
+   | `ae sdd phase next` | Advance only after phase is complete |
+   | `ae sdd task start` | Start next full-lane task |
+   | `ae sdd task complete --next` | Finish and chain tasks |
+   | `/sdd/proposal` | Draft and refine proposal |
+   | `/sdd/specs` | Create/update specs |
+   | `/sdd/discovery` | Validate architecture and risks |
+   | `/sdd/tasks` | Build `tasks.toml` from specs |
+   | `/sdd/plan` | Create execution plans |
+   | `/sdd/implement` | Execute planned work |
+   | `/sdd/reconcile` | Verify implementation vs specs |
+   | `/sdd/finish` | Close out change set |
 
-6. **State Management**: Reference the `spec-driven-development` skill for:
-   - How state.toml tracks phase, status, lane
-   - How tasks.toml tracks implementation tasks
-   - Available CLI commands for state operations
-
-7. **Accuracy**: Use `research` for repo-specific implementation details.
+7. **How To Guide Users**:
+   - Recommend lane choice based on risk and ambiguity.
+   - Explain next command, why it is next, and what artifact it should produce.
+   - Use `research` for repo-specific details when asked how current code behaves.
 
 ## Success Criteria
 
-- User understands the logic and purpose of each phase.
-- Folder structure and command relationships are clearly articulated.
-- Explanations prioritize rationale ("Why") over structure ("What").
+- User understands when to use full vs vibe vs bug lane.
+- User understands that `ae sdd` CLI drives state and phase progression.
+- User can name the next command and expected artifact in their current phase.
 
 ## Usage Examples
 
-### Do: Explain the Vibe lane
+### Explain CLI + command relationship
 
-"Vibe lane is for 'implement-first' workflows. It's useful for prototyping. You reconcile later to capture what you built."
-
-### Don't: Be overly prescriptive
-
-Avoid dictating a specific lane. Explain trade-offs so the user can choose.
+"Use `/sdd/specs` to draft the contract, then run `ae sdd phase complete --next` when the phase is done."
 
 ## Followup Question
 
 > [!IMPORTANT]
-> Ask the user: "Is there a specific SDD concept, command, or workflow you would like to dive into next?"
+> End by asking one focused follow-up: "Do you want a lane recommendation for your current task, or a step-by-step walkthrough of your current phase?"

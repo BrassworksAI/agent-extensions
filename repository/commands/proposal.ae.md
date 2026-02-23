@@ -4,34 +4,38 @@ description: Draft and refine a product proposal document through collaborative 
 
 # Product Proposal
 
-Help the user externalize and articulate their vision into a complete product proposal.
+Help the user articulate a complete SDD proposal for the active change set.
 
 ## Required Skills
 
+- `spec-driven-development` (load first; use it to resolve/init change sets and manage phase/task state)
 - `research`
 
 ## Inputs
 
 > [!IMPORTANT]
-> You must ask the user for the following information; do not assume CLI arguments are provided.
+> Resolve required inputs from the workspace first; only ask the user when resolution is ambiguous or missing.
 
-- **Target Path**: Folder or file path for `proposal.md` (default: `./proposal.md`).
+- **Proposal Context**: What problem or capability should this change set address?
+- **Change Set Name**: Resolve from existing `changes/` directories. If none exist, create a new full-lane change set using `ae sdd init <name> --lane full`.
 
 ## Instructions
 
-The proposal is the source of truth for "how the system works." Your goal is to help the user articulate their tribal knowledge into concrete narrative prose.
+The proposal is the source of truth for how the system should behave. Use SDD workflow conventions and CLI commands, not manual scaffolding.
 
-1. **Research First**: Use the `research` skill to identify existing patterns, similar features, and integration points. Use these findings to anchor the proposal in the existing codebase.
-2. **Collaborative Dialogue**: Ask targeted questions to fill logic gaps (e.g., "What happens if the network drops?") rather than guessing. Recommend patterns; don't decide for the user.
-3. **Narrative Prose**: Write specific, concrete behavior. Describe what the system *does*, not what it *doesn't* do. Avoid hedging (e.g., "if time permits").
-4. **Identify Boundaries**: Surface natural capability boundaries as they emerge to simplify the upcoming specs phase.
+1. **Load SDD Context**: Load `spec-driven-development`, run `ae sdd status [name]`, and confirm the active change set and current phase.
+2. **Research First**: Use the `research` skill to identify existing patterns, related features, and integration points.
+3. **Collaborative Dialogue**: Ask targeted questions to close behavior gaps instead of guessing.
+4. **Write Proposal**: Create or refine `changes/<name>/proposal.md` with concrete narrative behavior, failure/recovery paths, and clear boundaries.
+5. **Move Workflow Forward**: Suggest the next SDD command (typically `ae sdd phase complete --next` to enter `specs` when proposal is approved).
 
 ## Success Criteria
 
+- Active change set is resolved through SDD workflow.
 - Proposal includes a clear problem statement (1-2 sentences).
-- Full system behavior is described in narrative prose.
-- Error handling and recovery paths are explicitly defined.
-- Finalized document is saved to the target path.
+- System behavior is documented in specific narrative prose.
+- Error handling and recovery paths are explicit.
+- Proposal is saved at `changes/<name>/proposal.md`.
 
 ## Usage Examples
 
@@ -42,5 +46,5 @@ The proposal is the source of truth for "how the system works." Your goal is to 
 
 ### Don't
 
-- Assume implementation details like database schemas or specific API endpoints.
-- Include scope exclusions or "future work" in the main proposal body.
+- Skip loading `spec-driven-development` before deciding where to write.
+- Create ad-hoc files outside `changes/<name>/` for proposal artifacts.

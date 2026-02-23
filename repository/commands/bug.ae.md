@@ -6,7 +6,7 @@ description: Fast-track bug investigation and fix initialization
 
 ## Required Skills
 
-- `spec-driven-development` (state management, lane/phase flow)
+- `spec-driven-development` (load first; resolve/init change sets and drive lane/phase/task commands)
 - `research`
 
 ## Inputs
@@ -19,17 +19,17 @@ description: Fast-track bug investigation and fix initialization
 
 ## Instructions
 
-1. **Resolution**: Check for existing change sets. If multiple exist, ask the user if this is a new issue or related to an existing one.
+1. **Load SDD Context**: Load `spec-driven-development`, resolve the active change set, and run `ae sdd status [name]`.
 
-2. **Triage**: Determine if this is an **Actual Bug** (code fails to meet existing specs/intent) or a **Behavioral Change** (new capability requested). If it's a change, redirect the user to the full lane (`/sdd/init`).
+2. **Triage**: Determine if this is an **Actual Bug** (code fails to meet existing specs/intent) or a **Behavioral Change** (new capability requested). If it is a change request, redirect to full lane.
 
-3. **Initialize** (if new): Create the change set using the bug lane:
+3. **Create Change Set When Needed**: If no change set exists, initialize via CLI:
 
    ```bash
    ae sdd init <name> --lane bug
    ```
 
-   This creates `state.toml` with lane=bug, phase=triage, status=in_progress.
+   Do not hand-roll scaffolding or use deprecated custom init commands.
 
 4. **Research**: Use the `research` skill to locate the problem, trace the execution path, and identify the root cause. Compare findings against existing specs.
 
@@ -39,7 +39,7 @@ description: Fast-track bug investigation and fix initialization
    - Root cause (from research)
    - High-level fix approach
 
-6. **Next Steps**: Instruct the user to run `/sdd/plan` to start the fix.
+6. **Next Steps**: Use SDD CLI progression (`ae sdd phase complete --next`) after triage is complete.
 
 ## Success Criteria
 
@@ -56,4 +56,4 @@ description: Fast-track bug investigation and fix initialization
 
 ### Don't: Assume CLI arguments
 
-Avoid starting work before asking the user for the bug details or the desired change set name.
+Avoid starting work before resolving bug context and active change set.

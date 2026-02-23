@@ -41,6 +41,12 @@ var sddPhaseNextCmd = &cobra.Command{
 	RunE:  runSddPhaseNext,
 }
 
+var sddPhaseCompleteCmd = &cobra.Command{
+	Use:   "complete",
+	Short: "Complete current phase (optionally advance next)",
+	RunE:  runSddPhaseComplete,
+}
+
 var sddPhaseSetCmd = &cobra.Command{
 	Use:   "set <phase>",
 	Short: "Set current phase",
@@ -120,15 +126,18 @@ var sddTaskCompleteCmd = &cobra.Command{
 }
 
 var (
-	flagLane             string
-	flagTaskCompleteNext bool
+	flagLane              string
+	flagPhaseCompleteNext bool
+	flagTaskCompleteNext  bool
 )
 
 func init() {
 	sddInitCmd.Flags().StringVarP(&flagLane, "lane", "l", "full", "Lane type (full, vibe, bug)")
+	sddPhaseCompleteCmd.Flags().BoolVar(&flagPhaseCompleteNext, "next", false, "Advance to next phase after completing current")
 	sddTaskCompleteCmd.Flags().BoolVar(&flagTaskCompleteNext, "next", false, "Start next pending task after completing current")
 
 	sddPhaseCmd.AddCommand(sddPhaseNextCmd)
+	sddPhaseCmd.AddCommand(sddPhaseCompleteCmd)
 	sddPhaseCmd.AddCommand(sddPhaseSetCmd)
 
 	sddPendingCmd.AddCommand(sddPendingAddCmd)
@@ -266,42 +275,13 @@ func runSddPhaseNext(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	var nextPhase string
-	if state.Phase.Current == "implement" {
-		tasks, err := sdd.LoadTasks(changeDir)
-		if err != nil {
-			return err
-		}
+	if state.Phase.Status != sdd.StatusComplete {
+		return fmt.Errorf("cannot advance phase %q while status is %q; run `ae sdd phase complete` after finishing work", state.Phase.Current, state.Phase.Status)
+	}
 
-		total, _, _, _ := tasks.Stats()
-		if total == 0 {
-			return fmt.Errorf("cannot advance from implement: no tasks defined")
-		}
-
-		if name, currentTask, err := tasks.CurrentTaskStrict(); err != nil {
-			return err
-		} else if currentTask != nil {
-			if name == "" {
-				name = "current task"
-			}
-			return fmt.Errorf("cannot advance from implement: complete %q first", name)
-		}
-
-		if tasks.AllComplete() {
-			candidate, ok := state.NextPhase()
-			if !ok {
-				return fmt.Errorf("already at final phase")
-			}
-			nextPhase = candidate
-		} else {
-			nextPhase = "plan"
-		}
-	} else {
-		candidate, ok := state.NextPhase()
-		if !ok {
-			return fmt.Errorf("already at final phase")
-		}
-		nextPhase = candidate
+	nextPhase, err := resolveNextPhase(changeDir, state)
+	if err != nil {
+		return err
 	}
 
 	if err := state.SetPhase(nextPhase); err != nil {
@@ -315,6 +295,136 @@ func runSddPhaseNext(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func runSddPhaseComplete(cmd *cobra.Command, args []string) error {
+	changeDir, err := resolveChangeSet("")
+	if err != nil {
+		return err
+	}
+
+	state, err := sdd.LoadState(changeDir)
+	if err != nil {
+		return err
+	}
+
+	if state.Phase.Status == sdd.StatusComplete && !flagPhaseCompleteNext {
+		fmt.Printf("Phase %q is already complete\n", state.Phase.Current)
+		return nil
+	}
+
+	if err := validatePhaseCompletion(changeDir, state); err != nil {
+		return err
+	}
+
+	state.CompletePhase()
+
+	if !flagPhaseCompleteNext {
+		if err := state.Save(changeDir); err != nil {
+			return err
+		}
+		fmt.Printf("✓ Completed phase: %s\n", state.Phase.Current)
+		return nil
+	}
+
+	nextPhase, err := resolveNextPhase(changeDir, state)
+	if err != nil {
+		if err := state.Save(changeDir); err != nil {
+			return err
+		}
+		fmt.Printf("✓ Completed phase: %s\n", state.Phase.Current)
+		fmt.Printf("→ No next phase: %v\n", err)
+		return nil
+	}
+
+	completedPhase := state.Phase.Current
+	if err := state.SetPhase(nextPhase); err != nil {
+		return err
+	}
+	if err := state.Save(changeDir); err != nil {
+		return err
+	}
+
+	fmt.Printf("✓ Completed phase: %s\n", completedPhase)
+	fmt.Printf("✓ Advanced to phase: %s\n", nextPhase)
+	return nil
+}
+
+func validatePhaseCompletion(changeDir string, state *sdd.State) error {
+	if state.Phase.Status == sdd.StatusComplete {
+		return nil
+	}
+
+	if state.Phase.Current != "implement" || state.Change.Lane != sdd.LaneFull {
+		return nil
+	}
+
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
+
+	total, _, _, _ := tasks.Stats()
+	if total == 0 {
+		return fmt.Errorf("cannot complete implement phase: no tasks defined")
+	}
+
+	if name, currentTask, err := tasks.CurrentTaskStrict(); err != nil {
+		return err
+	} else if currentTask != nil {
+		if name == "" {
+			name = "current task"
+		}
+		return fmt.Errorf("cannot complete implement phase: complete %q first", name)
+	}
+
+	if !tasks.AllComplete() {
+		return fmt.Errorf("cannot complete implement phase: complete all tasks first")
+	}
+
+	return nil
+}
+
+func resolveNextPhase(changeDir string, state *sdd.State) (string, error) {
+	var nextPhase string
+	if state.Phase.Current == "implement" {
+		tasks, err := sdd.LoadTasks(changeDir)
+		if err != nil {
+			return "", err
+		}
+
+		total, _, _, _ := tasks.Stats()
+		if total == 0 {
+			return "", fmt.Errorf("cannot advance from implement: no tasks defined")
+		}
+
+		if name, currentTask, err := tasks.CurrentTaskStrict(); err != nil {
+			return "", err
+		} else if currentTask != nil {
+			if name == "" {
+				name = "current task"
+			}
+			return "", fmt.Errorf("cannot advance from implement: complete %q first", name)
+		}
+
+		if tasks.AllComplete() {
+			candidate, ok := state.NextPhase()
+			if !ok {
+				return "", fmt.Errorf("already at final phase")
+			}
+			nextPhase = candidate
+		} else {
+			nextPhase = "plan"
+		}
+	} else {
+		candidate, ok := state.NextPhase()
+		if !ok {
+			return "", fmt.Errorf("already at final phase")
+		}
+		nextPhase = candidate
+	}
+
+	return nextPhase, nil
+}
+
 func runSddPhaseSet(cmd *cobra.Command, args []string) error {
 	phase := args[0]
 
@@ -326,6 +436,10 @@ func runSddPhaseSet(cmd *cobra.Command, args []string) error {
 	state, err := sdd.LoadState(changeDir)
 	if err != nil {
 		return err
+	}
+
+	if phase != state.Phase.Current && state.Phase.Status != sdd.StatusComplete {
+		return fmt.Errorf("cannot set phase from %q while status is %q; complete current phase first with `ae sdd phase complete`", state.Phase.Current, state.Phase.Status)
 	}
 
 	if err := state.SetPhase(phase); err != nil {
