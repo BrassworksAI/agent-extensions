@@ -21,10 +21,10 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
    - **Confidence**: reconcile/validation checks prove intent matches implementation
 
 3. **CLI-First Operating Model**:
-   - Change sets are initialized with `ae sdd init <name> --lane <full|vibe|bug>`.
-   - Progress is tracked with `ae sdd status [name]`, `ae sdd phase complete`, and `ae sdd phase next`.
-   - Full-lane implementation uses `ae sdd task list|start|complete|complete --next`.
-   - Slash commands (`/sdd/proposal`, `/sdd/specs`, `/sdd/tasks`, etc.) are workflow assistants; the CLI is the source of truth for state transitions.
+    - Change sets are initialized with `ae sdd init <name> --lane <full|vibe|bug>`.
+    - Progress is tracked with `ae sdd status [name]`, `ae sdd phase complete`, and `ae sdd phase next`.
+    - Full-lane implementation uses `ae sdd task list|start|complete|complete --next`.
+    - Slash commands (`/sdd/init`, `/sdd/proposal`, `/sdd/specs`, `/sdd/tasks`, etc.) are workflow assistants; the CLI is the source of truth for state transitions.
 
 4. **Lane Flows**:
    - **Full**: `proposal -> specs -> discovery -> tasks -> plan -> implement -> reconcile -> finish`
@@ -48,20 +48,28 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
 
    | Command | Use For |
    |---|---|
-   | `ae sdd init` | Create a new change set |
-   | `ae sdd status` | See current lane/phase/tasks |
-   | `ae sdd phase complete [--next]` | Mark phase complete and optionally advance |
-   | `ae sdd phase next` | Advance only after phase is complete |
-   | `ae sdd task start` | Start next full-lane task |
-   | `ae sdd task complete --next` | Finish and chain tasks |
-   | `/sdd/proposal` | Draft and refine proposal |
-   | `/sdd/specs` | Create/update specs |
-   | `/sdd/discovery` | Validate architecture and risks |
-   | `/sdd/tasks` | Build `tasks.toml` from specs |
-   | `/sdd/plan` | Create execution plans |
-   | `/sdd/implement` | Execute planned work |
-   | `/sdd/reconcile` | Verify implementation vs specs |
-   | `/sdd/finish` | Close out change set |
+    | `ae sdd init` | Create a new change set |
+    | `ae sdd status` | See current lane/phase/tasks |
+    | `ae sdd phase complete [--next]` | Mark phase complete and optionally advance |
+    | `ae sdd phase next` | Advance only after phase is complete |
+    | `ae sdd task start` | Start next full-lane task |
+    | `ae sdd task complete --next` | Finish and chain tasks |
+    | `/sdd/init` | Derive and approve a new change-set name, then initialize |
+    | `/sdd/continue` | Resume an existing change set from CLI status |
+    | `/sdd/vibe` | Start or continue vibe-lane exploratory work |
+    | `/sdd/bug` | Triage and initialize bug-lane fixes |
+    | `/sdd/proposal` | Draft and refine proposal |
+    | `/sdd/specs` | Create/update specs |
+    | `/sdd/discovery` | Validate architecture and risks |
+    | `/sdd/tasks` | Build `tasks.toml` from specs |
+    | `/sdd/plan` | Create execution plans |
+    | `/sdd/implement` | Execute planned work |
+    | `/sdd/critique` | Review artifacts for quality and gaps |
+    | `/sdd/scenario-test` | Validate behavior using realistic scenarios |
+    | `/sdd/commit` | Craft commit(s) aligned to SDD progress |
+    | `/sdd/reconcile` | Verify implementation vs specs |
+    | `/sdd/finish` | Close out change set |
+    | `/sdd/explain` | Teach SDD concepts and workflow usage |
 
 7. **How To Guide Users**:
    - Recommend lane choice based on risk and ambiguity.
