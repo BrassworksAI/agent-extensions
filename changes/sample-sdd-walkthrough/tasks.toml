@@ -1,0 +1,49 @@
+[[task]]
+  name = "wire-sdd-state"
+  title = "Wire sdd state transitions"
+  description = "Validate phase transitions through the CLI"
+  status = "complete"
+
+  [[task.spec_requirements]]
+    spec = "changes/sample-sdd-walkthrough/specs.md"
+    requirements = ["The workflow SHALL initialize and persist a valid state.toml", "The workflow SHALL expose phase transitions via CLI commands"]
+
+[[task]]
+  name = "define-task-list"
+  title = "Define implementation task list"
+  description = "Create initial tasks for the sample change set"
+  status = "complete"
+
+  [[task.spec_requirements]]
+    spec = "changes/sample-sdd-walkthrough/specs.md"
+    requirements = ["Tasking SHALL decompose implementation into concrete steps", "Each task SHALL reference the governing spec requirements"]
+
+[[task]]
+  name = "execute-core-work"
+  title = "Execute core implementation"
+  description = "Implement and test key pieces"
+  status = "in_progress"
+
+  [[task.spec_requirements]]
+    spec = "changes/sample-sdd-walkthrough/specs.md"
+    requirements = ["Implementation SHALL satisfy task requirements before completion"]
+
+[[task]]
+  name = "run-validation"
+  title = "Run validation checks"
+  description = "Verify tests and status output"
+  status = "pending"
+
+  [[task.spec_requirements]]
+    spec = "changes/sample-sdd-walkthrough/specs.md"
+    requirements = ["Status output SHALL present actionable next steps", "Validation SHALL run tests and dead-code checks before commit"]
+
+[[task]]
+  name = "polish-task-notes"
+  title = "Polish task notes"
+  description = "Finalize task notes and pending follow-ups"
+  status = "pending"
+
+  [[task.spec_requirements]]
+    spec = "changes/sample-sdd-walkthrough/specs.md"
+    requirements = ["Task metadata SHALL remain clear for handoff"]

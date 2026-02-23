@@ -18,11 +18,17 @@ const (
 )
 
 type Task struct {
-	Name         string     `toml:"name"`
-	Title        string     `toml:"title"`
-	Description  string     `toml:"description"`
-	Status       TaskStatus `toml:"status"`
-	Requirements []string   `toml:"requirements"`
+	Name             string            `toml:"name"`
+	Title            string            `toml:"title"`
+	Description      string            `toml:"description"`
+	Status           TaskStatus        `toml:"status"`
+	Requirements     []string          `toml:"requirements"`
+	SpecRequirements []SpecRequirement `toml:"spec_requirements"`
+}
+
+type SpecRequirement struct {
+	Spec         string   `toml:"spec"`
+	Requirements []string `toml:"requirements"`
 }
 
 type Tasks struct {
@@ -203,6 +209,75 @@ func (t *Tasks) CurrentTask() (string, *Task) {
 		}
 	}
 	return "", nil
+}
+
+func (t *Tasks) CurrentTaskStrict() (string, *Task, error) {
+	var currentName string
+	var currentTask *Task
+
+	for _, task := range t.Task {
+		if task == nil || task.Status != TaskInProgress {
+			continue
+		}
+
+		if currentTask != nil {
+			return "", nil, fmt.Errorf("invalid task state: multiple tasks are in_progress")
+		}
+
+		currentName = task.Name
+		if currentName == "" {
+			currentName = task.Title
+		}
+		currentTask = task
+	}
+
+	return currentName, currentTask, nil
+}
+
+func (t *Tasks) NextPendingTask() (string, *Task) {
+	for _, task := range t.Task {
+		if task == nil {
+			continue
+		}
+		if task.Status == TaskPending {
+			name := task.Name
+			if name == "" {
+				name = task.Title
+			}
+			return name, task
+		}
+	}
+
+	return "", nil
+}
+
+func (t *Tasks) StartNextTask() (string, *Task, error) {
+	if _, current, err := t.CurrentTaskStrict(); err != nil {
+		return "", nil, err
+	} else if current != nil {
+		return "", nil, fmt.Errorf("cannot start next task: a task is already in progress")
+	}
+
+	name, nextTask := t.NextPendingTask()
+	if nextTask == nil {
+		return "", nil, fmt.Errorf("no pending tasks available")
+	}
+
+	nextTask.Status = TaskInProgress
+	return name, nextTask, nil
+}
+
+func (t *Tasks) CompleteCurrentTask() (string, *Task, error) {
+	name, currentTask, err := t.CurrentTaskStrict()
+	if err != nil {
+		return "", nil, err
+	}
+	if currentTask == nil {
+		return "", nil, fmt.Errorf("no task is currently in progress")
+	}
+
+	currentTask.Status = TaskComplete
+	return name, currentTask, nil
 }
 
 func (t *Tasks) AllComplete() bool {

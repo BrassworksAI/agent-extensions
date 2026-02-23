@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -184,4 +185,33 @@ func (s *State) ClearPending(index int) error {
 
 func (s *State) SetNotes(content string) {
 	s.Notes.Content = content
+}
+
+func HumanizeName(name string) string {
+	parts := strings.Split(strings.TrimSpace(name), "-")
+	words := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if part == "" {
+			continue
+		}
+		words = append(words, strings.ToLower(part))
+	}
+	if len(words) == 0 {
+		return name
+	}
+	sentence := strings.Join(words, " ")
+	return strings.ToUpper(sentence[:1]) + sentence[1:]
+}
+
+func LaneLabel(lane Lane) string {
+	switch lane {
+	case LaneFull:
+		return "Full"
+	case LaneVibe:
+		return "Vibe"
+	case LaneBug:
+		return "Bug"
+	default:
+		return string(lane)
+	}
 }

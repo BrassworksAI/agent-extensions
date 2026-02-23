@@ -79,12 +79,54 @@ var sddNotesSetCmd = &cobra.Command{
 	RunE:  runSddNotesSet,
 }
 
+var sddTaskCmd = &cobra.Command{
+	Use:   "task",
+	Short: "Task workflow management",
+}
+
+var sddTaskListCmd = &cobra.Command{
+	Use:   "list [name]",
+	Short: "List tasks with statuses",
+	Args:  cobra.MaximumNArgs(1),
+	RunE:  runSddTaskList,
+}
+
+var sddTaskCurrentCmd = &cobra.Command{
+	Use:   "current [name]",
+	Short: "Show current in-progress task details",
+	Args:  cobra.MaximumNArgs(1),
+	RunE:  runSddTaskCurrent,
+}
+
+var sddTaskNextCmd = &cobra.Command{
+	Use:   "next [name]",
+	Short: "Show next pending task details",
+	Args:  cobra.MaximumNArgs(1),
+	RunE:  runSddTaskNext,
+}
+
+var sddTaskStartCmd = &cobra.Command{
+	Use:   "start [name]",
+	Short: "Start the next pending task",
+	Args:  cobra.MaximumNArgs(1),
+	RunE:  runSddTaskStart,
+}
+
+var sddTaskCompleteCmd = &cobra.Command{
+	Use:   "complete [name]",
+	Short: "Complete current task (optionally start next)",
+	Args:  cobra.MaximumNArgs(1),
+	RunE:  runSddTaskComplete,
+}
+
 var (
-	flagLane string
+	flagLane             string
+	flagTaskCompleteNext bool
 )
 
 func init() {
 	sddInitCmd.Flags().StringVarP(&flagLane, "lane", "l", "full", "Lane type (full, vibe, bug)")
+	sddTaskCompleteCmd.Flags().BoolVar(&flagTaskCompleteNext, "next", false, "Start next pending task after completing current")
 
 	sddPhaseCmd.AddCommand(sddPhaseNextCmd)
 	sddPhaseCmd.AddCommand(sddPhaseSetCmd)
@@ -94,11 +136,18 @@ func init() {
 
 	sddNotesCmd.AddCommand(sddNotesSetCmd)
 
+	sddTaskCmd.AddCommand(sddTaskListCmd)
+	sddTaskCmd.AddCommand(sddTaskCurrentCmd)
+	sddTaskCmd.AddCommand(sddTaskNextCmd)
+	sddTaskCmd.AddCommand(sddTaskStartCmd)
+	sddTaskCmd.AddCommand(sddTaskCompleteCmd)
+
 	sddCmd.AddCommand(sddInitCmd)
 	sddCmd.AddCommand(sddStatusCmd)
 	sddCmd.AddCommand(sddPhaseCmd)
 	sddCmd.AddCommand(sddPendingCmd)
 	sddCmd.AddCommand(sddNotesCmd)
+	sddCmd.AddCommand(sddTaskCmd)
 
 	rootCmd.AddCommand(sddCmd)
 }
@@ -172,7 +221,9 @@ func runSddInit(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("saving state: %w", err)
 	}
 
-	fmt.Printf("✓ Created change set: %s (%s lane)\n", name, lane)
+	createdTitle := sdd.HumanizeName(name)
+	fmt.Printf("✓ Created change set: %s (%s lane)\n", createdTitle, sdd.LaneLabel(lane))
+	fmt.Printf("  name: %s\n", name)
 	fmt.Printf("  → %s\n", changeDir)
 	return nil
 }
@@ -215,9 +266,42 @@ func runSddPhaseNext(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	nextPhase, ok := state.NextPhase()
-	if !ok {
-		return fmt.Errorf("already at final phase")
+	var nextPhase string
+	if state.Phase.Current == "implement" {
+		tasks, err := sdd.LoadTasks(changeDir)
+		if err != nil {
+			return err
+		}
+
+		total, _, _, _ := tasks.Stats()
+		if total == 0 {
+			return fmt.Errorf("cannot advance from implement: no tasks defined")
+		}
+
+		if name, currentTask, err := tasks.CurrentTaskStrict(); err != nil {
+			return err
+		} else if currentTask != nil {
+			if name == "" {
+				name = "current task"
+			}
+			return fmt.Errorf("cannot advance from implement: complete %q first", name)
+		}
+
+		if tasks.AllComplete() {
+			candidate, ok := state.NextPhase()
+			if !ok {
+				return fmt.Errorf("already at final phase")
+			}
+			nextPhase = candidate
+		} else {
+			nextPhase = "plan"
+		}
+	} else {
+		candidate, ok := state.NextPhase()
+		if !ok {
+			return fmt.Errorf("already at final phase")
+		}
+		nextPhase = candidate
 	}
 
 	if err := state.SetPhase(nextPhase); err != nil {
@@ -328,4 +412,193 @@ func runSddNotesSet(cmd *cobra.Command, args []string) error {
 
 	fmt.Println("✓ Updated notes")
 	return nil
+}
+
+func runSddTaskList(cmd *cobra.Command, args []string) error {
+	changeDir, err := resolveChangeSetFromArgs(args)
+	if err != nil {
+		return err
+	}
+
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
+
+	if len(tasks.Task) == 0 {
+		fmt.Println("No tasks defined in tasks.toml")
+		return nil
+	}
+
+	fmt.Printf("Tasks for %s\n\n", filepath.Base(changeDir))
+	for _, task := range tasks.Task {
+		if task == nil {
+			continue
+		}
+		name := task.Name
+		if name == "" {
+			name = task.Title
+		}
+		fmt.Printf("%s %s\n", taskSymbol(task.Status), name)
+	}
+
+	return nil
+}
+
+func runSddTaskCurrent(cmd *cobra.Command, args []string) error {
+	changeDir, err := resolveChangeSetFromArgs(args)
+	if err != nil {
+		return err
+	}
+
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
+
+	name, task, err := tasks.CurrentTaskStrict()
+	if err != nil {
+		return err
+	}
+	if task == nil {
+		fmt.Println("No task is currently in progress")
+		return nil
+	}
+
+	printTaskDetails("Current task", name, task)
+	return nil
+}
+
+func runSddTaskNext(cmd *cobra.Command, args []string) error {
+	changeDir, err := resolveChangeSetFromArgs(args)
+	if err != nil {
+		return err
+	}
+
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
+
+	name, task := tasks.NextPendingTask()
+	if task == nil {
+		fmt.Println("No pending tasks")
+		return nil
+	}
+
+	printTaskDetails("Next task", name, task)
+	return nil
+}
+
+func runSddTaskStart(cmd *cobra.Command, args []string) error {
+	changeDir, err := resolveChangeSetFromArgs(args)
+	if err != nil {
+		return err
+	}
+
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
+
+	name, task, err := tasks.StartNextTask()
+	if err != nil {
+		return err
+	}
+
+	if err := tasks.Save(changeDir); err != nil {
+		return err
+	}
+
+	fmt.Printf("✓ Started task: %s\n", name)
+	printTaskDetails("In progress", name, task)
+	return nil
+}
+
+func runSddTaskComplete(cmd *cobra.Command, args []string) error {
+	changeDir, err := resolveChangeSetFromArgs(args)
+	if err != nil {
+		return err
+	}
+
+	tasks, err := sdd.LoadTasks(changeDir)
+	if err != nil {
+		return err
+	}
+
+	completedName, _, err := tasks.CompleteCurrentTask()
+	if err != nil {
+		return err
+	}
+
+	if !flagTaskCompleteNext {
+		if err := tasks.Save(changeDir); err != nil {
+			return err
+		}
+		fmt.Printf("✓ Completed task: %s\n", completedName)
+		return nil
+	}
+
+	nextName, nextTask, startErr := tasks.StartNextTask()
+	if err := tasks.Save(changeDir); err != nil {
+		return err
+	}
+
+	fmt.Printf("✓ Completed task: %s\n", completedName)
+	if startErr != nil {
+		fmt.Printf("→ No next task started: %v\n", startErr)
+		return nil
+	}
+
+	fmt.Printf("✓ Started next task: %s\n", nextName)
+	printTaskDetails("In progress", nextName, nextTask)
+	return nil
+}
+
+func resolveChangeSetFromArgs(args []string) (string, error) {
+	if len(args) > 0 {
+		return resolveChangeSet(args[0])
+	}
+	return resolveChangeSet("")
+}
+
+func taskSymbol(status sdd.TaskStatus) string {
+	switch status {
+	case sdd.TaskComplete:
+		return "✓"
+	case sdd.TaskInProgress:
+		return "◐"
+	default:
+		return "○"
+	}
+}
+
+func printTaskDetails(label, name string, task *sdd.Task) {
+	fmt.Printf("%s\n", label)
+	fmt.Printf("  Name: %s\n", name)
+	if task.Title != "" {
+		fmt.Printf("  Title: %s\n", task.Title)
+	}
+	fmt.Printf("  Status: %s\n", task.Status)
+	if task.Description != "" {
+		fmt.Printf("  Description: %s\n", task.Description)
+	}
+	if len(task.SpecRequirements) > 0 {
+		fmt.Println("  Spec Requirements:")
+		for _, specReq := range task.SpecRequirements {
+			specName := specReq.Spec
+			if specName == "" {
+				specName = "(unspecified spec)"
+			}
+			fmt.Printf("    %s\n", specName)
+			for _, req := range specReq.Requirements {
+				fmt.Printf("      - %s\n", req)
+			}
+		}
+	} else if len(task.Requirements) > 0 {
+		fmt.Println("  Requirements:")
+		for _, req := range task.Requirements {
+			fmt.Printf("    - %s\n", req)
+		}
+	}
 }

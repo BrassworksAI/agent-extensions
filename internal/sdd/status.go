@@ -2,9 +2,9 @@ package sdd
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"strings"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
 type StatusRenderer struct {
@@ -26,8 +26,9 @@ func (r *StatusRenderer) Render() {
 }
 
 func (r *StatusRenderer) renderHeader() {
-	header := fmt.Sprintf("%s (%s lane)", r.State.Change.Name, r.State.Change.Lane)
-	gumStyle(header, "--foreground", "212", "--bold")
+	fmt.Println()
+	header := fmt.Sprintf("%s (%s lane)", HumanizeName(r.State.Change.Name), LaneLabel(r.State.Change.Lane))
+	styleText(header, lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true))
 	fmt.Println()
 }
 
@@ -63,8 +64,8 @@ func (r *StatusRenderer) renderPhaseProgress() {
 	phaseLine := strings.Join(symbols, " ─── ")
 	labelLine := strings.Join(labels, "  ")
 
-	gumStyle(phaseLine, "--foreground", "212")
-	gumStyle(labelLine, "--foreground", "240")
+	styleText(phaseLine, lipgloss.NewStyle().Foreground(lipgloss.Color("212")))
+	styleText(labelLine, lipgloss.NewStyle().Foreground(lipgloss.Color("240")))
 	fmt.Println()
 }
 
@@ -88,7 +89,8 @@ func (r *StatusRenderer) renderTaskProgress() {
 		strings.Repeat("░", empty),
 		percent, complete, total)
 
-	gumStyle(bar, "--foreground", "212")
+	styleText(bar, lipgloss.NewStyle().Foreground(lipgloss.Color("212")))
+	fmt.Println()
 
 	for _, task := range r.Tasks.Task {
 		if task == nil {
@@ -117,11 +119,13 @@ func (r *StatusRenderer) renderNotes() {
 		return
 	}
 
-	content := "Notes\n" + r.State.Notes.Content
-	gumStyle(content,
-		"--border", "rounded",
-		"--padding", "0 1",
-		"--border-foreground", "240")
+	styleText("Notes:", lipgloss.NewStyle().Foreground(lipgloss.Color("81")))
+	for _, line := range strings.Split(r.State.Notes.Content, "\n") {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		fmt.Printf("  • %s\n", line)
+	}
 	fmt.Println()
 }
 
@@ -130,7 +134,7 @@ func (r *StatusRenderer) renderPending() {
 		return
 	}
 
-	gumStyle("Pending:", "--foreground", "214")
+	styleText("Pending:", lipgloss.NewStyle().Foreground(lipgloss.Color("214")))
 	for _, item := range r.State.Pending.Items {
 		fmt.Printf("  • %s\n", item)
 	}
@@ -147,28 +151,30 @@ func (r *StatusRenderer) renderNextAction() {
 			next = "Change set complete!"
 		}
 	} else {
-		name, currentTask := r.Tasks.CurrentTask()
-		if currentTask != nil {
+		if r.Tasks == nil {
+			next = fmt.Sprintf("Continue %s phase", r.State.Phase.Current)
+			styleText("Next: "+next, lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Italic(true))
+			return
+		}
+
+		name, currentTask, err := r.Tasks.CurrentTaskStrict()
+		if err != nil {
+			next = err.Error()
+		} else if currentTask != nil {
 			if name == "" {
 				name = "current task"
 			}
-			next = fmt.Sprintf("Update tasks.toml to set %s status=complete", name)
+			next = fmt.Sprintf("ae sdd task complete --next  (current: %s)", name)
+		} else if nextName, nextTask := r.Tasks.NextPendingTask(); nextTask != nil {
+			next = fmt.Sprintf("ae sdd task start  (next: %s)", nextName)
 		} else {
 			next = fmt.Sprintf("Continue %s phase", r.State.Phase.Current)
 		}
 	}
 
-	gumStyle("Next: "+next, "--foreground", "240", "--italic")
+	styleText("Next: "+next, lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Italic(true))
 }
 
-func gumStyle(text string, args ...string) {
-	cmdArgs := append([]string{"style"}, args...)
-	cmdArgs = append(cmdArgs, text)
-
-	cmd := exec.Command("gum", cmdArgs...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Println(text)
-	}
+func styleText(text string, style lipgloss.Style) {
+	fmt.Println(style.Render(text))
 }
