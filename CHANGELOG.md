@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/shanepadgett/agent-extensions/compare/v0.2.0...v0.2.1) (2026-02-23)
+
+
+### Bug Fixes
+
+* automate release process ([c8bd2c8](https://github.com/shanepadgett/agent-extensions/commit/c8bd2c83a15fe13b2cffb7177ec3a5ee0a2f594f))
+
 ## [0.2.0](https://github.com/shanepadgett/agent-extensions/compare/v0.1.0...v0.2.0) (2026-02-23)
 
 
