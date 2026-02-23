@@ -119,3 +119,8 @@ feat!: change installer config format
 ```
 
 Non-user-facing changes like `docs:`, `test:`, and `chore:` generally do not trigger a new release version on their own.
+
+## Release Troubleshooting
+
+- If `Auto Tag Release PR` is rerun after a tag already exists, it skips tag creation and will not retrigger `Release`.
+- To retrigger a missed release, delete and re-push the same tag.
