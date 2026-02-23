@@ -32,6 +32,17 @@ Releases are automated with Release Please and conventional commits.
 3. Merge the release PR
 4. A workflow auto-creates and pushes the `v*` tag
 
+### Required GitHub Secret for Auto-Tag
+
+The auto-tag workflow must push tags with a non-default token. Tags pushed with the default `GITHUB_TOKEN` do not trigger downstream tag workflows.
+
+Add this repository secret:
+
+- `RELEASE_TAG_TOKEN`
+  - Fine-grained PAT or GitHub App token
+  - Repository permissions: **Contents: Read and write**
+  - Scope: this repository
+
 That tag triggers:
 
 1. GoReleaser builds binaries for all platforms
