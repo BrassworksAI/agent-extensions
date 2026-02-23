@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/shanepadgett/agent-extensions/compare/v0.2.4...v0.3.0) (2026-02-23)
+
+
+### Features
+
+* **commands:** add sdd continue workflow ([ade6a98](https://github.com/shanepadgett/agent-extensions/commit/ade6a98f2cf66f5c86add0d25bc06254bc9fdd34))
+* **commands:** add sdd init bootstrap ([5141978](https://github.com/shanepadgett/agent-extensions/commit/5141978a705d1259c7e1433c85eb17aa719eb559))
+
+
+### Bug Fixes
+
+* **skills:** properly format spec driven development skill description ([e2de311](https://github.com/shanepadgett/agent-extensions/commit/e2de31119b7c790d0ed2fdd893a346557ead5777))
+
 ## [0.2.4](https://github.com/shanepadgett/agent-extensions/compare/v0.2.3...v0.2.4) (2026-02-23)
 
 
