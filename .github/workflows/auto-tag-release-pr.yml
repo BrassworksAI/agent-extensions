@@ -38,8 +38,10 @@ jobs:
           TAG="v${VERSION}"
 
           if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists, skipping"
-            exit 0
+            echo "Error: Tag $TAG already exists"
+            echo "Auto-tag reruns do not retrigger release for existing tags."
+            echo "Delete and re-push the tag to trigger the Release workflow."
+            exit 1
           fi
 
           git tag "$TAG"
