@@ -2,11 +2,6 @@
 
 - Describe the user-visible change and why it was needed.
 
-## Release Impact
-
-- [ ] This PR should trigger a release bump (`fix:` patch, `feat:` minor, `feat!:`/`BREAKING CHANGE:` major)
-- [ ] This PR should not trigger a release bump (`docs:`, `test:`, `chore:`, etc.)
-
 ## Conventional Commit Checklist
 
 - [ ] Commit messages use conventional commit format: `type(scope): description`
