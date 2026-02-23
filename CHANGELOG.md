@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3](https://github.com/shanepadgett/agent-extensions/compare/v0.2.2...v0.2.3) (2026-02-23)
+
+
+### Bug Fixes
+
+* **npm:** add cli launcher shim ([1dc3759](https://github.com/shanepadgett/agent-extensions/commit/1dc3759125e4bb9554c72e932b660b84cd3487df))
+* **npm:** add cli launcher shim ([9b5932c](https://github.com/shanepadgett/agent-extensions/commit/9b5932cc94db05640e5a22275d21c749f41e2c62))
+
 ## [0.2.2](https://github.com/shanepadgett/agent-extensions/compare/v0.2.1...v0.2.2) (2026-02-23)
 
 
