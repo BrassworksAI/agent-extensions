@@ -21,6 +21,9 @@ type Conventions struct {
 	Commands       string `yaml:"commands"`
 	GlobalCommands string `yaml:"global_commands,omitempty"`
 	LocalCommands  string `yaml:"local_commands,omitempty"`
+	Skills         string `yaml:"skills,omitempty"`
+	GlobalSkills   string `yaml:"global_skills,omitempty"`
+	LocalSkills    string `yaml:"local_skills,omitempty"`
 }
 
 type ToolsConfig struct {
@@ -42,12 +45,7 @@ func LoadToolsConfigFromFS(fsys fs.FS, path string) (*ToolsConfig, error) {
 }
 
 func (t *Tool) ResolveGlobalPath() string {
-	path := t.GlobalPath
-	if strings.HasPrefix(path, "~/") {
-		home, _ := os.UserHomeDir()
-		path = filepath.Join(home, path[2:])
-	}
-	return path
+	return ExpandUserPath(t.GlobalPath)
 }
 
 func (t *Tool) ResolveLocalPath(projectRoot string) string {
@@ -55,7 +53,20 @@ func (t *Tool) ResolveLocalPath(projectRoot string) string {
 }
 
 func (c *Conventions) SkillPath(name string) string {
-	return "skills/" + name + "/SKILL.md"
+	return resolveConventionPath(c.Skills, name, "skills/{name}/SKILL.md", filepath.Join(name, "SKILL.md"))
+}
+
+func (c *Conventions) ScopedSkillPath(name string, isGlobal bool) string {
+	var pattern string
+	if isGlobal && c.GlobalSkills != "" {
+		pattern = c.GlobalSkills
+	} else if !isGlobal && c.LocalSkills != "" {
+		pattern = c.LocalSkills
+	} else {
+		pattern = c.SkillPath(name)
+		return pattern
+	}
+	return resolveConventionPath(pattern, name, "skills/{name}/SKILL.md", filepath.Join(name, "SKILL.md"))
 }
 
 func (c *Conventions) CommandPath(name string, isGlobal bool) string {
@@ -67,5 +78,29 @@ func (c *Conventions) CommandPath(name string, isGlobal bool) string {
 	} else {
 		pattern = c.Commands
 	}
-	return strings.ReplaceAll(pattern, "{name}", name)
+	return resolveConventionPath(pattern, name, "commands/{name}.md", name+".md")
+}
+
+func ExpandUserPath(path string) string {
+	if strings.HasPrefix(path, "~/") {
+		home, _ := os.UserHomeDir()
+		return filepath.Join(home, path[2:])
+	}
+	return path
+}
+
+func resolveConventionPath(pattern, name, defaultPattern, inferredSuffix string) string {
+	if pattern == "" {
+		pattern = defaultPattern
+	}
+
+	if strings.Contains(pattern, "{name}") {
+		return strings.ReplaceAll(pattern, "{name}", name)
+	}
+
+	if filepath.Ext(pattern) == ".md" {
+		return pattern
+	}
+
+	return filepath.Join(pattern, inferredSuffix)
 }

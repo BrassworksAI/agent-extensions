@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/shanepadgett/agent-extensions/internal/config"
 	"github.com/shanepadgett/agent-extensions/internal/registry"
@@ -107,7 +108,7 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 
 		// Install skills
 		for _, skill := range skills {
-			if err := i.installSkill(skill, cache, target, tool.Conventions); err != nil {
+			if err := i.installSkill(skill, cache, target, tool.Conventions, s == ScopeGlobal); err != nil {
 				result.Errors = append(result.Errors, fmt.Errorf("skill %s: %w", skill, err))
 			} else {
 				result.Skills++
@@ -146,7 +147,7 @@ func (i *Installer) installCommand(name, cacheDir, targetBase string, conv confi
 	return createSymlink(cacheDest, dest)
 }
 
-func (i *Installer) installSkill(name, cacheDir, targetBase string, conv config.Conventions) error {
+func (i *Installer) installSkill(name, cacheDir, targetBase string, conv config.Conventions, isGlobal bool) error {
 	if !i.Registry.SkillExists(name) {
 		return fmt.Errorf("skill not found: %s", name)
 	}
@@ -157,37 +158,19 @@ func (i *Installer) installSkill(name, cacheDir, targetBase string, conv config.
 		return fmt.Errorf("copying to cache: %w", err)
 	}
 
-	destPath := conv.SkillPath(name)
-	dest := filepath.Join(targetBase, destPath)
+	destPath := conv.ScopedSkillPath(name, isGlobal)
+	hasScopeOverride := (isGlobal && conv.GlobalSkills != "") || (!isGlobal && conv.LocalSkills != "")
+	dest := resolveTargetPath(targetBase, destPath, i.ProjectRoot, isGlobal, hasScopeOverride)
 
-	// Symlink individual files from cache to destination directory
-	destDir := filepath.Dir(dest)
-	return i.symlinkSkillFiles(cacheDest, destDir)
-}
-
-// symlinkSkillFiles creates the destination directory and symlinks each file individually
-func (i *Installer) symlinkSkillFiles(cacheDir, destDir string) error {
-	if err := os.MkdirAll(destDir, 0755); err != nil {
-		return fmt.Errorf("creating skill directory: %w", err)
+	// Directory-based skill conventions should link the entire skill folder.
+	// Single-file conventions still link just SKILL.md.
+	isSingleFile := filepath.Ext(destPath) == ".md" && filepath.Base(destPath) == name+".md"
+	if isSingleFile {
+		skillFile := filepath.Join(cacheDest, "SKILL.md")
+		return createSymlink(skillFile, dest)
 	}
 
-	return filepath.WalkDir(cacheDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		relPath, _ := filepath.Rel(cacheDir, path)
-		destPath := filepath.Join(destDir, relPath)
-
-		if d.IsDir() {
-			if path == cacheDir {
-				return nil // skip root, already created
-			}
-			return os.MkdirAll(destPath, 0755)
-		}
-
-		return createSymlink(path, destPath)
-	})
+	return createSymlink(cacheDest, filepath.Dir(dest))
 }
 
 func (i *Installer) copySkillToCache(skillName, cacheDest string) error {
@@ -319,8 +302,9 @@ func (i *Installer) Uninstall(toolName string, scope Scope) (*InstallResult, err
 
 		// Uninstall skills
 		for _, skill := range skills {
-			destPath := tool.Conventions.SkillPath(skill)
-			dest := filepath.Join(target, destPath)
+			destPath := tool.Conventions.ScopedSkillPath(skill, s == ScopeGlobal)
+			hasScopeOverride := (s == ScopeGlobal && tool.Conventions.GlobalSkills != "") || (s != ScopeGlobal && tool.Conventions.LocalSkills != "")
+			dest := resolveTargetPath(target, destPath, i.ProjectRoot, s == ScopeGlobal, hasScopeOverride)
 
 			// Check if this is a single-file skill pattern (e.g., skills/{name}.md)
 			// vs directory-based (e.g., skills/{name}/SKILL.md)
@@ -376,4 +360,21 @@ func cleanEmptyParents(dir, stopAt string) {
 		}
 		dir = filepath.Dir(dir)
 	}
+}
+
+func resolveTargetPath(targetBase, conventionPath, projectRoot string, isGlobal, hasScopeOverride bool) string {
+	path := config.ExpandUserPath(conventionPath)
+	if filepath.IsAbs(path) {
+		return path
+	}
+
+	if hasScopeOverride {
+		if isGlobal {
+			home, _ := os.UserHomeDir()
+			return filepath.Join(home, strings.TrimPrefix(path, "./"))
+		}
+		return filepath.Join(projectRoot, path)
+	}
+
+	return filepath.Join(targetBase, path)
 }

@@ -12,6 +12,8 @@ tools:
     local_path: .codex
     conventions:
       commands: prompts/{name}.md
+      global_skills: ~/.agents/skills
+      local_skills: .agents/skills
 
   opencode:
     name: OpenCode

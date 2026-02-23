@@ -107,11 +107,64 @@ func TestTool_ResolveLocalPath(t *testing.T) {
 }
 
 func TestConventions_SkillPath(t *testing.T) {
-	conv := Conventions{}
-	got := conv.SkillPath("my-skill")
-	want := "skills/my-skill/SKILL.md"
-	if got != want {
-		t.Errorf("SkillPath() = %q, want %q", got, want)
+	tests := []struct {
+		name   string
+		skills string
+		skill  string
+		want   string
+	}{
+		{
+			name:   "default pattern",
+			skills: "",
+			skill:  "my-skill",
+			want:   "skills/my-skill/SKILL.md",
+		},
+		{
+			name:   "custom pattern",
+			skills: "skills/{name}.md",
+			skill:  "my-skill",
+			want:   "skills/my-skill.md",
+		},
+		{
+			name:   "base directory",
+			skills: "skills",
+			skill:  "my-skill",
+			want:   "skills/my-skill/SKILL.md",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			conv := Conventions{Skills: tt.skills}
+			got := conv.SkillPath(tt.skill)
+			if got != tt.want {
+				t.Errorf("SkillPath() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConventions_ScopedSkillPath(t *testing.T) {
+	conv := Conventions{
+		Skills:       "skills/{name}/SKILL.md",
+		GlobalSkills: "~/.agents/skills",
+		LocalSkills:  ".agents/skills",
+	}
+
+	global := conv.ScopedSkillPath("my-skill", true)
+	if global != "~/.agents/skills/my-skill/SKILL.md" {
+		t.Errorf("ScopedSkillPath(global) = %q", global)
+	}
+
+	local := conv.ScopedSkillPath("my-skill", false)
+	if local != ".agents/skills/my-skill/SKILL.md" {
+		t.Errorf("ScopedSkillPath(local) = %q", local)
+	}
+
+	fallbackConv := Conventions{Skills: "skills/{name}/SKILL.md"}
+	fallback := fallbackConv.ScopedSkillPath("my-skill", true)
+	if fallback != "skills/my-skill/SKILL.md" {
+		t.Errorf("ScopedSkillPath(fallback) = %q", fallback)
 	}
 }
 
@@ -139,6 +192,12 @@ func TestConventions_CommandPath(t *testing.T) {
 			pattern:     "workflows/{name}.md",
 			commandName: "test",
 			want:        "workflows/test.md",
+		},
+		{
+			name:        "base directory",
+			pattern:     "prompts",
+			commandName: "my-command",
+			want:        "prompts/my-command.md",
 		},
 	}
 

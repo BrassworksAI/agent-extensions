@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/shanepadgett/agent-extensions/internal/config"
 	"github.com/shanepadgett/agent-extensions/internal/embedded"
 	"github.com/shanepadgett/agent-extensions/internal/installer"
 	"github.com/shanepadgett/agent-extensions/internal/registry"
@@ -332,12 +333,15 @@ func runList(cmd *cobra.Command, args []string) error {
 
 		// Check if any skill is installed
 		for _, s := range skills {
-			skillPath := tool.Conventions.SkillPath(s)
-			globalSkillPath := filepath.Join(globalPath, skillPath)
-			localSkillPath := filepath.Join(localPath, skillPath)
+			globalPattern := tool.Conventions.ScopedSkillPath(s, true)
+			localPattern := tool.Conventions.ScopedSkillPath(s, false)
+			globalSkillPath := resolveScopedSkillPath(globalPath, projectRoot, globalPattern, true, tool.Conventions.GlobalSkills != "")
+			localSkillPath := resolveScopedSkillPath(localPath, projectRoot, localPattern, false, tool.Conventions.LocalSkills != "")
 
-			if filepath.Ext(skillPath) != ".md" {
+			if filepath.Ext(globalPattern) != ".md" {
 				globalSkillPath = filepath.Dir(globalSkillPath)
+			}
+			if filepath.Ext(localPattern) != ".md" {
 				localSkillPath = filepath.Dir(localSkillPath)
 			}
 
@@ -363,6 +367,23 @@ func runList(cmd *cobra.Command, args []string) error {
 
 	fmt.Println()
 	return nil
+}
+
+func resolveScopedSkillPath(targetBase, projectRoot, conventionPath string, isGlobal, hasScopeOverride bool) string {
+	path := config.ExpandUserPath(conventionPath)
+	if filepath.IsAbs(path) {
+		return path
+	}
+
+	if hasScopeOverride {
+		if isGlobal {
+			home, _ := os.UserHomeDir()
+			return filepath.Join(home, strings.TrimPrefix(path, "./"))
+		}
+		return filepath.Join(projectRoot, path)
+	}
+
+	return filepath.Join(targetBase, path)
 }
 
 func runDoctor(cmd *cobra.Command, args []string) error {

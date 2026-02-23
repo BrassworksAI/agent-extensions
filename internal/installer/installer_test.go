@@ -28,6 +28,15 @@ func createTestRegistry(t *testing.T, globalBase string) *registry.Registry {
     conventions:
       skills: skills/{name}/SKILL.md
       commands: prompts/{name}.md
+  codex-style:
+    name: CodexStyle
+    global_path: ` + globalBase + `/.codex
+    local_path: .codex
+    conventions:
+      skills: skills/{name}/SKILL.md
+      global_skills: ~/.agents/skills
+      local_skills: .agents/skills
+      commands: prompts/{name}.md
 `
 
 	fsys := fstest.MapFS{
@@ -88,7 +97,7 @@ func TestInstaller_cacheDir(t *testing.T) {
 
 // TestInstallMatrix tests all tool × scope combinations
 func TestInstallMatrix(t *testing.T) {
-	tools := []string{"dir-based", "prompts-style"}
+	tools := []string{"dir-based", "prompts-style", "codex-style"}
 	scopes := []Scope{ScopeGlobal, ScopeLocal, ScopeBoth}
 
 	for _, tool := range tools {
@@ -147,12 +156,13 @@ func verifyInstallation(t *testing.T, reg *registry.Registry, inst *Installer, t
 
 		// Verify skills
 		for _, skill := range skills {
-			skillPath := tool.Conventions.SkillPath(skill)
-			fullPath := filepath.Join(targetBase, skillPath)
+			skillPath := tool.Conventions.ScopedSkillPath(skill, s == ScopeGlobal)
+			hasScopeOverride := (s == ScopeGlobal && tool.Conventions.GlobalSkills != "") || (s != ScopeGlobal && tool.Conventions.LocalSkills != "")
+			fullPath := resolveTargetPath(targetBase, skillPath, projectRoot, s == ScopeGlobal, hasScopeOverride)
 
-			// All skills are directory-based - check the directory contains symlinked files
+			// All skills are directory-based - check the skill directory is symlinked
 			skillDir := filepath.Dir(fullPath)
-			verifyDirWithSymlinkedFiles(t, skillDir)
+			verifySymlinkedSkillDir(t, skillDir)
 		}
 	}
 }
@@ -198,37 +208,40 @@ func verifySymlinkContent(t *testing.T, path, expectedContains string) {
 	}
 }
 
-func verifyDirWithSymlinkedFiles(t *testing.T, path string) {
+func verifySymlinkedSkillDir(t *testing.T, path string) {
 	t.Helper()
 
-	info, err := os.Stat(path)
+	info, err := os.Lstat(path)
 	if err != nil {
-		t.Errorf("directory not found at %s: %v", path, err)
+		t.Errorf("skill symlink not found at %s: %v", path, err)
 		return
 	}
 
-	if !info.IsDir() {
-		t.Errorf("%s is not a directory", path)
+	if info.Mode()&os.ModeSymlink == 0 {
+		t.Errorf("%s is not a symlink", path)
 		return
 	}
 
-	// Verify it contains at least one symlinked file (SKILL.md)
+	resolved, err := os.Stat(path)
+	if err != nil {
+		t.Errorf("broken skill symlink at %s: %v", path, err)
+		return
+	}
+	if !resolved.IsDir() {
+		t.Errorf("symlink target for %s is not a directory", path)
+		return
+	}
+
+	// Verify linked directory contains SKILL.md file.
 	skillFile := filepath.Join(path, "SKILL.md")
-	fileInfo, err := os.Lstat(skillFile)
+	fileInfo, err := os.Stat(skillFile)
 	if err != nil {
 		t.Errorf("SKILL.md not found in %s: %v", path, err)
 		return
 	}
 
-	if fileInfo.Mode()&os.ModeSymlink == 0 {
-		t.Errorf("SKILL.md in %s is not a symlink", path)
-		return
-	}
-
-	// Verify symlink resolves
-	_, err = os.Stat(skillFile)
-	if err != nil {
-		t.Errorf("broken symlink at %s: %v", skillFile, err)
+	if fileInfo.IsDir() {
+		t.Errorf("SKILL.md in %s is unexpectedly a directory", path)
 	}
 }
 
@@ -248,7 +261,7 @@ func searchString(s, substr string) bool {
 
 // TestUninstallMatrix tests all tool × scope uninstall combinations
 func TestUninstallMatrix(t *testing.T) {
-	tools := []string{"dir-based", "prompts-style"}
+	tools := []string{"dir-based", "prompts-style", "codex-style"}
 	scopes := []Scope{ScopeGlobal, ScopeLocal, ScopeBoth}
 
 	for _, tool := range tools {
@@ -325,8 +338,9 @@ func verifyUninstallation(t *testing.T, reg *registry.Registry, toolName string,
 
 		// Verify skills are removed
 		for _, skill := range skills {
-			skillPath := tool.Conventions.SkillPath(skill)
-			fullPath := filepath.Join(targetBase, skillPath)
+			skillPath := tool.Conventions.ScopedSkillPath(skill, s == ScopeGlobal)
+			hasScopeOverride := (s == ScopeGlobal && tool.Conventions.GlobalSkills != "") || (s != ScopeGlobal && tool.Conventions.LocalSkills != "")
+			fullPath := resolveTargetPath(targetBase, skillPath, projectRoot, s == ScopeGlobal, hasScopeOverride)
 
 			// All skills are directory-based
 			skillDir := filepath.Dir(fullPath)
@@ -566,26 +580,26 @@ func TestToolConventions_DirBasedSkills(t *testing.T) {
 	tool, _ := reg.GetTool("dir-based")
 	targetBase := tool.ResolveGlobalPath()
 
-	// For dir-based tool, skills should be at skills/{name} (directory with symlinked files)
+	// For dir-based tool, skills should be at skills/{name} as a symlink to cached skill directory
 	skillDir := filepath.Join(targetBase, "skills", "skill-one")
-	info, err := os.Stat(skillDir)
+	info, err := os.Lstat(skillDir)
 	if err != nil {
-		t.Fatalf("skill directory not found: %v", err)
+		t.Fatalf("skill symlink not found: %v", err)
 	}
 
-	if !info.IsDir() {
-		t.Error("skill should be a directory")
+	if info.Mode()&os.ModeSymlink == 0 {
+		t.Error("skill should be a symlink")
 	}
 
-	// The directory should contain SKILL.md as a symlink
+	// The linked directory should contain SKILL.md.
 	skillFile := filepath.Join(skillDir, "SKILL.md")
-	fileInfo, err := os.Lstat(skillFile)
+	fileInfo, err := os.Stat(skillFile)
 	if err != nil {
-		t.Errorf("SKILL.md not found in skill directory: %v", err)
+		t.Errorf("SKILL.md not found in linked skill directory: %v", err)
 	}
 
-	if fileInfo.Mode()&os.ModeSymlink == 0 {
-		t.Error("SKILL.md should be a symlink")
+	if fileInfo.IsDir() {
+		t.Error("SKILL.md should be a file")
 	}
 }
 
@@ -607,6 +621,44 @@ func TestToolConventions_PromptsStyle(t *testing.T) {
 	cmdFile := filepath.Join(targetBase, "prompts", "cmd-one.md")
 	if _, err := os.Stat(cmdFile); err != nil {
 		t.Errorf("command file not found at prompts directory: %v", err)
+	}
+}
+
+func TestToolConventions_CodexSkillPaths(t *testing.T) {
+	globalDir := t.TempDir()
+	projectRoot := t.TempDir()
+	reg := createTestRegistry(t, globalDir)
+	inst := New(reg, projectRoot)
+
+	_, err := inst.Install("codex-style", ScopeBoth)
+	if err != nil {
+		t.Fatalf("Install failed: %v", err)
+	}
+
+	tool, _ := reg.GetTool("codex-style")
+	globalSkill := resolveTargetPath(
+		tool.ResolveGlobalPath(),
+		tool.Conventions.ScopedSkillPath("skill-one", true),
+		projectRoot,
+		true,
+		tool.Conventions.GlobalSkills != "",
+	)
+	localSkill := resolveTargetPath(
+		tool.ResolveLocalPath(projectRoot),
+		tool.Conventions.ScopedSkillPath("skill-one", false),
+		projectRoot,
+		false,
+		tool.Conventions.LocalSkills != "",
+	)
+
+	globalSkillDir := filepath.Dir(globalSkill)
+	localSkillDir := filepath.Dir(localSkill)
+
+	if _, err := os.Stat(globalSkillDir); err != nil {
+		t.Fatalf("global codex skill directory not found: %v", err)
+	}
+	if _, err := os.Stat(localSkillDir); err != nil {
+		t.Fatalf("local codex skill directory not found: %v", err)
 	}
 }
 
