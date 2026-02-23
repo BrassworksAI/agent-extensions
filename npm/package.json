@@ -1,7 +1,7 @@
 {
-  "name": "agent-extensions",
+  "name": "@shanepadgett/agent-extensions",
   "version": "0.1.0",
-  "description": "CLI for managing AI coding agent extensions",
+  "description": "CLI for coding agent extensions and sdd workflow",
   "author": "Shane Padgett",
   "license": "MIT",
   "repository": {
