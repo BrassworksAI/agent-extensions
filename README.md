@@ -109,6 +109,10 @@ ae uninstall --yes
 
 ## Developer Workflow
 
+Prerequisite: install `mise` before running development tasks.
+
+- Install guide: <https://mise.jdx.dev/getting-started.html>
+
 Use `mise run <task>` for day-to-day development:
 
 | Task | Command |
