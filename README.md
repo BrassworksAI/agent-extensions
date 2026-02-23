@@ -10,11 +10,14 @@
   <strong>Supercharge your AI coding agents with curated commands, skills, and hooks.</strong>
 </p>
 
-## Philosophy
+## What This Project Does
 
-Agent Extensions embraces spec-driven development, where specifications are treated as first-class citizens alongside code. Think of specs as source code and your implementation as the compiled binary. Well-curated specs capture intent, constraints, and long-term vision, while the code is simply their executable form.
+Agent Extensions installs curated commands, skills, and hooks for supported AI coding agents.
 
-These extensions are not about completing a single ticket. They are about building products with intention, where every feature traces back to a specification that explains the *why*, not just the *how*. Your AI agents become partners in maintaining this discipline, helping you plan, discover, implement, and reconcile against specs throughout the entire development lifecycle.
+It is designed for two audiences:
+
+- Users who want a fast way to install and manage agent tooling.
+- Maintainers who want a predictable release flow across GitHub releases and npm.
 
 ## Supported Agents
 
@@ -30,7 +33,7 @@ These extensions are not about completing a single ticket. They are about buildi
 | [Kilo Code](https://kilocode.ai/) | ✅ | ✅ | ❌ |
 | [Droid](https://docs.factory.ai/cli/getting-started/quickstart) | ✅ | ✅ | 🔜 |
 
-## Installation
+## Install
 
 ### Quick Install (Recommended)
 
@@ -60,6 +63,14 @@ mise run build
 ./bin/ae
 ```
 
+## Terminal Preview
+
+<p align="center">
+  <picture>
+    <img alt="Agent Extensions terminal UI" src="docs/_media/terminal.png" style="max-width: 60%; border-radius: 6px;">
+  </picture>
+</p>
+
 ## Usage
 
 Run `ae` to start the interactive installer:
@@ -70,14 +81,8 @@ ae
 
 ### Interactive Mode
 
-1. **Select tools** - Pick which AI agents to configure
-2. **Select scope** - Install globally, locally, or both
-
-<p align="center">
-  <picture>
-    <img alt="Agent Extensions" src="docs/_media/cli.png" style="max-width: 50%; border-radius: 6px;">
-  </picture>
-</p>
+1. Select tools to configure.
+2. Select install scope (`global`, `local`, or both).
 
 ### Non-Interactive Mode
 
@@ -102,7 +107,31 @@ ae uninstall --yes
 | `ae doctor` | Check configuration health |
 | `ae version` | Display version information |
 
-## Release Commit Conventions
+## Developer Workflow
+
+Use `mise run <task>` for day-to-day development:
+
+| Task | Command |
+|------|---------|
+| Build CLI | `mise run build` |
+| Run tests | `mise run test` |
+| Lint | `mise run lint` |
+| Format | `mise run fmt` |
+| Local release check (snapshot) | `mise run release` |
+
+## Release Workflow
+
+Releases are automated with Release Please and conventional commits.
+
+1. Merge feature/fix PRs into `main`.
+2. Release Please opens or updates a release PR.
+3. Merge that release PR.
+4. Auto-tag workflow creates `vX.Y.Z`.
+5. Tag triggers publish workflow (GoReleaser assets + npm publish).
+
+`npm/package.json` version must match the tag version; CI enforces this.
+
+## Conventional Commits
 
 This repo uses Release Please and Conventional Commits to automate versioning and release PRs.
 
@@ -118,9 +147,4 @@ feat: add codex install diagnostics
 feat!: change installer config format
 ```
 
-Non-user-facing changes like `docs:`, `test:`, and `chore:` generally do not trigger a new release version on their own.
-
-## Release Troubleshooting
-
-- If `Auto Tag Release PR` is rerun after a tag already exists, it skips tag creation and will not retrigger `Release`.
-- To retrigger a missed release, delete and re-push the same tag.
+Non-user-facing changes like `docs:`, `test:`, and `chore:` do not trigger a new release version on their own.
