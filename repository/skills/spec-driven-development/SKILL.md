@@ -1,6 +1,6 @@
 ---
 name: spec-driven-development
-description: Spec-Driven Development (SDD) workflow and state management. Use when guiding or executing SDD flows: selecting lanes (full/vibe/bug), moving phases, managing artifacts, running task progression commands, and keeping change state current through ae sdd CLI.
+description: Spec-Driven Development (SDD) workflow and state management. Use when guiding or executing SDD flows; selecting lanes (full/vibe/bug), moving phases, managing artifacts, running task progression commands, and keeping change state current through ae sdd CLI.
 ---
 
 # Spec-Driven Development
