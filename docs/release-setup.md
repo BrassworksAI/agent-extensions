@@ -25,18 +25,27 @@ After setup, all future releases via `v*` tags will auto-publish to npm using OI
 
 ## Creating a Release
 
-```sh
-git checkout main
-git pull origin main
-git tag v0.1.0
-git push origin v0.1.0
-```
+Releases are automated with Release Please and conventional commits.
 
-This triggers:
+1. Merge regular feature/fix PRs into `main`
+2. Release Please opens or updates a release PR
+3. Merge the release PR
+4. A workflow auto-creates and pushes the `v*` tag
+
+That tag triggers:
 
 1. GoReleaser builds binaries for all platforms
 2. Creates GitHub Release with assets
 3. Publishes to npm with matching version
+
+## Versioning Rules
+
+- Conventional commits drive version bumps:
+  - `fix:` -> patch
+  - `feat:` -> minor
+  - `feat!:` or `BREAKING CHANGE:` -> major
+- `npm/package.json` is updated by the release PR
+- Tag version and `npm/package.json` must match (enforced in CI)
 
 ## Deferred Tasks
 

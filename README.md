@@ -101,3 +101,21 @@ ae uninstall --yes
 | `ae list` | Show available content and installation status |
 | `ae doctor` | Check configuration health |
 | `ae version` | Display version information |
+
+## Release Commit Conventions
+
+This repo uses Release Please and Conventional Commits to automate versioning and release PRs.
+
+- `fix:` bumps patch (`x.y.Z`)
+- `feat:` bumps minor (`x.Y.0`)
+- `feat!:` or `BREAKING CHANGE:` bumps major (`X.0.0`)
+
+Examples:
+
+```text
+fix: handle missing config path
+feat: add codex install diagnostics
+feat!: change installer config format
+```
+
+Non-user-facing changes like `docs:`, `test:`, and `chore:` generally do not trigger a new release version on their own.
