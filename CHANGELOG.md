@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.4](https://github.com/shanepadgett/agent-extensions/compare/v0.2.3...v0.2.4) (2026-02-23)
+
+
+### Bug Fixes
+
+* **release:** fail when tag already exists ([6120cf2](https://github.com/shanepadgett/agent-extensions/commit/6120cf2cb38e1134b22886ad6967241997ca4631))
+* **release:** fail when tag already exists ([9db1df9](https://github.com/shanepadgett/agent-extensions/commit/9db1df95bbccf2d3aeffde084cab207eefc0d300))
+
 ## [0.2.3](https://github.com/shanepadgett/agent-extensions/compare/v0.2.2...v0.2.3) (2026-02-23)
 
 
