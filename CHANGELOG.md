@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/shanepadgett/agent-extensions/compare/v0.2.1...v0.2.2) (2026-02-23)
+
+
+### Bug Fixes
+
+* get release secret properly ([4885e0c](https://github.com/shanepadgett/agent-extensions/commit/4885e0c5194da2ab51cae06cf65a6e19093e18d1))
+* get release secret properly ([29aba12](https://github.com/shanepadgett/agent-extensions/commit/29aba12c102d1ebc3d7524973030af97901cf18c))
+
 ## [0.2.1](https://github.com/shanepadgett/agent-extensions/compare/v0.2.0...v0.2.1) (2026-02-23)
 
 
