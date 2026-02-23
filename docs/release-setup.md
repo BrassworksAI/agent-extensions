@@ -12,7 +12,7 @@
    ```
 
 2. **Configure Trusted Publisher on npmjs.com**:
-   - Go to: <https://www.npmjs.com/package/agent-extensions/access>
+   - Go to: <https://www.npmjs.com/package/@shanepadgett/agent-extensions/access>
    - Navigate to: Settings → Trusted Publisher
    - Select: **GitHub Actions**
    - Enter:

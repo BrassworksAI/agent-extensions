@@ -41,13 +41,13 @@ curl -fsSL https://raw.githubusercontent.com/shanepadgett/agent-extensions/main/
 ### npm / npx
 
 ```sh
-npx agent-extensions
+npx @shanepadgett/agent-extensions
 ```
 
 Or install globally:
 
 ```sh
-npm install -g agent-extensions
+npm install -g @shanepadgett/agent-extensions
 ae
 ```
 

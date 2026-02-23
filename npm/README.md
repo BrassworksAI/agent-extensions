@@ -5,13 +5,13 @@ CLI for managing AI coding agent extensions across multiple tools.
 ## Installation
 
 ```sh
-npm install -g agent-extensions
+npm install -g @shanepadgett/agent-extensions
 ```
 
 Or use directly with npx:
 
 ```sh
-npx agent-extensions install
+npx @shanepadgett/agent-extensions install
 ```
 
 ## Usage
