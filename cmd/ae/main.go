@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -169,21 +168,27 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	inst := installer.New(reg, getProjectRoot())
 	var lines []string
 
-	for _, toolName := range selectedTools {
-		result, err := inst.Install(toolName, installScope)
-		if err != nil {
-			lines = append(lines, fmt.Sprintf("✗ %s: %v", toolName, err))
-			continue
-		}
-
-		if len(result.Errors) > 0 {
-			for _, e := range result.Errors {
-				lines = append(lines, fmt.Sprintf("! %s: %v", toolName, e))
+	err = u.Spin("Installing extensions", func() error {
+		for _, toolName := range selectedTools {
+			result, err := inst.Install(toolName, installScope)
+			if err != nil {
+				lines = append(lines, fmt.Sprintf("✗ %s: %v", toolName, err))
+				continue
 			}
-		}
 
-		tool, _ := reg.GetTool(toolName)
-		lines = append(lines, fmt.Sprintf("✓ %s: %d commands, %d skills", tool.Name, result.Commands, result.Skills))
+			if len(result.Errors) > 0 {
+				for _, e := range result.Errors {
+					lines = append(lines, fmt.Sprintf("! %s: %v", toolName, e))
+				}
+			}
+
+			tool, _ := reg.GetTool(toolName)
+			lines = append(lines, fmt.Sprintf("✓ %s: %d commands, %d skills", tool.Name, result.Commands, result.Skills))
+		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 
 	u.Summary(strings.Join(lines, "\n"))
@@ -256,17 +261,23 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 	inst := installer.New(reg, getProjectRoot())
 	var lines []string
 
-	for _, toolName := range selectedTools {
-		result, err := inst.Uninstall(toolName, uninstallScope)
-		if err != nil {
-			lines = append(lines, fmt.Sprintf("✗ %s: %v", toolName, err))
-			continue
-		}
+	err = u.Spin("Removing extensions", func() error {
+		for _, toolName := range selectedTools {
+			result, err := inst.Uninstall(toolName, uninstallScope)
+			if err != nil {
+				lines = append(lines, fmt.Sprintf("✗ %s: %v", toolName, err))
+				continue
+			}
 
-		if result.Commands > 0 || result.Skills > 0 {
-			tool, _ := reg.GetTool(toolName)
-			lines = append(lines, fmt.Sprintf("✓ %s: removed %d commands, %d skills", tool.Name, result.Commands, result.Skills))
+			if result.Commands > 0 || result.Skills > 0 {
+				tool, _ := reg.GetTool(toolName)
+				lines = append(lines, fmt.Sprintf("✓ %s: removed %d commands, %d skills", tool.Name, result.Commands, result.Skills))
+			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 
 	u.Summary(strings.Join(lines, "\n"))
@@ -366,14 +377,6 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	}
 	u.Success("Config: tools.yaml loaded (embedded)")
 
-	// Check gum (try running it to handle mise/shim scenarios)
-	gumCmd := exec.Command("gum", "--version")
-	if out, err := gumCmd.Output(); err != nil {
-		u.Error("gum: not found (required for interactive mode)")
-	} else {
-		u.Success(fmt.Sprintf("gum: %s", strings.TrimSpace(string(out))))
-	}
-
 	// Check each tool's global path
 	u.Header("\nTool Paths:")
 	tools := reg.GetToolNames()
@@ -466,40 +469,46 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	u.Info("Refreshing installed extensions...")
 
 	refreshedCount := 0
-	for _, toolKey := range tools {
-		tool, _ := reg.GetTool(toolKey)
-		globalPath := tool.ResolveGlobalPath()
-		localPath := tool.ResolveLocalPath(projectRoot)
+	err = u.Spin("Refreshing extensions", func() error {
+		for _, toolKey := range tools {
+			tool, _ := reg.GetTool(toolKey)
+			globalPath := tool.ResolveGlobalPath()
+			localPath := tool.ResolveLocalPath(projectRoot)
 
-		// Check if installed globally (check first command)
-		globalInstalled := false
-		for _, c := range commands {
-			if _, err := os.Stat(filepath.Join(globalPath, tool.Conventions.CommandPath(c, true))); err == nil {
-				globalInstalled = true
-				break
+			// Check if installed globally (check first command)
+			globalInstalled := false
+			for _, c := range commands {
+				if _, err := os.Stat(filepath.Join(globalPath, tool.Conventions.CommandPath(c, true))); err == nil {
+					globalInstalled = true
+					break
+				}
 			}
-		}
 
-		// Check if installed locally
-		localInstalled := false
-		for _, c := range commands {
-			if _, err := os.Stat(filepath.Join(localPath, tool.Conventions.CommandPath(c, false))); err == nil {
-				localInstalled = true
-				break
+			// Check if installed locally
+			localInstalled := false
+			for _, c := range commands {
+				if _, err := os.Stat(filepath.Join(localPath, tool.Conventions.CommandPath(c, false))); err == nil {
+					localInstalled = true
+					break
+				}
 			}
-		}
 
-		// Refresh installations
-		if globalInstalled {
-			if _, err := inst.Install(toolKey, installer.ScopeGlobal); err == nil {
-				refreshedCount++
+			// Refresh installations
+			if globalInstalled {
+				if _, err := inst.Install(toolKey, installer.ScopeGlobal); err == nil {
+					refreshedCount++
+				}
+			}
+			if localInstalled {
+				if _, err := inst.Install(toolKey, installer.ScopeLocal); err == nil {
+					refreshedCount++
+				}
 			}
 		}
-		if localInstalled {
-			if _, err := inst.Install(toolKey, installer.ScopeLocal); err == nil {
-				refreshedCount++
-			}
-		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 
 	fmt.Println()

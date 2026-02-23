@@ -27,20 +27,6 @@ type ToolsConfig struct {
 	Tools map[string]Tool `yaml:"tools"`
 }
 
-func LoadToolsConfig(path string) (*ToolsConfig, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("reading tools config: %w", err)
-	}
-
-	var cfg ToolsConfig
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, fmt.Errorf("parsing tools config: %w", err)
-	}
-
-	return &cfg, nil
-}
-
 func LoadToolsConfigFromFS(fsys fs.FS, path string) (*ToolsConfig, error) {
 	data, err := fs.ReadFile(fsys, path)
 	if err != nil {

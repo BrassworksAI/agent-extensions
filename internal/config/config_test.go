@@ -7,55 +7,6 @@ import (
 	"testing/fstest"
 )
 
-func TestLoadToolsConfig(t *testing.T) {
-	content := `tools:
-  test-tool:
-    name: Test Tool
-    global_path: ~/.test-tool
-    local_path: .test-tool
-    conventions:
-      commands: commands/{name}.md
-  another-tool:
-    name: Another Tool
-    global_path: ~/.another
-    local_path: .another
-    conventions:
-      commands: prompts/{name}.md
-`
-	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, "tools.yaml")
-	if err := os.WriteFile(configPath, []byte(content), 0644); err != nil {
-		t.Fatalf("failed to write test config: %v", err)
-	}
-
-	cfg, err := LoadToolsConfig(configPath)
-	if err != nil {
-		t.Fatalf("LoadToolsConfig failed: %v", err)
-	}
-
-	if len(cfg.Tools) != 2 {
-		t.Errorf("expected 2 tools, got %d", len(cfg.Tools))
-	}
-
-	tool, ok := cfg.Tools["test-tool"]
-	if !ok {
-		t.Fatal("test-tool not found")
-	}
-
-	if tool.Name != "Test Tool" {
-		t.Errorf("expected name 'Test Tool', got %q", tool.Name)
-	}
-	if tool.GlobalPath != "~/.test-tool" {
-		t.Errorf("expected global_path '~/.test-tool', got %q", tool.GlobalPath)
-	}
-	if tool.LocalPath != ".test-tool" {
-		t.Errorf("expected local_path '.test-tool', got %q", tool.LocalPath)
-	}
-	if tool.Conventions.Commands != "commands/{name}.md" {
-		t.Errorf("expected commands convention 'commands/{name}.md', got %q", tool.Conventions.Commands)
-	}
-}
-
 func TestLoadToolsConfigFromFS(t *testing.T) {
 	content := `tools:
   fs-tool:
@@ -84,26 +35,6 @@ func TestLoadToolsConfigFromFS(t *testing.T) {
 	}
 	if tool.Name != "FS Tool" {
 		t.Errorf("expected name 'FS Tool', got %q", tool.Name)
-	}
-}
-
-func TestLoadToolsConfig_InvalidYAML(t *testing.T) {
-	tmpDir := t.TempDir()
-	configPath := filepath.Join(tmpDir, "tools.yaml")
-	if err := os.WriteFile(configPath, []byte("invalid: yaml: content: ["), 0644); err != nil {
-		t.Fatalf("failed to write test config: %v", err)
-	}
-
-	_, err := LoadToolsConfig(configPath)
-	if err == nil {
-		t.Error("expected error for invalid YAML, got nil")
-	}
-}
-
-func TestLoadToolsConfig_FileNotFound(t *testing.T) {
-	_, err := LoadToolsConfig("/nonexistent/path/tools.yaml")
-	if err == nil {
-		t.Error("expected error for missing file, got nil")
 	}
 }
 

@@ -43,8 +43,3 @@ func DetectTerminalTheme() TerminalTheme {
 	// Default to dark theme
 	return ThemeDark
 }
-
-func IsToolInstalled(globalPath string) bool {
-	_, err := os.Stat(globalPath)
-	return err == nil
-}

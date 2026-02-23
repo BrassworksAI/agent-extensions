@@ -89,10 +89,6 @@ func (r *Registry) ReadCommand(name string) ([]byte, error) {
 	return fs.ReadFile(r.FS, r.CommandSourcePath(name))
 }
 
-func (r *Registry) ReadSkillFile(skillName, fileName string) ([]byte, error) {
-	return fs.ReadFile(r.FS, filepath.Join(r.SkillSourcePath(skillName), fileName))
-}
-
 func (r *Registry) ListSkillFiles(skillName string) ([]fs.DirEntry, error) {
 	return fs.ReadDir(r.FS, r.SkillSourcePath(skillName))
 }

@@ -233,21 +233,6 @@ func TestRegistry_ReadCommand_NotFound(t *testing.T) {
 	}
 }
 
-func TestRegistry_ReadSkillFile(t *testing.T) {
-	fsys := createTestFS()
-	reg, _ := New(fsys)
-
-	data, err := reg.ReadSkillFile("skill-one", "SKILL.md")
-	if err != nil {
-		t.Fatalf("ReadSkillFile failed: %v", err)
-	}
-
-	expected := "# Skill One\nContent"
-	if string(data) != expected {
-		t.Errorf("ReadSkillFile() = %q, want %q", string(data), expected)
-	}
-}
-
 func TestRegistry_ListSkillFiles(t *testing.T) {
 	fsys := createTestFS()
 	reg, _ := New(fsys)

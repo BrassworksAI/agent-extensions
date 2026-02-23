@@ -2,7 +2,6 @@
 go = "1.25.6"
 goreleaser = "latest"
 bun = "latest"  # For npm wrapper build
-gum = "latest"  # Interactive CLI prompts
 "go:golang.org/x/tools/cmd/deadcode" = "latest"
 
 [env]

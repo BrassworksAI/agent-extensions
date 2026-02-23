@@ -2,7 +2,6 @@ package detect
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -87,41 +86,6 @@ func TestDetectTerminalTheme_Default(t *testing.T) {
 	theme := DetectTerminalTheme()
 	if theme != ThemeDark {
 		t.Errorf("default theme should be dark, got %v", theme)
-	}
-}
-
-func TestIsToolInstalled_Exists(t *testing.T) {
-	tmpDir := t.TempDir()
-	toolPath := filepath.Join(tmpDir, ".test-tool")
-
-	// Create the directory
-	if err := os.MkdirAll(toolPath, 0755); err != nil {
-		t.Fatalf("failed to create test directory: %v", err)
-	}
-
-	if !IsToolInstalled(toolPath) {
-		t.Error("IsToolInstalled should return true for existing directory")
-	}
-}
-
-func TestIsToolInstalled_NotExists(t *testing.T) {
-	if IsToolInstalled("/nonexistent/path/that/does/not/exist") {
-		t.Error("IsToolInstalled should return false for non-existing path")
-	}
-}
-
-func TestIsToolInstalled_File(t *testing.T) {
-	tmpDir := t.TempDir()
-	filePath := filepath.Join(tmpDir, "test-file")
-
-	// Create a file (not directory)
-	if err := os.WriteFile(filePath, []byte("test"), 0644); err != nil {
-		t.Fatalf("failed to create test file: %v", err)
-	}
-
-	// IsToolInstalled just checks if path exists, doesn't care if it's a file or dir
-	if !IsToolInstalled(filePath) {
-		t.Error("IsToolInstalled should return true for existing file")
 	}
 }
 

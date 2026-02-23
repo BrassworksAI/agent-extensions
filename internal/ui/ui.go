@@ -1,10 +1,15 @@
 package ui
 
 import (
+	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
+
+	"github.com/charmbracelet/bubbles/spinner"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type UI struct {
@@ -16,21 +21,23 @@ func New() *UI {
 }
 
 func (u *UI) Choose(header string, options []string) (string, error) {
-	args := []string{"choose", "--header", header}
-	args = append(args, "--cursor.foreground", u.Theme.Primary)
-	args = append(args, "--header.foreground", u.Theme.Secondary)
-	args = append(args, options...)
+	if len(options) == 0 {
+		return "", errors.New("no options available")
+	}
 
-	cmd := exec.Command("gum", args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
-
-	out, err := cmd.Output()
-	if err != nil {
+	selected := options[0]
+	if err := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title(header).
+				Options(optionsToHuh(options)...).
+				Value(&selected),
+		),
+	).Run(); err != nil {
 		return "", err
 	}
 
-	return strings.TrimSpace(string(out)), nil
+	return strings.TrimSpace(selected), nil
 }
 
 func (u *UI) ChooseMulti(header string, options []string) ([]string, error) {
@@ -38,119 +45,112 @@ func (u *UI) ChooseMulti(header string, options []string) ([]string, error) {
 		return []string{}, nil
 	}
 
-	isRetry := false
-	for {
-		// Clear previous warning on retry
-		if isRetry {
-			u.ClearLines(1)
-		}
-
-		args := []string{"choose", "--no-limit", "--header", header}
-		args = append(args, "--cursor.foreground", u.Theme.Primary)
-		args = append(args, "--selected.foreground", u.Theme.Success)
-		args = append(args, "--header.foreground", u.Theme.Secondary)
-		args = append(args, options...)
-
-		cmd := exec.Command("gum", args...)
-		cmd.Stdin = os.Stdin
-		cmd.Stderr = os.Stderr
-
-		out, err := cmd.Output()
-		if err != nil {
-			return nil, err
-		}
-
-		result := strings.TrimSpace(string(out))
-		if result == "" {
-			u.Warn("Please select at least one (Space to toggle, Enter to confirm)")
-			isRetry = true
-			continue
-		}
-
-		return strings.Split(result, "\n"), nil
+	selected := make([]string, 0, len(options))
+	if err := huh.NewForm(
+		huh.NewGroup(
+			huh.NewMultiSelect[string]().
+				Title(header).
+				Options(optionsToHuh(options)...).
+				Validate(func(value []string) error {
+					if len(value) == 0 {
+						return errors.New("please select at least one")
+					}
+					return nil
+				}).
+				Value(&selected),
+		),
+	).Run(); err != nil {
+		return nil, err
 	}
+
+	return selected, nil
 }
 
 func (u *UI) Confirm(prompt string) (bool, error) {
-	args := []string{"confirm", prompt}
-	args = append(args, "--affirmative", "Yes")
-	args = append(args, "--negative", "No")
-	args = append(args, "--prompt.foreground", u.Theme.Primary)
-	args = append(args, "--prompt.margin", "0")
-	args = append(args, "--selected.margin", "0")
-	args = append(args, "--unselected.margin", "0")
-
-	cmd := exec.Command("gum", args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			if exitErr.ExitCode() == 1 {
-				return false, nil
-			}
-		}
+	confirmed := false
+	if err := huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().
+				Title(prompt).
+				Affirmative("Yes").
+				Negative("No").
+				Value(&confirmed),
+		),
+	).Run(); err != nil {
 		return false, err
 	}
 
-	return true, nil
+	return confirmed, nil
 }
 
 func (u *UI) Spin(title string, fn func() error) error {
-	// TODO: Implement gum spin subprocess
-	// For now, just run the function directly with a simple indicator
-	// For now, just run the function directly with a simple indicator
-	fmt.Printf("%s... ", title)
-	err := fn()
+	done := make(chan error, 1)
+	go func() {
+		done <- fn()
+		close(done)
+	}()
+
+	s := spinner.New()
+	s.Spinner = spinner.Dot
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Primary))
+
+	model := spinModel{
+		spinner: s,
+		title:   title,
+		done:    done,
+	}
+
+	finalModel, err := tea.NewProgram(model, tea.WithOutput(os.Stderr)).Run()
 	if err != nil {
-		u.Error("failed")
 		return err
 	}
+
+	result, ok := finalModel.(spinModel)
+	if !ok {
+		return errors.New("unexpected spinner model type")
+	}
+
+	if result.err != nil {
+		u.Error("failed")
+		return result.err
+	}
+
 	u.Success("done")
 	return nil
 }
 
 func (u *UI) Success(msg string) {
-	fmt.Printf("\033[38;2;%sm✓\033[0m %s\n", hexToRGB(u.Theme.Success), msg)
+	symbol := lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Success)).Render("✓")
+	fmt.Printf("%s %s\n", symbol, msg)
 }
 
 func (u *UI) Error(msg string) {
-	fmt.Printf("\033[38;2;%sm✗\033[0m %s\n", hexToRGB(u.Theme.Error), msg)
+	symbol := lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Error)).Render("✗")
+	fmt.Printf("%s %s\n", symbol, msg)
 }
 
 func (u *UI) Info(msg string) {
-	fmt.Printf("\033[38;2;%sm•\033[0m %s\n", hexToRGB(u.Theme.Primary), msg)
+	symbol := lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Primary)).Render("•")
+	fmt.Printf("%s %s\n", symbol, msg)
 }
 
 func (u *UI) Warn(msg string) {
-	fmt.Printf("\033[38;2;%sm!\033[0m %s\n", hexToRGB(u.Theme.Warning), msg)
+	symbol := lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Warning)).Render("!")
+	fmt.Printf("%s %s\n", symbol, msg)
 }
 
 func (u *UI) Header(msg string) {
-	fmt.Printf("\n\033[38;2;%sm%s\033[0m\n", hexToRGB(u.Theme.Secondary), msg)
-}
-
-func (u *UI) ClearLines(n int) {
-	for i := 0; i < n; i++ {
-		fmt.Print("\033[1A\033[2K")
-	}
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Secondary))
+	fmt.Printf("\n%s\n", style.Render(msg))
 }
 
 func (u *UI) Summary(content string) {
-	args := []string{"style",
-		"--border", "rounded",
-		"--padding", "0 1",
-		"--margin", "0 0 0 0",
-		"--border-foreground", u.Theme.Muted,
-		content,
-	}
+	style := lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color(u.Theme.Muted)).
+		Padding(0, 1)
 
-	cmd := exec.Command("gum", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
+	fmt.Println(style.Render(content))
 }
 
 func (u *UI) Title() {
@@ -162,18 +162,54 @@ func (u *UI) Title() {
 ██║  ██║ ███████╗
 ╚═╝  ╚═╝ ╚══════╝`
 	subtitle := "Supercharge your AI agents"
-	fmt.Printf("\033[38;2;%sm%s\033[0m\n", hexToRGB(u.Theme.Primary), title)
-	fmt.Printf("\033[38;2;%sm%s\033[0m\n\n", hexToRGB(u.Theme.Muted), subtitle)
+	fmt.Println(lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Primary)).Render(title))
+	fmt.Println(lipgloss.NewStyle().Foreground(lipgloss.Color(u.Theme.Muted)).Render(subtitle))
+	fmt.Println()
 }
 
-func (u *UI) Section(title string) {
-	// Minimal section - just the title with muted color
-	fmt.Printf("\033[38;2;%sm%s\033[0m\n", hexToRGB(u.Theme.Muted), title)
+func optionsToHuh(options []string) []huh.Option[string] {
+	out := make([]huh.Option[string], 0, len(options))
+	for _, option := range options {
+		out = append(out, huh.NewOption(option, option))
+	}
+	return out
 }
 
-func hexToRGB(hex string) string {
-	hex = strings.TrimPrefix(hex, "#")
-	var r, g, b int
-	fmt.Sscanf(hex, "%02x%02x%02x", &r, &g, &b)
-	return fmt.Sprintf("%d;%d;%d", r, g, b)
+type spinDoneMsg struct {
+	err error
+}
+
+type spinModel struct {
+	spinner spinner.Model
+	title   string
+	done    <-chan error
+	err     error
+}
+
+func (m spinModel) Init() tea.Cmd {
+	return tea.Batch(m.spinner.Tick, waitForSpinDone(m.done))
+}
+
+func (m spinModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case spinner.TickMsg:
+		var cmd tea.Cmd
+		m.spinner, cmd = m.spinner.Update(msg)
+		return m, cmd
+	case spinDoneMsg:
+		m.err = msg.err
+		return m, tea.Quit
+	}
+
+	return m, nil
+}
+
+func (m spinModel) View() string {
+	return fmt.Sprintf("%s %s", m.spinner.View(), m.title)
+}
+
+func waitForSpinDone(done <-chan error) tea.Cmd {
+	return func() tea.Msg {
+		return spinDoneMsg{err: <-done}
+	}
 }
