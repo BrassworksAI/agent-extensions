@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/shanepadgett/agent-extensions/compare/v0.3.0...v0.3.1) (2026-02-23)
+
+
+### Bug Fixes
+
+* **ci:** align release-pr workflow with release-please v4 ([4aeacc4](https://github.com/shanepadgett/agent-extensions/commit/4aeacc4dd7feafff4e142cff069106cbcfbb0e26))
+* **skills:** support scoped skill directory links ([32e39ed](https://github.com/shanepadgett/agent-extensions/commit/32e39ed9cf1a5718bde32149946eebeae59d83fe))
+
 ## [0.3.0](https://github.com/shanepadgett/agent-extensions/compare/v0.2.4...v0.3.0) (2026-02-23)
 
 
