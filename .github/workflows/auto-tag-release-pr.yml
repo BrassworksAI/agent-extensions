@@ -15,8 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Require tag push token
-        if: ${{ secrets.RELEASE_TAG_TOKEN == '' }}
+        env:
+          RELEASE_TAG_TOKEN: ${{ secrets.RELEASE_TAG_TOKEN }}
         run: |
+          if [ -n "$RELEASE_TAG_TOKEN" ]; then
+            exit 0
+          fi
           echo "Error: Missing RELEASE_TAG_TOKEN secret"
           echo "Add a fine-grained PAT or GitHub App token with Contents: Read and write access."
           exit 1
