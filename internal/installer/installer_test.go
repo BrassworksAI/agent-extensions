@@ -3,6 +3,7 @@ package installer
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"testing/fstest"
 
@@ -659,6 +660,49 @@ func TestToolConventions_CodexSkillPaths(t *testing.T) {
 	}
 	if _, err := os.Stat(localSkillDir); err != nil {
 		t.Fatalf("local codex skill directory not found: %v", err)
+	}
+}
+
+func TestInstall_LocalSymlinksUseRelativeTargets(t *testing.T) {
+	globalDir := t.TempDir()
+	projectRoot := t.TempDir()
+	reg := createTestRegistry(t, globalDir)
+	inst := New(reg, projectRoot)
+
+	_, err := inst.Install("dir-based", ScopeLocal)
+	if err != nil {
+		t.Fatalf("Install failed: %v", err)
+	}
+
+	tool, _ := reg.GetTool("dir-based")
+	localBase := tool.ResolveLocalPath(projectRoot)
+
+	cmdPath := filepath.Join(localBase, tool.Conventions.CommandPath("cmd-one", false))
+	target, err := os.Readlink(cmdPath)
+	if err != nil {
+		t.Fatalf("failed reading command symlink: %v", err)
+	}
+	if filepath.IsAbs(target) {
+		t.Fatalf("expected relative command symlink target, got %q", target)
+	}
+	if strings.HasPrefix(target, "~") || strings.Contains(target, "://") {
+		t.Fatalf("unexpected command symlink target format: %q", target)
+	}
+
+	skillPath := resolveTargetPath(
+		localBase,
+		tool.Conventions.ScopedSkillPath("skill-one", false),
+		projectRoot,
+		false,
+		tool.Conventions.LocalSkills != "",
+	)
+	skillDir := filepath.Dir(skillPath)
+	skillTarget, err := os.Readlink(skillDir)
+	if err != nil {
+		t.Fatalf("failed reading skill symlink: %v", err)
+	}
+	if filepath.IsAbs(skillTarget) {
+		t.Fatalf("expected relative skill symlink target, got %q", skillTarget)
 	}
 }
 

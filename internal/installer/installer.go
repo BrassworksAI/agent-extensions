@@ -23,6 +23,7 @@ const (
 type Installer struct {
 	Registry    *registry.Registry
 	ProjectRoot string
+	Source      string
 }
 
 type InstallResult struct {
@@ -45,7 +46,15 @@ func New(reg *registry.Registry, projectRoot string) *Installer {
 	return &Installer{
 		Registry:    reg,
 		ProjectRoot: projectRoot,
+		Source:      "dev",
 	}
+}
+
+func (i *Installer) SetSource(source string) {
+	if source == "" {
+		return
+	}
+	i.Source = source
 }
 
 func (i *Installer) cacheDir(scope Scope) string {
@@ -86,6 +95,7 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 
 	for _, s := range scopes {
 		cache := i.cacheDir(s)
+		scopeErrStart := len(result.Errors)
 		if err := writeFile(filepath.Join(cache, "README.md"), []byte(cacheReadme)); err != nil {
 			result.Errors = append(result.Errors, fmt.Errorf("cache readme: %w", err))
 		}
@@ -112,6 +122,12 @@ func (i *Installer) Install(toolName string, scope Scope) (*InstallResult, error
 				result.Errors = append(result.Errors, fmt.Errorf("skill %s: %w", skill, err))
 			} else {
 				result.Skills++
+			}
+		}
+
+		if len(result.Errors) == scopeErrStart {
+			if err := i.writeCacheMetadata(cache); err != nil {
+				result.Errors = append(result.Errors, fmt.Errorf("cache metadata: %w", err))
 			}
 		}
 	}
@@ -144,7 +160,7 @@ func (i *Installer) installCommand(name, cacheDir, targetBase string, conv confi
 	destPath := conv.CommandPath(name, isGlobal)
 	dest := filepath.Join(targetBase, destPath)
 
-	return createSymlink(cacheDest, dest)
+	return createSymlink(cacheDest, dest, !isGlobal)
 }
 
 func (i *Installer) installSkill(name, cacheDir, targetBase string, conv config.Conventions, isGlobal bool) error {
@@ -167,10 +183,10 @@ func (i *Installer) installSkill(name, cacheDir, targetBase string, conv config.
 	isSingleFile := filepath.Ext(destPath) == ".md" && filepath.Base(destPath) == name+".md"
 	if isSingleFile {
 		skillFile := filepath.Join(cacheDest, "SKILL.md")
-		return createSymlink(skillFile, dest)
+		return createSymlink(skillFile, dest, !isGlobal)
 	}
 
-	return createSymlink(cacheDest, filepath.Dir(dest))
+	return createSymlink(cacheDest, filepath.Dir(dest), !isGlobal)
 }
 
 func (i *Installer) copySkillToCache(skillName, cacheDest string) error {
@@ -231,7 +247,7 @@ func findJSRuntime() string {
 	return ""
 }
 
-func createSymlink(src, dest string) error {
+func createSymlink(src, dest string, useRelative bool) error {
 	if err := os.MkdirAll(filepath.Dir(dest), 0755); err != nil {
 		return fmt.Errorf("creating parent dir: %w", err)
 	}
@@ -242,7 +258,16 @@ func createSymlink(src, dest string) error {
 		}
 	}
 
-	if err := os.Symlink(src, dest); err != nil {
+	linkTarget := src
+	if useRelative {
+		rel, err := filepath.Rel(filepath.Dir(dest), src)
+		if err != nil {
+			return fmt.Errorf("resolving relative symlink: %w", err)
+		}
+		linkTarget = rel
+	}
+
+	if err := os.Symlink(linkTarget, dest); err != nil {
 		return fmt.Errorf("creating symlink: %w", err)
 	}
 

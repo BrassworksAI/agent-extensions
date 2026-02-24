@@ -53,6 +53,17 @@ var doctorCmd = &cobra.Command{
 	RunE:  runDoctor,
 }
 
+var cacheCmd = &cobra.Command{
+	Use:   "cache",
+	Short: "Manage local and global cache files",
+}
+
+var cacheRepairCmd = &cobra.Command{
+	Use:   "repair",
+	Short: "Rebuild cache files and metadata",
+	RunE:  runCacheRepair,
+}
+
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update repository and refresh installed extensions",
@@ -68,9 +79,11 @@ var versionCmd = &cobra.Command{
 }
 
 var (
-	flagTools []string
-	flagScope string
-	flagYes   bool
+	flagTools      []string
+	flagScope      string
+	flagYes        bool
+	flagDoctorFix  bool
+	flagCacheScope string
 )
 
 func init() {
@@ -82,10 +95,16 @@ func init() {
 	uninstallCmd.Flags().StringVarP(&flagScope, "scope", "s", "", "Uninstallation scope (global, local, both)")
 	uninstallCmd.Flags().BoolVarP(&flagYes, "yes", "y", false, "Skip confirmation")
 
+	doctorCmd.Flags().BoolVar(&flagDoctorFix, "fix", false, "Repair cache issues when found")
+
+	cacheRepairCmd.Flags().StringVarP(&flagCacheScope, "scope", "s", "both", "Cache scope (global, local, both)")
+	cacheCmd.AddCommand(cacheRepairCmd)
+
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(doctorCmd)
+	rootCmd.AddCommand(cacheCmd)
 	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(versionCmd)
 }
@@ -167,6 +186,7 @@ func runInstall(cmd *cobra.Command, args []string) error {
 
 	// Install
 	inst := installer.New(reg, getProjectRoot())
+	inst.SetSource(version)
 	var lines []string
 
 	err = u.Spin("Installing extensions", func() error {
@@ -414,22 +434,127 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Check cache directories
-	u.Header("\nCache:")
-	home, _ := os.UserHomeDir()
-	globalCache := filepath.Join(home, ".agents", "ae")
-	localCache := filepath.Join(getProjectRoot(), ".agents", "ae")
+	inst := installer.New(reg, getProjectRoot())
+	inst.SetSource(version)
 
-	if _, err := os.Stat(globalCache); err == nil {
-		u.Success(fmt.Sprintf("Global cache: %s", globalCache))
-	} else {
-		u.Info(fmt.Sprintf("Global cache: not created yet (%s)", globalCache))
+	// Check cache directories and integrity
+	u.Header("\nCache:")
+	cacheResults := make([]*installer.CacheCheckResult, 0, 2)
+	for _, scope := range []installer.Scope{installer.ScopeGlobal, installer.ScopeLocal} {
+		result, err := inst.CheckCache(scope, version)
+		if err != nil {
+			u.Error(fmt.Sprintf("%s cache check failed: %v", scopeTitle(scope), err))
+			continue
+		}
+		cacheResults = append(cacheResults, result)
+
+		if !result.Exists {
+			u.Info(fmt.Sprintf("%s cache: not created yet (%s)", scopeTitle(scope), result.Path))
+			continue
+		}
+
+		if len(result.Issues) == 0 && !result.SourceMismatch {
+			u.Success(fmt.Sprintf("%s cache: healthy (source %s, 0 mismatches)", scopeTitle(scope), displaySource(result.Source)))
+			continue
+		}
+
+		u.Warn(fmt.Sprintf("%s cache: issues found", scopeTitle(scope)))
+		if result.SourceMismatch {
+			u.Warn(fmt.Sprintf("source mismatch: installed by %s, running %s", displaySource(result.Source), version))
+		}
+		for _, issue := range result.Issues {
+			switch issue.Kind {
+			case "hash mismatch", "metadata hash mismatch":
+				u.Warn(fmt.Sprintf("%s: %s", issue.Kind, issue.Path))
+			case "missing file":
+				u.Warn(fmt.Sprintf("missing file: %s", issue.Path))
+			case "metadata missing":
+				u.Warn("metadata missing")
+			default:
+				u.Warn(fmt.Sprintf("%s: %s", issue.Kind, issue.Path))
+			}
+		}
+		u.Info(fmt.Sprintf("Run: ae cache repair --scope %s", scope))
 	}
 
-	if _, err := os.Stat(localCache); err == nil {
-		u.Success(fmt.Sprintf("Local cache: %s", localCache))
-	} else {
-		u.Info(fmt.Sprintf("Local cache: not created yet (%s)", localCache))
+	if flagDoctorFix {
+		u.Header("\nCache Repair:")
+		for _, result := range cacheResults {
+			if !result.Exists {
+				continue
+			}
+			if len(result.Issues) == 0 && !result.SourceMismatch {
+				continue
+			}
+
+			scope := result.Scope
+			err := u.Spin(fmt.Sprintf("Repairing %s cache", strings.ToLower(scopeTitle(scope))), func() error {
+				_, repairErr := inst.RepairCache(scope)
+				return repairErr
+			})
+			if err != nil {
+				u.Error(fmt.Sprintf("%s cache repair failed: %v", scopeTitle(scope), err))
+				continue
+			}
+			u.Success(fmt.Sprintf("%s cache repaired", scopeTitle(scope)))
+		}
+
+		u.Info("Re-running cache health checks...")
+		allHealthy := true
+		for _, scope := range []installer.Scope{installer.ScopeGlobal, installer.ScopeLocal} {
+			result, err := inst.CheckCache(scope, version)
+			if err != nil {
+				allHealthy = false
+				u.Error(fmt.Sprintf("%s cache re-check failed: %v", scopeTitle(scope), err))
+				continue
+			}
+			if result.Exists && len(result.Issues) == 0 && !result.SourceMismatch {
+				u.Success(fmt.Sprintf("%s cache: healthy", scopeTitle(scope)))
+				continue
+			}
+			allHealthy = false
+			if !result.Exists {
+				u.Info(fmt.Sprintf("%s cache: not created yet", scopeTitle(scope)))
+			} else {
+				u.Warn(fmt.Sprintf("%s cache: still has issues", scopeTitle(scope)))
+			}
+		}
+		if allHealthy {
+			u.Success("All caches healthy")
+		}
+
+		u.Header("\nInstall Repair:")
+		for _, scope := range []installer.Scope{installer.ScopeGlobal, installer.ScopeLocal} {
+			installed := installedToolsForScope(reg, getProjectRoot(), scope)
+			if len(installed) == 0 {
+				u.Info(fmt.Sprintf("%s installs: none detected", scopeTitle(scope)))
+				continue
+			}
+
+			refreshErrors := make([]string, 0)
+			err := u.Spin(fmt.Sprintf("Refreshing %s installs", strings.ToLower(scopeTitle(scope))), func() error {
+				for _, toolKey := range installed {
+					if _, installErr := inst.Install(toolKey, scope); installErr != nil {
+						refreshErrors = append(refreshErrors, fmt.Sprintf("%s: %v", toolKey, installErr))
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				u.Error(fmt.Sprintf("%s install refresh failed: %v", scopeTitle(scope), err))
+				continue
+			}
+
+			if len(refreshErrors) == 0 {
+				u.Success(fmt.Sprintf("%s installs refreshed (%d tool(s))", scopeTitle(scope), len(installed)))
+				continue
+			}
+
+			u.Warn(fmt.Sprintf("%s installs refreshed with issues", scopeTitle(scope)))
+			for _, issue := range refreshErrors {
+				u.Warn(issue)
+			}
+		}
 	}
 
 	// Check for broken symlinks
@@ -465,6 +590,125 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func runCacheRepair(cmd *cobra.Command, args []string) error {
+	u := ui.New()
+
+	reg, err := getRegistry()
+	if err != nil {
+		return fmt.Errorf("loading registry: %w", err)
+	}
+
+	scope, err := parseScope(flagCacheScope)
+	if err != nil {
+		return err
+	}
+
+	inst := installer.New(reg, getProjectRoot())
+	inst.SetSource(version)
+
+	scopes := []installer.Scope{scope}
+	if scope == installer.ScopeBoth {
+		scopes = []installer.Scope{installer.ScopeGlobal, installer.ScopeLocal}
+	}
+
+	for _, s := range scopes {
+		err := u.Spin(fmt.Sprintf("Rebuilding %s cache", strings.ToLower(scopeTitle(s))), func() error {
+			_, repairErr := inst.RepairCache(s)
+			return repairErr
+		})
+		if err != nil {
+			return err
+		}
+
+		result, err := inst.CheckCache(s, version)
+		if err != nil {
+			return err
+		}
+		if len(result.Issues) == 0 && !result.SourceMismatch {
+			u.Success(fmt.Sprintf("%s cache repaired (%s)", scopeTitle(s), result.Path))
+		} else {
+			u.Warn(fmt.Sprintf("%s cache repaired with warnings", scopeTitle(s)))
+		}
+	}
+
+	return nil
+}
+
+func parseScope(value string) (installer.Scope, error) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "global":
+		return installer.ScopeGlobal, nil
+	case "local":
+		return installer.ScopeLocal, nil
+	case "both", "":
+		return installer.ScopeBoth, nil
+	default:
+		return "", fmt.Errorf("unknown scope: %s", value)
+	}
+}
+
+func scopeTitle(scope installer.Scope) string {
+	if scope == installer.ScopeGlobal {
+		return "Global"
+	}
+	return "Local"
+}
+
+func displaySource(source string) string {
+	if strings.TrimSpace(source) == "" {
+		return "unknown"
+	}
+	return source
+}
+
+func installedToolsForScope(reg *registry.Registry, projectRoot string, scope installer.Scope) []string {
+	tools := reg.GetToolNames()
+	sort.Strings(tools)
+	commands := reg.GetAllCommands()
+	skills := reg.GetAllSkills()
+
+	installed := make([]string, 0)
+	isGlobal := scope == installer.ScopeGlobal
+
+	for _, toolKey := range tools {
+		tool, _ := reg.GetTool(toolKey)
+		targetBase := tool.ResolveLocalPath(projectRoot)
+		if isGlobal {
+			targetBase = tool.ResolveGlobalPath()
+		}
+
+		if toolHasInstalledContent(tool, targetBase, projectRoot, isGlobal, commands, skills) {
+			installed = append(installed, toolKey)
+		}
+	}
+
+	return installed
+}
+
+func toolHasInstalledContent(tool config.Tool, targetBase, projectRoot string, isGlobal bool, commands, skills []string) bool {
+	for _, c := range commands {
+		path := filepath.Join(targetBase, tool.Conventions.CommandPath(c, isGlobal))
+		if _, err := os.Lstat(path); err == nil {
+			return true
+		}
+	}
+
+	for _, s := range skills {
+		pattern := tool.Conventions.ScopedSkillPath(s, isGlobal)
+		hasScopeOverride := (isGlobal && tool.Conventions.GlobalSkills != "") || (!isGlobal && tool.Conventions.LocalSkills != "")
+		fullPath := resolveScopedSkillPath(targetBase, projectRoot, pattern, isGlobal, hasScopeOverride)
+		checkPath := fullPath
+		if filepath.Ext(pattern) != ".md" {
+			checkPath = filepath.Dir(fullPath)
+		}
+		if _, err := os.Lstat(checkPath); err == nil {
+			return true
+		}
+	}
+
+	return false
+}
+
 func runUpdate(cmd *cobra.Command, args []string) error {
 	u := ui.New()
 
@@ -485,6 +729,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 
 	// Find what's currently installed and refresh symlinks
 	inst := installer.New(reg, projectRoot)
+	inst.SetSource(version)
 
 	fmt.Println()
 	u.Info("Refreshing installed extensions...")
