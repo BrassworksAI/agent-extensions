@@ -6,6 +6,8 @@ description: Advance to the next SDD phase with artifact checks
 
 Advance the active change set to the next phase only after verifying current-phase artifacts exist.
 
+`next.ae` is the single versatile phase-transition command. For full-lane work, use it for both directions between `plan` and `implement` by delegating transition decisions to CLI guards.
+
 ## Required Skills
 
 - `spec-driven-development` (state management, phase sequencing, guardrails)
@@ -28,7 +30,7 @@ Advance the active change set to the next phase only after verifying current-pha
    - **full/discovery**: `changes/<name>/thoughts/` exists and contains at least one discovery note.
    - **full/tasks**: `changes/<name>/tasks.toml` exists and contains at least one task entry.
    - **full/plan**: `changes/<name>/plans/` exists and contains the current task plan.
-   - **full/implement**: `changes/<name>/tasks.toml` exists and task progress is 100%.
+   - **full/implement**: `changes/<name>/tasks.toml` exists and task state is valid (no more than one `in_progress` task).
    - **full/reconcile**: `changes/<name>/reconciliation.md` exists.
    - **vibe/context** and **bug/triage**: `changes/<name>/context.md` exists.
    - **vibe/plan** and **bug/plan**: `changes/<name>/plan.md` exists.
@@ -36,13 +38,21 @@ Advance the active change set to the next phase only after verifying current-pha
 
 4. If artifacts are missing, do not advance. Report exactly what is missing and suggest the command to produce/fix it.
 
-5. If artifacts are present, advance phase by running:
+5. Full-lane transition behavior between `plan` and `implement` must be deterministic and delegated to CLI guards:
+
+   - From `plan`, running `ae sdd phase complete --next [name]` advances to `implement`.
+   - From `implement`, running `ae sdd phase complete --next [name]` is versatile:
+     - tasks remaining: loop back to `plan`
+     - tasks complete: advance to `reconcile`
+   - Always use this single CLI transition path; do not manually branch phases in workflow command logic.
+
+6. If artifacts are present, advance phase by running:
 
    ```bash
    ae sdd phase complete --next [name]
    ```
 
-6. Report the transition result and the new phase from status output.
+7. Report the transition result and the new phase from status output.
 
 ## Success Criteria
 

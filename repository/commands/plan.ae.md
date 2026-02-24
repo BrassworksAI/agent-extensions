@@ -23,9 +23,11 @@ Research the codebase and create an implementation plan. Full lane plans one tas
 2. Read tasks from `changes/<name>/tasks.toml` if full lane.
 
 3. **Full lane**:
-   - Identify current or next task using task status
-   - Mark task in_progress in tasks.toml
-   - Read task details and all `thoughts/` (discovery outputs)
+   - Confirm the active phase is `plan`
+   - Determine task via CLI, not manual edits:
+     - First check `ae sdd task current [name]`
+     - If no current task, run `ae sdd task start [name]` to move next pending task to `in_progress`
+   - Read current task details and all `thoughts/` (discovery outputs)
    - Research codebase for patterns, paths, integration, tests
 
 4. **Vibe/Bug lane**:
@@ -58,7 +60,7 @@ Research the codebase and create an implementation plan. Full lane plans one tas
    - Include all required sections
    - Include code or pseudocode for complex logic
 
-10. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
+10. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>` to advance into `implement`.
 
 ## Examples
 
