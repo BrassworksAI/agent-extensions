@@ -5,7 +5,6 @@ description: Close a change set and sync its specs to canonical
 ### Required Skills (Must Load)
 
 - `spec-driven-development` (state management, completion workflow)
-- `merge-change-specs`
 
 # Finish Change Set
 
@@ -20,11 +19,11 @@ Close the change set and sync specs to canonical.
 
 1. **Verify prerequisites**: Load `spec-driven-development` skill and read state. Confirm phase is `reconcile` and status is `complete` per skill guidelines.
 
-2. **Sync specs**: Use the `merge-change-specs` skill to:
-   - Run a dry run preview showing which specs will be created/modified
-   - Present any errors or blockers requiring user decisions
+2. **Sync specs**: Use the CLI merge command:
+   - Run a dry run preview first: `ae sdd spec merge --dry-run [<change-name>] [--specs-dir <dir>]`
+   - Present dry run results (created/modified/skipped) and any blockers
    - Wait for user approval
-   - Apply the merge to canonical `specs/`
+   - Apply merge: `ae sdd spec merge [<change-name>] [--specs-dir <dir>]`
 
 3. **Update state**: Mark phase and status as complete per skill guidelines.
 
