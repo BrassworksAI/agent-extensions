@@ -10,6 +10,7 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 
 - `spec-driven-development` (state/task management, lane detection)
 - `research`
+- `agent-browser` (required when implementing frontend work to validate behavior, semantics, and computed CSS)
 
 ## Inputs
 
@@ -31,6 +32,8 @@ Execute the current implementation plan. Follow the plan step by step, validate 
    - Validate after significant changes
    - Keep repo green
    - Use `research` skill for unexpected code structure or integration questions
+   - For any frontend implementation (UI, styling, layout, interaction, accessibility), use `agent-browser` skill to validate the implemented result in a browser
+   - During frontend validation, explicitly verify semantic HTML correctness and that computed CSS matches the intended design/reference used during implementation
    - Document any deviations from plan
 
 5. Handle issues:
