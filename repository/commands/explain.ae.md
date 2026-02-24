@@ -49,7 +49,7 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
      state.toml      # lane, phase, notes, pending
      proposal.md     # full lane proposal
      context.md      # vibe/bug context when needed
-     specs/          # behavior contracts
+     docs/specs/     # behavior contracts (default; configurable via .ae-config.json specRoot)
      thoughts/       # discovery notes
      tasks.toml      # ordered tasks with spec_requirements
      plans/          # implementation plans
@@ -72,6 +72,7 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
    | `ae sdd notes set` | Persist resume context/decisions |
    | `ae sdd pending add/clear` | Track unresolved blockers |
    | `ae sdd spec list` | List canonical specs |
+   | `ae sdd config init` | Initialize `.ae-config.json` |
    | `init.ae` | Derive and approve a new change-set name, then initialize |
    | `continue.ae` | Resume an existing change set from CLI status |
    | `vibe.ae` | Start or continue vibe-lane exploratory work |

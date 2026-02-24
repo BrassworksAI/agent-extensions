@@ -39,7 +39,7 @@ change_set: rbac-rollout
 ## Spec repository layout (centralized)
 
 ```text
-specs/
+docs/specs/
   change-sets/
     rbac-rollout/
       state.toml
@@ -58,8 +58,8 @@ specs/
 
 Use git to compute deterministic deltas without API drift:
 
-- `git diff --name-status <base>...<head> -- specs/`
-- `git diff <base>...<head> -- specs/change-sets/<name>`
+- `git diff --name-status <base>...<head> -- docs/specs/`
+- `git diff <base>...<head> -- docs/specs/change-sets/<name>`
 - If desired, strip or normalize frontmatter before diffing to hide re-ordering noise.
 
 This is stable and avoids remote API inconsistencies. The CLI can `git fetch` and diff locally.

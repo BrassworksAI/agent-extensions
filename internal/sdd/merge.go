@@ -44,7 +44,7 @@ func MergeChangeSpecs(opts MergeOptions) (MergeSummary, error) {
 	}
 	specsDir := strings.TrimSpace(opts.SpecsDir)
 	if specsDir == "" {
-		specsDir = "specs"
+		specsDir = "docs/specs"
 	}
 	if filepath.IsAbs(specsDir) {
 		return MergeSummary{}, fmt.Errorf("refusing absolute --specs-dir path: %s", specsDir)

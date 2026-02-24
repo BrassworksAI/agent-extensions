@@ -9,13 +9,13 @@ This skill covers how to write and structure SDD specifications.
 
 ## Spec File Structure
 
-Canonical specs (post-finish) may live in a domain taxonomy under `specs/` at the repository root.
+Canonical specs (post-finish) live under the configured canonical spec root (`.ae-config.json` `specRoot`, default `docs/specs`).
 Discover canonical spec paths with `ae sdd spec list` (no flag by default).
 
 Change-set specs for a given change set live under `changes/<name>/specs/` and may be nested by domain/subdomain.
 
 ```text
-specs/
+docs/specs/
   <domain>/
     <subdomain>/
       <capability>.md
@@ -162,11 +162,11 @@ Use `depends_on` to express spec-to-spec dependencies in a machine-readable form
 ---
 kind: new
 depends_on:
-  - specs/<domain>/<...>/<capability>.md
+  - docs/specs/<domain>/<...>/<capability>.md
 ---
 ```
 
-Prefer listing canonical spec paths under `specs/` even when the dependency is being modified in the current change set.
+Prefer using canonical paths returned by `ae sdd spec list` even when the dependency is being modified in the current change set.
 
 ### `kind: new`
 

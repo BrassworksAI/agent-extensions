@@ -232,7 +232,7 @@ func ValidateAllChangeSpecs(repoRootAbs, changeDirAbs string) ([]ValidationResul
 func ListCanonicalSpecs(repoRootAbs, specsDir string) ([]string, error) {
 	specsDir = strings.TrimSpace(specsDir)
 	if specsDir == "" {
-		specsDir = "specs"
+		specsDir = "docs/specs"
 	}
 	if filepath.IsAbs(specsDir) {
 		return nil, fmt.Errorf("refusing absolute --specs-dir path: %s", specsDir)

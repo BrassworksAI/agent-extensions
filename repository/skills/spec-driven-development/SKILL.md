@@ -53,6 +53,7 @@ next.ae [name]
 |---|---|
 | `ae sdd init <name> --lane <full|vibe|bug>` | Create a new change set and initial state |
 | `ae sdd status [name]` | Show current lane, phase, tasks, notes, and pending |
+| `ae sdd config init` | Initialize `.ae-config.json` for canonical spec root |
 | `next.ae [name]` | Verify current-phase artifacts, then complete and advance |
 | `ae sdd phase complete [--next] [name]` | Underlying CLI transition used by `next.ae` |
 | `ae sdd phase set <phase> [name]` | Manual override for explicit user-directed corrections |

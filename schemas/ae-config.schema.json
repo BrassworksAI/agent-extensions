@@ -1,0 +1,20 @@
+{
+  "$id": "https://raw.githubusercontent.com/shanepadgett/agent-extensions/main/schemas/ae-config.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AE Config",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional schema reference for editor/CI JSON Schema validation"
+    },
+    "specRoot": {
+      "type": "string",
+      "default": "docs/specs",
+      "minLength": 1,
+      "description": "Repo-relative canonical specs root (for example: docs/specs)",
+      "pattern": "^(?!/)(?!.*\\.\\.)[^\\u0000]+$"
+    }
+  }
+}

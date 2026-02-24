@@ -157,3 +157,45 @@ Session capability.
 		t.Fatalf("expected no file written in dry run, stat err: %v", err)
 	}
 }
+
+func TestMergeChangeSpecs_DefaultDirUsesDocsSpecs(t *testing.T) {
+	repo := t.TempDir()
+	change := "session-default-dir"
+	changeSpecsDir := filepath.Join(repo, "changes", change, "specs")
+	if err := os.MkdirAll(changeSpecsDir, 0755); err != nil {
+		t.Fatalf("mkdir change specs: %v", err)
+	}
+
+	newSpec := `---
+kind: new
+---
+# Session
+
+## Overview
+
+Session capability.
+
+## Requirements
+
+- The system SHALL maintain session state.
+`
+	if err := os.WriteFile(filepath.Join(changeSpecsDir, "session.md"), []byte(newSpec), 0644); err != nil {
+		t.Fatalf("write new spec: %v", err)
+	}
+
+	summary, err := MergeChangeSpecs(MergeOptions{
+		RepoRootAbs: repo,
+		ChangeName:  change,
+		DryRun:      false,
+		SpecsDir:    "",
+	})
+	if err != nil {
+		t.Fatalf("merge: %v", err)
+	}
+	if summary.Counts.Created != 1 {
+		t.Fatalf("expected one created, got %+v", summary.Counts)
+	}
+	if _, err := os.Stat(filepath.Join(repo, "docs", "specs", "session.md")); err != nil {
+		t.Fatalf("expected created canonical spec in docs/specs: %v", err)
+	}
+}

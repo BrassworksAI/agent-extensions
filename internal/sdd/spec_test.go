@@ -164,6 +164,24 @@ func TestListCanonicalSpecs_CustomDir(t *testing.T) {
 	}
 }
 
+func TestListCanonicalSpecs_DefaultDirUsesDocsSpecs(t *testing.T) {
+	repo := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(repo, "docs", "specs", "auth"), 0755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, "docs", "specs", "auth", "login.md"), []byte("# Login"), 0644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	paths, err := ListCanonicalSpecs(repo, "")
+	if err != nil {
+		t.Fatalf("list canonical specs: %v", err)
+	}
+	if len(paths) != 1 || paths[0] != "docs/specs/auth/login.md" {
+		t.Fatalf("unexpected paths: %+v", paths)
+	}
+}
+
 func TestListCanonicalSpecs_RejectsUnsafeDir(t *testing.T) {
 	repo := t.TempDir()
 	if _, err := ListCanonicalSpecs(repo, "../specs"); err == nil {

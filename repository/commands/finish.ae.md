@@ -43,7 +43,7 @@ Close the change set and sync specs to canonical.
 Verified phase=reconcile, status=complete
 Dry run: merge 3 new, 2 modified specs
 User approved merge
-Applied: specs/a.md, specs/b.md, specs/c.md created; specs/d.md modified
+Applied: docs/specs/a.md, docs/specs/b.md, docs/specs/c.md created; docs/specs/d.md modified
 State updated to complete
 Archived to changes/archive/feature-x/
 ```

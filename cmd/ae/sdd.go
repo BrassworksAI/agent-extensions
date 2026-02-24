@@ -125,16 +125,32 @@ var sddTaskCompleteCmd = &cobra.Command{
 	RunE:  runSddTaskComplete,
 }
 
+var sddConfigCmd = &cobra.Command{
+	Use:   "config",
+	Short: "SDD configuration",
+}
+
+var sddConfigInitCmd = &cobra.Command{
+	Use:   "init",
+	Short: "Initialize .ae-config.json in repo root",
+	Args:  cobra.NoArgs,
+	RunE:  runSddConfigInit,
+}
+
 var (
 	flagLane              string
 	flagPhaseCompleteNext bool
 	flagTaskCompleteNext  bool
+	flagConfigInitSpecDir string
+	flagConfigInitForce   bool
 )
 
 func init() {
 	sddInitCmd.Flags().StringVarP(&flagLane, "lane", "l", "full", "Lane type (full, vibe, bug)")
 	sddPhaseCompleteCmd.Flags().BoolVar(&flagPhaseCompleteNext, "next", false, "Advance to next phase after completing current")
 	sddTaskCompleteCmd.Flags().BoolVar(&flagTaskCompleteNext, "next", false, "Start next pending task after completing current")
+	sddConfigInitCmd.Flags().StringVar(&flagConfigInitSpecDir, "spec-root", defaultCanonicalSpecsDir, "Canonical specs root directory (repo-relative)")
+	sddConfigInitCmd.Flags().BoolVar(&flagConfigInitForce, "force", false, "Overwrite existing .ae-config.json")
 
 	sddPhaseCmd.AddCommand(sddPhaseNextCmd)
 	sddPhaseCmd.AddCommand(sddPhaseCompleteCmd)
@@ -150,6 +166,7 @@ func init() {
 	sddTaskCmd.AddCommand(sddTaskNextCmd)
 	sddTaskCmd.AddCommand(sddTaskStartCmd)
 	sddTaskCmd.AddCommand(sddTaskCompleteCmd)
+	sddConfigCmd.AddCommand(sddConfigInitCmd)
 
 	sddCmd.AddCommand(sddInitCmd)
 	sddCmd.AddCommand(sddStatusCmd)
@@ -157,6 +174,7 @@ func init() {
 	sddCmd.AddCommand(sddPendingCmd)
 	sddCmd.AddCommand(sddNotesCmd)
 	sddCmd.AddCommand(sddTaskCmd)
+	sddCmd.AddCommand(sddConfigCmd)
 
 	rootCmd.AddCommand(sddCmd)
 }

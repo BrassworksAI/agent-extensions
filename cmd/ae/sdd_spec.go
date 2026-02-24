@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -51,13 +54,18 @@ var (
 	flagSpecListDir      string
 )
 
+const (
+	defaultCanonicalSpecsDir = "docs/specs"
+	aeConfigSchemaURL        = "https://raw.githubusercontent.com/shanepadgett/agent-extensions/main/schemas/ae-config.schema.json"
+)
+
 func init() {
 	sddSpecValidateCmd.Flags().StringVar(&flagSpecValidatePath, "path", "", "Repo-relative path to a single change-set spec file")
 	sddSpecValidateCmd.Flags().BoolVar(&flagSpecValidateAll, "all", false, "Validate all specs under changes/<name>/specs")
 
 	sddSpecMergeCmd.Flags().BoolVar(&flagSpecMergeDryRun, "dry-run", false, "Preview merge changes without writing files")
-	sddSpecMergeCmd.Flags().StringVar(&flagSpecMergeDir, "specs-dir", "specs", "Canonical specs root directory (repo-relative)")
-	sddSpecListCmd.Flags().StringVar(&flagSpecListDir, "specs-dir", "specs", "Canonical specs root directory (repo-relative)")
+	sddSpecMergeCmd.Flags().StringVar(&flagSpecMergeDir, "specs-dir", "", "Canonical specs root directory (repo-relative). Overrides .ae-config.json specRoot")
+	sddSpecListCmd.Flags().StringVar(&flagSpecListDir, "specs-dir", "", "Canonical specs root directory (repo-relative). Overrides .ae-config.json specRoot")
 
 	sddSpecCmd.AddCommand(sddSpecValidateCmd)
 	sddSpecCmd.AddCommand(sddSpecMergeCmd)
@@ -159,11 +167,16 @@ func runSddSpecMerge(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("resolving working directory: %w", err)
 	}
 
+	specsDir, err := resolveCanonicalSpecsDir(repoRootAbs, flagSpecMergeDir)
+	if err != nil {
+		return err
+	}
+
 	summary, err := sdd.MergeChangeSpecs(sdd.MergeOptions{
 		RepoRootAbs: repoRootAbs,
 		ChangeName:  filepath.Base(changeDir),
 		DryRun:      flagSpecMergeDryRun,
-		SpecsDir:    flagSpecMergeDir,
+		SpecsDir:    specsDir,
 	})
 	if err != nil {
 		return err
@@ -183,14 +196,14 @@ func runSddSpecList(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("resolving working directory: %w", err)
 	}
 
-	paths, err := sdd.ListCanonicalSpecs(repoRootAbs, flagSpecListDir)
+	specsDir, err := resolveCanonicalSpecsDir(repoRootAbs, flagSpecListDir)
 	if err != nil {
 		return err
 	}
 
-	specsDir := strings.TrimSpace(flagSpecListDir)
-	if specsDir == "" {
-		specsDir = "specs"
+	paths, err := sdd.ListCanonicalSpecs(repoRootAbs, specsDir)
+	if err != nil {
+		return err
 	}
 
 	payload := struct {
@@ -209,4 +222,57 @@ func runSddSpecList(cmd *cobra.Command, args []string) error {
 	}
 	fmt.Println(string(out))
 	return nil
+}
+
+type aeConfig struct {
+	Schema   string  `json:"$schema,omitempty"`
+	SpecRoot *string `json:"specRoot,omitempty"`
+}
+
+func resolveCanonicalSpecsDir(repoRootAbs, flagValue string) (string, error) {
+	flagValue = strings.TrimSpace(flagValue)
+	if flagValue != "" {
+		return flagValue, nil
+	}
+
+	cfg, err := loadAEConfig(repoRootAbs)
+	if err != nil {
+		return "", err
+	}
+	if cfg.SpecRoot == nil {
+		return defaultCanonicalSpecsDir, nil
+	}
+
+	specRoot := strings.TrimSpace(*cfg.SpecRoot)
+	if specRoot == "" {
+		return "", fmt.Errorf("invalid .ae-config.json: specRoot must be a non-empty string when set")
+	}
+
+	return specRoot, nil
+}
+
+func loadAEConfig(repoRootAbs string) (aeConfig, error) {
+	configPath := filepath.Join(repoRootAbs, ".ae-config.json")
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return aeConfig{}, nil
+		}
+		return aeConfig{}, fmt.Errorf("reading %s: %w", filepath.Base(configPath), err)
+	}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+
+	var cfg aeConfig
+	if err := decoder.Decode(&cfg); err != nil {
+		return aeConfig{}, fmt.Errorf("parsing %s: %w", filepath.Base(configPath), err)
+	}
+
+	var extra json.RawMessage
+	if err := decoder.Decode(&extra); err != io.EOF {
+		return aeConfig{}, fmt.Errorf("parsing %s: must contain exactly one JSON object", filepath.Base(configPath))
+	}
+
+	return cfg, nil
 }
