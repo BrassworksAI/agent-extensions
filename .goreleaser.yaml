@@ -35,10 +35,9 @@ checksum:
 changelog:
   sort: asc
   filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
-      - "^chore:"
+    include:
+      - '^[a-f0-9]+\s+feat(\([^)]+\))?!?:'
+      - '^[a-f0-9]+\s+fix(\([^)]+\))?!?:'
 
 release:
   github:
