@@ -10,6 +10,7 @@ This skill covers how to write and structure SDD specifications.
 ## Spec File Structure
 
 Canonical specs (post-finish) may live in a domain taxonomy under `specs/` at the repository root.
+Discover canonical spec paths with `ae sdd spec list` (no flag by default).
 
 Change-set specs for a given change set live under `changes/<name>/specs/` and may be nested by domain/subdomain.
 

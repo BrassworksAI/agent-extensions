@@ -25,7 +25,7 @@ Write change-set specifications for the change set.
 
 3. Spec writing is collaborative. Don't start writing immediately. First, summarize the goal, actors, workflows, and constraints in your own words. Explain how the change maps to the existing capability hierarchy. Present concrete statements and decisions. Offer options for open decisions. Pause and wait for user confirmation.
 
-4. After confirmation, use `research` skill to understand current spec structure, related capabilities, naming conventions, and build context for spec writing. When taxonomy decisions are needed, defer to the `derive-taxonomy` skill and confirm the result with the user.
+4. After confirmation, run `ae sdd spec list` (no flag by default) to discover canonical spec paths, then use `research` skill to understand related capabilities, naming conventions, and build context for spec writing. If the canonical specs directory does not exist yet, treat this as greenfield and proceed.
 
 5. With approval, create specs in `changes/<name>/specs/` using `spec-format` skill:
    - Specs may be nested by domain

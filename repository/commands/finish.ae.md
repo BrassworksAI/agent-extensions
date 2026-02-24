@@ -20,6 +20,7 @@ Close the change set and sync specs to canonical.
 1. **Verify prerequisites**: Load `spec-driven-development` skill and read state. Confirm phase is `reconcile` and status is `complete` per skill guidelines.
 
 2. **Sync specs**: Use the CLI merge command:
+   - Inspect canonical spec inventory first with `ae sdd spec list` (no flag by default)
    - Run a dry run preview first: `ae sdd spec merge --dry-run [<change-name>] [--specs-dir <dir>]`
    - Present dry run results (created/modified/skipped) and any blockers
    - Wait for user approval

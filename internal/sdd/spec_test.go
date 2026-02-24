@@ -121,3 +121,52 @@ text
 		t.Fatalf("missing expected result paths: %+v", results)
 	}
 }
+
+func TestListCanonicalSpecs(t *testing.T) {
+	repo := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(repo, "specs", "auth"), 0755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, "specs", "auth", "login.md"), []byte("# Login"), 0644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, "specs", "auth", "notes.txt"), []byte("ignore"), 0644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	paths, err := ListCanonicalSpecs(repo, "specs")
+	if err != nil {
+		t.Fatalf("list canonical specs: %v", err)
+	}
+	if len(paths) != 1 {
+		t.Fatalf("expected 1 markdown spec, got %d", len(paths))
+	}
+	if paths[0] != "specs/auth/login.md" {
+		t.Fatalf("unexpected path: %s", paths[0])
+	}
+}
+
+func TestListCanonicalSpecs_CustomDir(t *testing.T) {
+	repo := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(repo, "docs", "specs"), 0755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, "docs", "specs", "session.md"), []byte("# Session"), 0644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	paths, err := ListCanonicalSpecs(repo, "docs/specs")
+	if err != nil {
+		t.Fatalf("list canonical specs: %v", err)
+	}
+	if len(paths) != 1 || paths[0] != "docs/specs/session.md" {
+		t.Fatalf("unexpected paths: %+v", paths)
+	}
+}
+
+func TestListCanonicalSpecs_RejectsUnsafeDir(t *testing.T) {
+	repo := t.TempDir()
+	if _, err := ListCanonicalSpecs(repo, "../specs"); err == nil {
+		t.Fatal("expected unsafe path error")
+	}
+}

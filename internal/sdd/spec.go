@@ -229,6 +229,40 @@ func ValidateAllChangeSpecs(repoRootAbs, changeDirAbs string) ([]ValidationResul
 	return results, nil
 }
 
+func ListCanonicalSpecs(repoRootAbs, specsDir string) ([]string, error) {
+	specsDir = strings.TrimSpace(specsDir)
+	if specsDir == "" {
+		specsDir = "specs"
+	}
+	if filepath.IsAbs(specsDir) {
+		return nil, fmt.Errorf("refusing absolute --specs-dir path: %s", specsDir)
+	}
+	if strings.Contains(specsDir, "..") {
+		return nil, fmt.Errorf("refusing unsafe --specs-dir path: %s", specsDir)
+	}
+
+	specsDirAbs := filepath.Join(repoRootAbs, specsDir)
+	if _, err := os.Stat(specsDirAbs); err != nil {
+		return nil, fmt.Errorf("missing canonical specs directory: %s", filepath.ToSlash(specsDir))
+	}
+
+	files, err := listMarkdownFiles(specsDirAbs)
+	if err != nil {
+		return nil, fmt.Errorf("listing canonical specs: %w", err)
+	}
+
+	paths := make([]string, 0, len(files))
+	for _, fileAbs := range files {
+		rel, err := filepath.Rel(repoRootAbs, fileAbs)
+		if err != nil {
+			return nil, fmt.Errorf("computing path for %s: %w", fileAbs, err)
+		}
+		paths = append(paths, filepath.ToSlash(rel))
+	}
+
+	return paths, nil
+}
+
 func splitTopicChunks(body string) []string {
 	parts := regexp.MustCompile(`(?m)^####\s+`).Split(body, -1)
 	out := make([]string, 0, len(parts))

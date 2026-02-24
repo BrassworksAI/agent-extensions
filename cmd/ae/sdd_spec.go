@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/shanepadgett/agent-extensions/internal/sdd"
 	"github.com/spf13/cobra"
@@ -33,11 +34,21 @@ var sddSpecMergeCmd = &cobra.Command{
 	RunE:          runSddSpecMerge,
 }
 
+var sddSpecListCmd = &cobra.Command{
+	Use:           "list",
+	Short:         "List canonical specs",
+	Args:          cobra.NoArgs,
+	SilenceUsage:  true,
+	SilenceErrors: true,
+	RunE:          runSddSpecList,
+}
+
 var (
 	flagSpecValidatePath string
 	flagSpecValidateAll  bool
 	flagSpecMergeDryRun  bool
 	flagSpecMergeDir     string
+	flagSpecListDir      string
 )
 
 func init() {
@@ -46,9 +57,11 @@ func init() {
 
 	sddSpecMergeCmd.Flags().BoolVar(&flagSpecMergeDryRun, "dry-run", false, "Preview merge changes without writing files")
 	sddSpecMergeCmd.Flags().StringVar(&flagSpecMergeDir, "specs-dir", "specs", "Canonical specs root directory (repo-relative)")
+	sddSpecListCmd.Flags().StringVar(&flagSpecListDir, "specs-dir", "specs", "Canonical specs root directory (repo-relative)")
 
 	sddSpecCmd.AddCommand(sddSpecValidateCmd)
 	sddSpecCmd.AddCommand(sddSpecMergeCmd)
+	sddSpecCmd.AddCommand(sddSpecListCmd)
 	sddCmd.AddCommand(sddSpecCmd)
 }
 
@@ -161,5 +174,39 @@ func runSddSpecMerge(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("encoding merge output: %w", err)
 	}
 	fmt.Println(string(payload))
+	return nil
+}
+
+func runSddSpecList(cmd *cobra.Command, args []string) error {
+	repoRootAbs, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("resolving working directory: %w", err)
+	}
+
+	paths, err := sdd.ListCanonicalSpecs(repoRootAbs, flagSpecListDir)
+	if err != nil {
+		return err
+	}
+
+	specsDir := strings.TrimSpace(flagSpecListDir)
+	if specsDir == "" {
+		specsDir = "specs"
+	}
+
+	payload := struct {
+		SpecsDir string   `json:"specsDir"`
+		Count    int      `json:"count"`
+		Paths    []string `json:"paths"`
+	}{
+		SpecsDir: specsDir,
+		Count:    len(paths),
+		Paths:    paths,
+	}
+
+	out, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		return fmt.Errorf("encoding list output: %w", err)
+	}
+	fmt.Println(string(out))
 	return nil
 }

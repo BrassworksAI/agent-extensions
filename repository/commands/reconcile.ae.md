@@ -22,11 +22,13 @@ Perform bi-directional reconciliation between change set specs and implementatio
 
 2. Read tasks from `changes/<name>/tasks.toml` if full lane.
 
-3. Get the implementation diff for the change set. Execute bi-directional reconciliation:
+3. Discover canonical specs first by running `ae sdd spec list` (no flag by default). If it succeeds, use returned paths for forward reconciliation. If it reports missing canonical specs directory, skip forward reconciliation and proceed with backward reconciliation only.
+
+4. Get the implementation diff for the change set. Execute bi-directional reconciliation:
 
 ### Forward Reconciliation (Specs → Implementation)
 
-For each spec in specs/:
+For each canonical spec path from `ae sdd spec list`:
 
 - Verify the spec describes behavior that is actually present in the implementation
 - Confirm all conditions, flows, and capabilities specified are implemented
@@ -81,7 +83,7 @@ Examples that typically don't require specs:
 - Modify specs to match actual implementation
 - Mark items as out-of-scope (if applicable)
 
-1. If specs/ doesn't exist, perform backward reconciliation and analyze whether implementation adds/removes business logic worth specifying. Present analysis and ask user to capture specs. If yes, create specs/ and write change-set specs (kind: new and/or delta). If no, document that specs were not created.
+1. If canonical specs directory doesn't exist, perform backward reconciliation and analyze whether implementation adds/removes business logic worth specifying. Present analysis and ask user to capture specs. If yes, create canonical specs and write change-set specs (kind: new and/or delta). If no, document that specs were not created.
 
 2. Document bi-directional reconciliation findings in `changes/<name>/reconciliation.md` including:
 
