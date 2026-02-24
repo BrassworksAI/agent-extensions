@@ -58,7 +58,7 @@ Research the codebase and create an implementation plan. Full lane plans one tas
    - Include all required sections
    - Include code or pseudocode for complex logic
 
-10. When user explicitly approves, update phase status per skill guidelines and suggest `/sdd/implement <name>`. Questions/feedback don't count as approval.
+10. When user explicitly approves, update phase status per skill guidelines and suggest `implement.ae <name>`. Questions/feedback don't count as approval.
 
 ## Examples
 

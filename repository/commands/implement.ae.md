@@ -42,12 +42,12 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 
 7. **Full lane completion**:
    - Mark current task done in tasks.toml
-   - If tasks remain, suggest `/sdd/plan <name>` for next task
-   - If no tasks remain, update phase status per skill and suggest `/sdd/reconcile <name>`
+   - If tasks remain, suggest `plan.ae <name>` for next task
+   - If no tasks remain, update phase status per skill and suggest `reconcile.ae <name>`
 
 8. **Vibe/Bug lane completion**:
    - Discuss next steps with user
-   - If keeping work: update phase status per skill and suggest `/sdd/reconcile <name>` (optional)
+   - If keeping work: update phase status per skill and suggest `reconcile.ae <name>` (optional)
    - If throwing away: done, no state update needed
 
 ## Examples
@@ -60,7 +60,7 @@ Output: "Loading plan 01.md to implement password validator changes."
        Follows steps: update validator.ts, add reset logic, update tests.
        Validation: All tests pass.
        User: "Looks good."
-       Output: "Marked task 1 complete. Three tasks remaining—suggest /sdd/plan for next task."
+       Output: "Marked task 1 complete. Three tasks remaining—suggest plan.ae for next task."
 ```
 
 **Vibe lane quick fix:**
@@ -70,5 +70,5 @@ Input: "bug-fix" (user has context with plan.md)
 Output: "Following plan.md to patch router/routes.ts."
        Implementation complete, tests pass.
        User: "Great, keep this work."
-       Output: "Updated state complete. Suggest /sdd/reconcile if you want to capture specs."
+       Output: "Updated state complete. Suggest reconcile.ae if you want to capture specs."
 ```

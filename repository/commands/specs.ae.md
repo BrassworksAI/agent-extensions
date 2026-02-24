@@ -32,9 +32,9 @@ Write change-set specifications for the change set.
    - Use EARS syntax for requirements
    - Review specs for atomic, testable, implementation-agnostic requirements
 
-6. Suggest `/sdd/tools/critique specs` when complete for review.
+6. Suggest `critique.ae specs` when complete for review.
 
-7. When approved, update phase status per skill guidelines and suggest `/sdd/discovery <name>`.
+7. When approved, update phase status per skill guidelines and suggest `discovery.ae <name>`.
 
 ## Examples
 
@@ -53,5 +53,5 @@ Output: "Your goal is to allow users to reset passwords via email.
 
 ```text
 Input: "vibe-lane" (not full lane)
-Output: "Vibe lane should skip specs—redirecting to /sdd/plan."
+Output: "Vibe lane should skip specs—redirecting to plan.ae."
 ```
