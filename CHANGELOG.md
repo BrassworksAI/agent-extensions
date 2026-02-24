@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.4.0](https://github.com/shanepadgett/agent-extensions/compare/v0.3.1...v0.4.0) (2026-02-24)
+
+
+### Features
+
+* **cache:** add cache repair and sync fix ([35a37e0](https://github.com/shanepadgett/agent-extensions/commit/35a37e0b8a321e3e43aa8f0cfccad6fbcba48db9))
+* **commands:** add remove-slop workflow ([8cb6187](https://github.com/shanepadgett/agent-extensions/commit/8cb6187770a010f62491e13e2ec67591534c01fb))
+* **commands:** make next.ae transition versatile ([fa3758d](https://github.com/shanepadgett/agent-extensions/commit/fa3758dd8d7b97ec4e6059a1aa75a36d8029c9d3))
+* **sdd:** add spec validate and merge commands ([60df70f](https://github.com/shanepadgett/agent-extensions/commit/60df70fc973ab5191c40e4458ba8c40a385c03da))
+* **sdd:** configure canonical spec root ([d99efd9](https://github.com/shanepadgett/agent-extensions/commit/d99efd9e937ad502ea509f8d6fe33598b55fc59c))
+* **sdd:** enable canonical spec discovery ([09824c2](https://github.com/shanepadgett/agent-extensions/commit/09824c279db147069e494ab435380ec4fb579c18))
+* **sdd:** gate phase advance via next.ae ([1393de6](https://github.com/shanepadgett/agent-extensions/commit/1393de683814597a1ef7e0863c077c5f97ab2817))
+* **skills:** expand agent-browser playbook ([06a3008](https://github.com/shanepadgett/agent-extensions/commit/06a3008e1e0113f1104bc059708320119814452d))
+
+
+### Bug Fixes
+
+* **commands:** use .ae command invocations ([dcdb930](https://github.com/shanepadgett/agent-extensions/commit/dcdb930d6a13752b9893a8e216ca6e22b3ba2951))
+* **sdd:** allow phase rollback in progress ([1a7286a](https://github.com/shanepadgett/agent-extensions/commit/1a7286a4b3a95130e7d073e751419345419e018f))
+
 ## [0.3.1](https://github.com/shanepadgett/agent-extensions/compare/v0.3.0...v0.3.1) (2026-02-23)
 
 
