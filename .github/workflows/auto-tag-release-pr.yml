@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   tag-release:
@@ -46,3 +47,30 @@ jobs:
 
           git tag "$TAG"
           git push origin "$TAG"
+
+      - name: Mark release PR as tagged
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.RELEASE_TAG_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number,
+                name: 'autorelease: pending',
+              });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number,
+              labels: ['autorelease: tagged'],
+            });
