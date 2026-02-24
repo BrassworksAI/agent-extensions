@@ -36,8 +36,8 @@ changelog:
   sort: asc
   filters:
     include:
-      - '^[a-f0-9]+\s+feat(\([^)]+\))?!?:'
-      - '^[a-f0-9]+\s+fix(\([^)]+\))?!?:'
+      - '^([a-f0-9]{7,40}\s+)?feat(\([^)]+\))?!?:'
+      - '^([a-f0-9]{7,40}\s+)?fix(\([^)]+\))?!?:'
 
 release:
   github:
