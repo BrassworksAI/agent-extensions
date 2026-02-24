@@ -34,7 +34,7 @@ Write change-set specifications for the change set.
 
 6. Suggest `critique.ae specs` when complete for review.
 
-7. When approved, update phase status per skill guidelines and suggest `discovery.ae <name>`.
+7. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
 
 ## Examples
 

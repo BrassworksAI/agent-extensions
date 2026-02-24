@@ -1,6 +1,6 @@
 ---
 name: spec-driven-development
-description: Spec-Driven Development (SDD) workflow and state management. Use when guiding or executing SDD flows; selecting lanes (full/vibe/bug), moving phases, managing artifacts, running task progression commands, and keeping change state current through ae sdd CLI.
+description: Spec-Driven Development (SDD) workflow and state management. Use when guiding or executing SDD flows; selecting lanes (full/vibe/bug), managing artifacts, running task progression commands, and keeping change state current through ae sdd CLI.
 ---
 
 # Spec-Driven Development
@@ -10,6 +10,9 @@ Use this skill as the source of truth for running SDD with `ae sdd` commands. Lo
 ## Core Rules
 
 - Use CLI commands for state progression whenever possible.
+- Never advance phases automatically from any workflow command.
+- Phase advancement is user-driven via `next.ae` only.
+- If the user approves work, suggest `next.ae` instead of running phase progression commands.
 - Do not use custom init scaffolding; initialize with `ae sdd init`.
 - Keep one task `in_progress` at a time in full lane.
 - Keep `notes` and `pending` current so work can resume in a new chat.
@@ -36,12 +39,10 @@ ae sdd init <name> --lane <full|vibe|bug>
 ae sdd status [name]
 ```
 
-1. Move to the right phase:
+1. Move to the right phase only through `next.ae`:
 
 ```bash
-ae sdd phase set <phase>
-# or
-ae sdd phase complete --next
+next.ae [name]
 ```
 
 ## Full Command Reference
@@ -52,9 +53,10 @@ ae sdd phase complete --next
 |---|---|
 | `ae sdd init <name> --lane <full|vibe|bug>` | Create a new change set and initial state |
 | `ae sdd status [name]` | Show current lane, phase, tasks, notes, and pending |
-| `ae sdd phase complete [--next] [name]` | Mark current phase complete and optionally advance |
-| `ae sdd phase set <phase> [name]` | Set phase explicitly |
-| `ae sdd phase next [name]` | Move to next phase (requires current phase complete) |
+| `next.ae [name]` | Verify current-phase artifacts, then complete and advance |
+| `ae sdd phase complete [--next] [name]` | Underlying CLI transition used by `next.ae` |
+| `ae sdd phase set <phase> [name]` | Manual override for explicit user-directed corrections |
+| `ae sdd phase next [name]` | Underlying CLI step used after completion |
 
 ### Task Commands (Full Lane)
 
@@ -109,11 +111,11 @@ For vibe and bug lanes, `reconcile` and `finish` are optional unless specs must 
 
 ## Phase Transition Guardrails
 
-- You must complete the current phase before moving to another phase.
-- `ae sdd phase next` fails when `phase.status != complete`.
-- `ae sdd phase set <phase>` fails for phase changes while the current phase is `in_progress`.
-- Use `ae sdd phase complete` when work is done, then run `ae sdd phase next`.
-- Use `ae sdd phase complete --next` to do both in one step.
+- Never auto-transition phases inside `proposal.ae`, `specs.ae`, `tasks.ae`, `plan.ae`, `implement.ae`, `reconcile.ae`, `vibe.ae`, `bug.ae`, or other workflow commands.
+- Only `next.ae` performs phase progression during normal workflow.
+- `next.ae` must verify phase artifacts before running `ae sdd phase complete --next`.
+- If artifacts are missing, stop and instruct the user how to produce them.
+- `ae sdd phase set <phase>` is reserved for explicit user-directed corrections.
 
 ## Artifact Expectations
 

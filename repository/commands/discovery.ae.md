@@ -34,13 +34,13 @@ Analyze high-level architectural requirements for implementing change-set specs 
 
 4. Document findings: Capture explorations, tradeoffs, and decisions in `changes/<name>/thoughts/`
 
-5. Complete the phase per skill guidelines (mark status complete, clear notes, suggest next phase).
+5. Do not update phase status in this command. After documenting discovery artifacts, suggest `next.ae <name>` when the user wants to proceed.
 
 ## Success Criteria
 
 - Architecture fit assessed and documented
 - Any concerns captured in thoughts/ directory
-- Phase completed per spec-driven-development skill
+- Discovery artifacts complete and ready for `next.ae`
 - User ready to proceed to tasks phase
 
 ## Usage Examples

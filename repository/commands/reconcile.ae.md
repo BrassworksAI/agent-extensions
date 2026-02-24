@@ -90,7 +90,7 @@ Examples that typically don't require specs:
 - User decisions on each discrepancy
 - Final determination: reconciled, requires work, or trivial
 
-When fully reconciled and approved, update phase status per skill guidelines and suggest `finish.ae <name>`.
+Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
 
 ## Examples
 

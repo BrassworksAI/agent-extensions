@@ -68,7 +68,7 @@ Current: full lane, phase=implement, status=in_progress
 Tasks: 50% (2/4)
 Ran: ae sdd task current checkout-fix
 Current task: payment-retry
-Next action: Continue current task, then complete and advance.
+Next action: Continue current task, then complete it.
 Next command: ae sdd task complete --next checkout-fix
 ```
 
@@ -79,5 +79,5 @@ Ran: ae sdd status checkout-fix
 Current: full lane, phase=implement, status=in_progress
 Tasks: 100% (4/4)
 Next action: Phase work appears complete.
-Next command: ae sdd phase complete --next checkout-fix
+Next command: next.ae checkout-fix
 ```

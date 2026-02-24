@@ -40,7 +40,7 @@ Vibe lane is your partner for getting through SDD without the ceremony. Think co
     - Update notes and pending items with `ae sdd notes set` and `ae sdd pending add|clear`
     - Captures progress for seamless continuation—never lose the thread
 
-5. **Deliver Sanity, Not Ceremony**: Build plans, run validations, and progress phase with `ae sdd phase complete --next` when ready. Ensure exploration converges on sane software.
+5. **Deliver Sanity, Not Ceremony**: Build plans, run validations, and never auto-advance phase from this command. When the user wants to proceed, suggest `next.ae <name>`. Ensure exploration converges on sane software.
 
 ## Success Criteria
 

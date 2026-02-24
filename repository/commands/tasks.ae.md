@@ -64,7 +64,7 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
    - Independently testable
    - Leave the system in a committable state
 
-8. When approved, update phase status per skill guidelines and suggest `plan.ae <name>`.
+8. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
 
 ## Examples
 

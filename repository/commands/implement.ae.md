@@ -43,11 +43,11 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 7. **Full lane completion**:
    - Mark current task done in tasks.toml
    - If tasks remain, suggest `plan.ae <name>` for next task
-   - If no tasks remain, update phase status per skill and suggest `reconcile.ae <name>`
+   - If no tasks remain, do not update phase status; suggest `next.ae <name>`
 
 8. **Vibe/Bug lane completion**:
    - Discuss next steps with user
-   - If keeping work: update phase status per skill and suggest `reconcile.ae <name>` (optional)
+   - If keeping work: do not update phase status; suggest `next.ae <name>` (optional)
    - If throwing away: done, no state update needed
 
 ## Examples
@@ -70,5 +70,5 @@ Input: "bug-fix" (user has context with plan.md)
 Output: "Following plan.md to patch router/routes.ts."
        Implementation complete, tests pass.
        User: "Great, keep this work."
-       Output: "Updated state complete. Suggest reconcile.ae if you want to capture specs."
+       Output: "Implementation looks complete. If you want to advance phase, run next.ae."
 ```

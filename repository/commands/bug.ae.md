@@ -39,7 +39,7 @@ description: Fast-track bug investigation and fix initialization
    - Root cause (from research)
    - High-level fix approach
 
-6. **Next Steps**: Use SDD CLI progression (`ae sdd phase complete --next`) after triage is complete.
+6. **Next Steps**: Do not auto-advance phase from this command. After triage artifacts are complete, suggest `next.ae <name>`.
 
 ## Success Criteria
 

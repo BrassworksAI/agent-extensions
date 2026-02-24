@@ -22,7 +22,7 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
 
 3. **CLI-First Operating Model**:
     - Change sets are initialized with `ae sdd init <name> --lane <full|vibe|bug>`.
-    - Progress is tracked with `ae sdd status [name]`, `ae sdd phase complete`, and `ae sdd phase next`.
+    - Progress is tracked with `ae sdd status [name]` and `next.ae [name]`.
     - Full-lane implementation uses `ae sdd task list|start|complete|complete --next`.
     - `.ae` commands (`init.ae`, `proposal.ae`, `specs.ae`, `tasks.ae`, etc.) are workflow assistants; the CLI is the source of truth for state transitions.
 
@@ -50,10 +50,9 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
    |---|---|
     | `ae sdd init` | Create a new change set |
     | `ae sdd status` | See current lane/phase/tasks |
-    | `ae sdd phase complete [--next]` | Mark phase complete and optionally advance |
-    | `ae sdd phase next` | Advance only after phase is complete |
-    | `ae sdd task start` | Start next full-lane task |
-    | `ae sdd task complete --next` | Finish and chain tasks |
+     | `next.ae` | Verify current-phase artifacts, then advance phase |
+     | `ae sdd task start` | Start next full-lane task |
+     | `ae sdd task complete --next` | Finish and chain tasks |
      | `init.ae` | Derive and approve a new change-set name, then initialize |
      | `continue.ae` | Resume an existing change set from CLI status |
      | `vibe.ae` | Start or continue vibe-lane exploratory work |
@@ -86,7 +85,7 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
 
 ### Explain CLI + command relationship
 
-"Use `specs.ae` to draft the contract, then run `ae sdd phase complete --next` when the phase is done."
+"Use `specs.ae` to draft the contract, then run `next.ae` when you want to advance phases."
 
 ## Followup Question
 
