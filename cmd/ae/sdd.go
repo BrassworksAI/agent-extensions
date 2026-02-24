@@ -438,10 +438,6 @@ func runSddPhaseSet(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if phase != state.Phase.Current && state.Phase.Status != sdd.StatusComplete {
-		return fmt.Errorf("cannot set phase from %q while status is %q; complete current phase first with `ae sdd phase complete`", state.Phase.Current, state.Phase.Status)
-	}
-
 	if err := state.SetPhase(phase); err != nil {
 		return err
 	}
