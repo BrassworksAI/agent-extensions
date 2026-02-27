@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-remove-slop
 description: Remove AI code slop
 ---
 

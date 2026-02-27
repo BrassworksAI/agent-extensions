@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-reconcile
 description: Ensure bi-directional match between specs and implementation
 ---
 
@@ -92,7 +93,7 @@ Examples that typically don't require specs:
 - User decisions on each discrepancy
 - Final determination: reconciled, requires work, or trivial
 
-Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
+Do not update phase status in this command. When the user wants to proceed, suggest `ae-sdd-next <name>`.
 
 ## Examples
 

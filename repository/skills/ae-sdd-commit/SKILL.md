@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-commit
 description: Create high-quality git commits with clear Conventional Commit messages
 ---
 

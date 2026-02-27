@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-specs
 description: Write change-set specifications for change
 ---
 
@@ -32,9 +33,9 @@ Write change-set specifications for the change set.
    - Use EARS syntax for requirements
    - Review specs for atomic, testable, implementation-agnostic requirements
 
-6. Suggest `critique.ae specs` when complete for review.
+6. Suggest `ae-sdd-critique specs` when complete for review.
 
-7. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
+7. Do not update phase status in this command. When the user wants to proceed, suggest `ae-sdd-next <name>`.
 
 ## Examples
 
@@ -53,5 +54,5 @@ Output: "Your goal is to allow users to reset passwords via email.
 
 ```text
 Input: "vibe-lane" (not full lane)
-Output: "Vibe lane should skip specs—redirecting to plan.ae."
+Output: "Vibe lane should skip specs—redirecting to ae-sdd-plan."
 ```

@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-next
 description: Advance to the next SDD phase with artifact checks
 ---
 
@@ -6,7 +7,7 @@ description: Advance to the next SDD phase with artifact checks
 
 Advance the active change set to the next phase only after verifying current-phase artifacts exist.
 
-`next.ae` is the single versatile phase-transition command. For full-lane work, use it for both directions between `plan` and `implement` by delegating transition decisions to CLI guards.
+`ae-sdd-next` is the single versatile phase-transition command. For full-lane work, use it for both directions between `plan` and `implement` by delegating transition decisions to CLI guards.
 
 ## Required Skills
 

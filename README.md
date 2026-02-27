@@ -7,12 +7,12 @@
 </p>
 
 <p align="center">
-  <strong>Supercharge your AI coding agents with curated commands, skills, and hooks.</strong>
+  <strong>Supercharge your AI coding agents with curated skills and hooks.</strong>
 </p>
 
 ## What This Project Does
 
-Agent Extensions installs curated commands, skills, and hooks for supported AI coding agents.
+Agent Extensions installs curated skills and hooks for supported AI coding agents.
 
 It is designed for two audiences:
 
@@ -21,17 +21,17 @@ It is designed for two audiences:
 
 ## Supported Agents
 
-| Agent | Commands | Skills | Hooks |
-|-------|:--------:|:------:|:-----:|
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) | ✅ | ✅ | 🔜 |
-| [Codex](https://github.com/openai/codex) | ✅ | ✅ | ❌ |
-| [OpenCode](https://opencode.ai/docs/) | ✅ | ✅ | 🔜 |
-| [Augment](https://docs.augmentcode.com/cli/overview) | ✅ | ✅ | ❌ |
-| [Cursor](https://www.cursor.com/) | ✅ | ✅ | ❌ |
-| [Windsurf](https://windsurf.com/editor) | ✅ | ✅ | ❌ |
-| [Cline](https://github.com/cline/cline) | ✅ | ✅ | ❌ |
-| [Kilo Code](https://kilocode.ai/) | ✅ | ✅ | ❌ |
-| [Droid](https://docs.factory.ai/cli/getting-started/quickstart) | ✅ | ✅ | 🔜 |
+| Agent | Skills | Hooks |
+|-------|:------:|:-----:|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) | ✅ | 🔜 |
+| [Codex](https://github.com/openai/codex) | ✅ | ❌ |
+| [OpenCode](https://opencode.ai/docs/) | ✅ | 🔜 |
+| [Augment](https://docs.augmentcode.com/cli/overview) | ✅ | ❌ |
+| [Cursor](https://www.cursor.com/) | ✅ | ❌ |
+| [Windsurf](https://windsurf.com/editor) | ✅ | ❌ |
+| [Cline](https://github.com/cline/cline) | ✅ | ❌ |
+| [Kilo Code](https://kilocode.ai/) | ✅ | ❌ |
+| [Droid](https://docs.factory.ai/cli/getting-started/quickstart) | ✅ | 🔜 |
 
 ## Install
 
@@ -101,8 +101,8 @@ ae uninstall --yes
 
 | Command | Description |
 |---------|-------------|
-| `ae install` | Install commands and skills for selected tools |
-| `ae uninstall` | Remove installed commands and skills |
+| `ae install` | Install skills for selected tools |
+| `ae uninstall` | Remove installed skills |
 | `ae list` | Show available content and installation status |
 | `ae doctor` | Check configuration health |
 | `ae version` | Display version information |

@@ -26,7 +26,7 @@ func main() {
 var rootCmd = &cobra.Command{
 	Use:   "ae",
 	Short: "Agent Extensions CLI",
-	Long:  "Manage installation of commands and skills for AI coding agents",
+	Long:  "Manage installation of skills for AI coding agents",
 }
 
 var installCmd = &cobra.Command{
@@ -135,7 +135,6 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	var selectedTools []string
 	var scope string
 
-	totalCommands := len(reg.GetAllCommands())
 	totalSkills := len(reg.GetAllSkills())
 
 	if len(flagTools) > 0 {
@@ -172,8 +171,8 @@ func runInstall(cmd *cobra.Command, args []string) error {
 
 	// Confirm
 	if !flagYes {
-		confirmMsg := fmt.Sprintf("Install %d commands and %d skills to %d tools (%s)?",
-			totalCommands, totalSkills, len(selectedTools), scope)
+		confirmMsg := fmt.Sprintf("Install %d skills to %d tools (%s)?",
+			totalSkills, len(selectedTools), scope)
 		confirmed, err := u.Confirm(confirmMsg)
 		if err != nil {
 			return err
@@ -204,7 +203,7 @@ func runInstall(cmd *cobra.Command, args []string) error {
 			}
 
 			tool, _ := reg.GetTool(toolName)
-			lines = append(lines, fmt.Sprintf("✓ %s: %d commands, %d skills", tool.Name, result.Commands, result.Skills))
+			lines = append(lines, fmt.Sprintf("✓ %s: %d skills", tool.Name, result.Skills))
 		}
 		return nil
 	})
@@ -230,7 +229,6 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 	var selectedTools []string
 	var scope string
 
-	totalCommands := len(reg.GetAllCommands())
 	totalSkills := len(reg.GetAllSkills())
 
 	if len(flagTools) > 0 {
@@ -267,8 +265,8 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 
 	// Confirm
 	if !flagYes {
-		confirmed, err := u.Confirm(fmt.Sprintf("Uninstall %d commands and %d skills from %d tools (%s)?",
-			totalCommands, totalSkills, len(selectedTools), scope))
+		confirmed, err := u.Confirm(fmt.Sprintf("Uninstall %d skills from %d tools (%s)?",
+			totalSkills, len(selectedTools), scope))
 		if err != nil {
 			return err
 		}
@@ -290,9 +288,9 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 				continue
 			}
 
-			if result.Commands > 0 || result.Skills > 0 {
+			if result.Skills > 0 {
 				tool, _ := reg.GetTool(toolName)
-				lines = append(lines, fmt.Sprintf("✓ %s: removed %d commands, %d skills", tool.Name, result.Commands, result.Skills))
+				lines = append(lines, fmt.Sprintf("✓ %s: removed %d skills", tool.Name, result.Skills))
 			}
 		}
 		return nil
@@ -317,12 +315,10 @@ func runList(cmd *cobra.Command, args []string) error {
 	projectRoot := getProjectRoot()
 	tools := reg.GetToolNames()
 	sort.Strings(tools)
-	commands := reg.GetAllCommands()
 	skills := reg.GetAllSkills()
 
 	u.Header("\nAvailable Content")
-	fmt.Printf("  Commands: %d\n", len(commands))
-	fmt.Printf("  Skills:   %d\n", len(skills))
+	fmt.Printf("  Skills: %d\n", len(skills))
 
 	// Check installation status per tool
 	type installStatus struct {
@@ -341,37 +337,8 @@ func runList(cmd *cobra.Command, args []string) error {
 
 		status := installStatus{}
 
-		// Check if any command is installed
-		for _, c := range commands {
-			if _, err := os.Stat(filepath.Join(globalPath, tool.Conventions.CommandPath(c, true))); err == nil {
-				status.global = true
-			}
-			if _, err := os.Stat(filepath.Join(localPath, tool.Conventions.CommandPath(c, false))); err == nil {
-				status.local = true
-			}
-		}
-
-		// Check if any skill is installed
-		for _, s := range skills {
-			globalPattern := tool.Conventions.ScopedSkillPath(s, true)
-			localPattern := tool.Conventions.ScopedSkillPath(s, false)
-			globalSkillPath := resolveScopedSkillPath(globalPath, projectRoot, globalPattern, true, tool.Conventions.GlobalSkills != "")
-			localSkillPath := resolveScopedSkillPath(localPath, projectRoot, localPattern, false, tool.Conventions.LocalSkills != "")
-
-			if filepath.Ext(globalPattern) != ".md" {
-				globalSkillPath = filepath.Dir(globalSkillPath)
-			}
-			if filepath.Ext(localPattern) != ".md" {
-				localSkillPath = filepath.Dir(localSkillPath)
-			}
-
-			if _, err := os.Stat(globalSkillPath); err == nil {
-				status.global = true
-			}
-			if _, err := os.Stat(localSkillPath); err == nil {
-				status.local = true
-			}
-		}
+		status.global = toolHasInstalledContent(tool, globalPath, projectRoot, true, nil, skills)
+		status.local = toolHasInstalledContent(tool, localPath, projectRoot, false, nil, skills)
 
 		statusStr := "  "
 		if status.global && status.local {
@@ -726,6 +693,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	projectRoot := getProjectRoot()
 	tools := reg.GetToolNames()
 	commands := reg.GetAllCommands()
+	skills := reg.GetAllSkills()
 
 	// Find what's currently installed and refresh symlinks
 	inst := installer.New(reg, projectRoot)
@@ -741,23 +709,8 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 			globalPath := tool.ResolveGlobalPath()
 			localPath := tool.ResolveLocalPath(projectRoot)
 
-			// Check if installed globally (check first command)
-			globalInstalled := false
-			for _, c := range commands {
-				if _, err := os.Stat(filepath.Join(globalPath, tool.Conventions.CommandPath(c, true))); err == nil {
-					globalInstalled = true
-					break
-				}
-			}
-
-			// Check if installed locally
-			localInstalled := false
-			for _, c := range commands {
-				if _, err := os.Stat(filepath.Join(localPath, tool.Conventions.CommandPath(c, false))); err == nil {
-					localInstalled = true
-					break
-				}
-			}
+			globalInstalled := toolHasInstalledContent(tool, globalPath, projectRoot, true, commands, skills)
+			localInstalled := toolHasInstalledContent(tool, localPath, projectRoot, false, commands, skills)
 
 			// Refresh installations
 			if globalInstalled {

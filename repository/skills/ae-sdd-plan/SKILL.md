@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-plan
 description: Research, plan, and prepare for implementation
 ---
 
@@ -60,7 +61,7 @@ Research the codebase and create an implementation plan. Full lane plans one tas
    - Include all required sections
    - Include code or pseudocode for complex logic
 
-10. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>` to advance into `implement`.
+10. Do not update phase status in this command. When the user wants to proceed, suggest `ae-sdd-next <name>` to advance into `implement`.
 
 ## Examples
 

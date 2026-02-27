@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-implement
 description: Execute the implementation plan
 ---
 
@@ -50,14 +51,14 @@ Execute the current implementation plan. Follow the plan step by step, validate 
 8. **Full lane completion**:
    - Mark current task complete with `ae sdd task complete [name]` (or `ae sdd task complete --next [name]` when explicitly chaining tasks)
    - Do not manually edit `tasks.toml` task status when CLI task commands are available
-   - After task completion, suggest `next.ae <name>`:
-     - If tasks remain, `next.ae` should deterministically loop `implement -> plan`
-     - If tasks are complete, `next.ae` should advance `implement -> reconcile`
+   - After task completion, suggest `ae-sdd-next <name>`:
+     - If tasks remain, `ae-sdd-next` should deterministically loop `implement -> plan`
+     - If tasks are complete, `ae-sdd-next` should advance `implement -> reconcile`
    - Do not update phase status directly in this command
 
 9. **Vibe/Bug lane completion**:
    - Discuss next steps with user
-   - If keeping work: do not update phase status; suggest `next.ae <name>` (optional)
+   - If keeping work: do not update phase status; suggest `ae-sdd-next <name>` (optional)
    - If throwing away: done, no state update needed
 
 ## Examples
@@ -70,7 +71,7 @@ Output: "Loading plan 01.md to implement password validator changes."
        Follows steps: update validator.ts, add reset logic, update tests.
        Validation: All tests pass.
        User: "Looks good."
-       Output: "Marked task 1 complete. Three tasks remaining—run next.ae to loop back to plan for the next task."
+       Output: "Marked task 1 complete. Three tasks remaining—run ae-sdd-next to loop back to plan for the next task."
 ```
 
 **Vibe lane quick fix:**
@@ -80,5 +81,5 @@ Input: "bug-fix" (user has context with plan.md)
 Output: "Following plan.md to patch router/routes.ts."
        Implementation complete, tests pass.
        User: "Great, keep this work."
-       Output: "Implementation looks complete. If you want to advance phase, run next.ae."
+       Output: "Implementation looks complete. If you want to advance phase, run ae-sdd-next."
 ```

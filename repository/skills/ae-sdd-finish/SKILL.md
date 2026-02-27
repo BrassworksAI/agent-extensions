@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-finish
 description: Close a change set and sync its specs to canonical
 ---
 

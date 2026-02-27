@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-proposal
 description: Draft and refine a product proposal document through collaborative dialogue
 ---
 
@@ -27,7 +28,7 @@ The proposal is the source of truth for how the system should behave. Use SDD wo
 2. **Research First**: Use the `research` skill to identify existing patterns, related features, and integration points.
 3. **Collaborative Dialogue**: Ask targeted questions to close behavior gaps instead of guessing.
 4. **Write Proposal**: Create or refine `changes/<name>/proposal.md` with concrete narrative behavior, failure/recovery paths, and clear boundaries.
-5. **Move Workflow Forward**: Do not update phase state in this command. If the user is ready to proceed, suggest `next.ae <name>`.
+5. **Move Workflow Forward**: Do not update phase state in this command. If the user is ready to proceed, suggest `ae-sdd-next <name>`.
 
 ## Success Criteria
 

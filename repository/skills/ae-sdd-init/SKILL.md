@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-init
 description: Initialize a new SDD change set after user-approved naming
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-continue
 description: Continue an SDD change set in a fresh chat using CLI status only
 ---
 
@@ -79,5 +80,5 @@ Ran: ae sdd status checkout-fix
 Current: full lane, phase=implement, status=in_progress
 Tasks: 100% (4/4)
 Next action: Phase work appears complete.
-Next command: next.ae checkout-fix
+Next command: ae-sdd-next checkout-fix
 ```

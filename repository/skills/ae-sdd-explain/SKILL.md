@@ -1,10 +1,11 @@
 ---
+name: ae-sdd-explain
 description: Explain SDD concepts, workflow, and CLI-first usage
 ---
 
 # SDD Explain
 
-Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this command to teach lane selection, phase flow, and how `.ae` commands and `ae sdd` commands work together.
+Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this skill to teach lane selection, phase flow, and how workflow skills and `ae sdd` commands work together.
 
 ## Required Skills
 
@@ -22,17 +23,17 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
 
 3. **CLI-First Operating Model**:
     - Change sets are initialized with `ae sdd init <name> --lane <full|vibe|bug>`.
-    - Progress is tracked with `ae sdd status [name]` and `next.ae [name]`.
+    - Progress is tracked with `ae sdd status [name]` and `ae-sdd-next [name]`.
     - Full-lane implementation uses `ae sdd task list|start|complete|complete --next`.
     - Use `ae sdd spec list` to discover canonical spec paths before reading or editing canonical specs.
-    - `.ae` commands (`init.ae`, `proposal.ae`, `specs.ae`, `tasks.ae`, etc.) are workflow assistants; the CLI is the source of truth for state transitions.
+    - Workflow skills (`ae-sdd-init`, `ae-sdd-proposal`, `ae-sdd-specs`, `ae-sdd-tasks`, etc.) are assistants; the CLI is the source of truth for state transitions.
 
 4. **Deterministic Full-Lane Loop (Plan <-> Implement)**:
    - Explain this exact loop until all tasks are complete:
-     1) `plan.ae` prepares the current task plan (task is selected via CLI task commands)
-     2) `next.ae` advances `plan -> implement`
-     3) `implement.ae` executes and completes the current task via `ae sdd task complete`
-     4) `next.ae` decides transition deterministically using CLI guards:
+     1) `ae-sdd-plan` prepares the current task plan (task is selected via CLI task commands)
+     2) `ae-sdd-next` advances `plan -> implement`
+     3) `ae-sdd-implement` executes and completes the current task via `ae sdd task complete`
+     4) `ae-sdd-next` decides transition deterministically using CLI guards:
         - remaining tasks: loop `implement -> plan`
         - all tasks complete: advance `implement -> reconcile`
    - Emphasize that workflow commands do not manually force phase transitions.
@@ -61,34 +62,34 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
    |---|---|
    | `ae sdd init` | Create a new change set |
    | `ae sdd status` | See current lane/phase/tasks |
-   | `next.ae` | Verify current-phase artifacts, then advance phase |
+   | `ae-sdd-next` | Verify current-phase artifacts, then advance phase |
    | `ae sdd task start` | Start next full-lane task |
    | `ae sdd task current` | Show active in-progress task |
    | `ae sdd task next` | Show next pending task |
    | `ae sdd task complete` | Complete current in-progress task |
    | `ae sdd task complete --next` | Finish and chain tasks |
-   | `ae sdd phase complete --next` | Underlying guarded transition used by `next.ae` |
+   | `ae sdd phase complete --next` | Underlying guarded transition used by `ae-sdd-next` |
    | `ae sdd phase set` | Manual override only by explicit user request |
    | `ae sdd notes set` | Persist resume context/decisions |
    | `ae sdd pending add/clear` | Track unresolved blockers |
    | `ae sdd spec list` | List canonical specs |
    | `ae sdd config init` | Initialize `.ae-config.json` |
-   | `init.ae` | Derive and approve a new change-set name, then initialize |
-   | `continue.ae` | Resume an existing change set from CLI status |
-   | `vibe.ae` | Start or continue vibe-lane exploratory work |
-   | `bug.ae` | Triage and initialize bug-lane fixes |
-   | `proposal.ae` | Draft and refine proposal |
-   | `specs.ae` | Create/update specs |
-   | `discovery.ae` | Validate architecture and risks |
-   | `tasks.ae` | Build `tasks.toml` from specs |
-   | `plan.ae` | Create execution plans |
-   | `implement.ae` | Execute planned work |
-   | `critique.ae` | Review artifacts for quality and gaps |
-   | `scenario-test.ae` | Validate behavior using realistic scenarios |
-   | `commit.ae` | Craft commit(s) aligned to SDD progress |
-   | `reconcile.ae` | Verify implementation vs specs |
-   | `finish.ae` | Close out change set |
-   | `explain.ae` | Teach SDD concepts and workflow usage |
+   | `ae-sdd-init` | Derive and approve a new change-set name, then initialize |
+   | `ae-sdd-continue` | Resume an existing change set from CLI status |
+   | `ae-sdd-vibe` | Start or continue vibe-lane exploratory work |
+   | `ae-sdd-bug` | Triage and initialize bug-lane fixes |
+   | `ae-sdd-proposal` | Draft and refine proposal |
+   | `ae-sdd-specs` | Create/update specs |
+   | `ae-sdd-discovery` | Validate architecture and risks |
+   | `ae-sdd-tasks` | Build `tasks.toml` from specs |
+   | `ae-sdd-plan` | Create execution plans |
+   | `ae-sdd-implement` | Execute planned work |
+   | `ae-sdd-critique` | Review artifacts for quality and gaps |
+   | `ae-sdd-scenario-test` | Validate behavior using realistic scenarios |
+   | `ae-sdd-commit` | Craft commit(s) aligned to SDD progress |
+   | `ae-sdd-reconcile` | Verify implementation vs specs |
+   | `ae-sdd-finish` | Close out change set |
+   | `ae-sdd-explain` | Teach SDD concepts and workflow usage |
 
 8. **How To Guide Users**:
    - Recommend lane choice based on risk and ambiguity.
@@ -105,7 +106,7 @@ Explain Spec-Driven Development (SDD) with a CLI-first mental model. Use this co
 
 ### Explain CLI + command relationship
 
-"Use `specs.ae` to draft the contract, then run `next.ae` when you want to advance phases."
+"Use `ae-sdd-specs` to draft the contract, then run `ae-sdd-next` when you want to advance phases."
 
 ## Followup Question
 

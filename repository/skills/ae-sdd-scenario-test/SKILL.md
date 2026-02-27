@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-scenario-test
 description: Roleplay as a user persona to stress-test proposals and designs
 ---
 

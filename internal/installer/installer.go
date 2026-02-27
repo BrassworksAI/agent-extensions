@@ -36,7 +36,7 @@ type InstallResult struct {
 
 const cacheReadme = `# Agent Extensions Cache
 
-This folder is managed by ae and contains cached commands and skills.
+This folder is managed by ae and contains cached skills.
 Agent tools symlink to these files.
 
 Do not delete this folder.

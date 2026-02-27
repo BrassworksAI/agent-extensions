@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-discovery
 description: Discover high-level architectural requirements for change-set specs
 ---
 
@@ -34,13 +35,13 @@ Analyze high-level architectural requirements for implementing change-set specs 
 
 4. Document findings: Capture explorations, tradeoffs, and decisions in `changes/<name>/thoughts/`
 
-5. Do not update phase status in this command. After documenting discovery artifacts, suggest `next.ae <name>` when the user wants to proceed.
+5. Do not update phase status in this command. After documenting discovery artifacts, suggest `ae-sdd-next <name>` when the user wants to proceed.
 
 ## Success Criteria
 
 - Architecture fit assessed and documented
 - Any concerns captured in thoughts/ directory
-- Discovery artifacts complete and ready for `next.ae`
+- Discovery artifacts complete and ready for `ae-sdd-next`
 - User ready to proceed to tasks phase
 
 ## Usage Examples

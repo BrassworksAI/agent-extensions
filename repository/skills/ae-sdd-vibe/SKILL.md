@@ -1,4 +1,5 @@
 ---
+name: ae-sdd-vibe
 description: Collaborative vibe coding sessions that free you from spec ceremony while delivering sane software
 ---
 
@@ -40,7 +41,7 @@ Vibe lane is your partner for getting through SDD without the ceremony. Think co
     - Update notes and pending items with `ae sdd notes set` and `ae sdd pending add|clear`
     - Captures progress for seamless continuation—never lose the thread
 
-5. **Deliver Sanity, Not Ceremony**: Build plans, run validations, and never auto-advance phase from this command. When the user wants to proceed, suggest `next.ae <name>`. Ensure exploration converges on sane software.
+5. **Deliver Sanity, Not Ceremony**: Build plans, run validations, and never auto-advance phase from this command. When the user wants to proceed, suggest `ae-sdd-next <name>`. Ensure exploration converges on sane software.
 
 ## Success Criteria
 

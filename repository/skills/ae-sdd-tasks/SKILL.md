@@ -1,10 +1,11 @@
 ---
+name: ae-sdd-tasks
 description: Create implementation tasks from specs (full lane)
 ---
 
 # Tasks
 
-Create implementation tasks for the change set. Full lane only—vibe/bug lanes skip this and use `plan.ae`.
+Create implementation tasks for the change set. Full lane only—vibe/bug lanes skip this and use `ae-sdd-plan`.
 
 ## Required Skills
 
@@ -19,7 +20,7 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
 
 1. Load `spec-driven-development` skill. Read state from `changes/<name>/state.toml`. Apply state entry check per skill guidelines.
 
-2. **Lane check**: If lane is `vibe` or `bug`, redirect to `plan.ae` per skill guidelines.
+2. **Lane check**: If lane is `vibe` or `bug`, redirect to `ae-sdd-plan` per skill guidelines.
 
 3. Read proposal, specs from `changes/<name>/specs/`, and thoughts from `changes/<name>/thoughts/`.
 
@@ -64,7 +65,7 @@ Create implementation tasks for the change set. Full lane only—vibe/bug lanes 
    - Independently testable
    - Leave the system in a committable state
 
-8. Do not update phase status in this command. When the user wants to proceed, suggest `next.ae <name>`.
+8. Do not update phase status in this command. When the user wants to proceed, suggest `ae-sdd-next <name>`.
 
 ## Examples
 
@@ -103,5 +104,5 @@ requirements = [
 
 ```text
 Input: "vibe-lane" (not full lane)
-Output: "Vibe lane should use plan.ae instead. Redirecting."
+Output: "Vibe lane should use ae-sdd-plan instead. Redirecting."
 ```
