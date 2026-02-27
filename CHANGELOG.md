@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/shanepadgett/agent-extensions/compare/v0.4.0...v0.5.0) (2026-02-27)
+
+
+### Features
+
+* **sdd:** adopt skill-based workflow aliases ([5e3ac3c](https://github.com/shanepadgett/agent-extensions/commit/5e3ac3c0df1ba0a2125f4e34673088b081049f7d))
+* **skills:** deepen product taxonomy derivation ([569024b](https://github.com/shanepadgett/agent-extensions/commit/569024bac720c8fa4c6203633beabc8080cd6a9d))
+
 ## [0.4.0](https://github.com/shanepadgett/agent-extensions/compare/v0.3.1...v0.4.0) (2026-02-24)
 
 
