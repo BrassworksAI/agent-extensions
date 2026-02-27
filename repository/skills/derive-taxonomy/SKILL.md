@@ -1,57 +1,120 @@
 ---
 name: derive-taxonomy
-description: Identify product-domain and capability boundaries for change intents, defining how a taxonomy should be structured.
+description: Derive product-domain taxonomy from change intents and existing specs, producing nested domain/context/capability boundaries.
 ---
 
 # Derive Taxonomy
 
 ## Purpose
 
-Translate change intents into a capability taxonomy by determining product system fit and clear domain/subdomain boundaries.
+Translate change intents into a product-domain taxonomy by:
+
+- understanding existing domain and capability structure,
+- evaluating boundary quality,
+- proposing nested domain/context/capability paths,
+- and producing final capability spec filenames.
+
+Taxonomy derivation must explicitly surface all needed scope across the tree:
+
+- new capabilities under existing domains,
+- existing capabilities that likely need modification,
+- entirely new domains/contexts when current taxonomy does not fit,
+- with nesting depth allowed to grow to any number of levels based on product boundaries.
+
+The taxonomy must stay implementation-agnostic and product-boundary first.
 
 ## Inputs I need
 
-- The change intent(s) or proposal text.
-- Relevant context about existing domains and capabilities (review available taxonomy context).
+- Change intent(s) or proposal text.
+- Relevant context about existing domains and capabilities.
+- Canonical/change-set spec structure when available.
 
 ## Workflow
 
-1. Load the `research` skill for taxonomy context and review available domain/capability materials.
-2. For each change intent, determine product system fit: which domain/capability boundaries it aligns with and where it does not.
-3. Identify all impacted capabilities in the change set, including new capabilities, modifications, and removals across domains.
-4. Classify each capability change as one of: entry points (UIs/APIs/CLIs), cross-cutting mechanisms (caching/auth/ranking), core domain model (data/validation), or global invariants (IDs/resolution rules).
-5. Choose the shallowest cohesive group structure for each domain and capability; use deeper paths only when boundaries demand it.
-6. Produce the mapping output with boundary decisions, grouping, and dependencies.
+1. Load the `research` skill and inspect existing specs/taxonomy artifacts first.
+2. Build an **Existing Taxonomy Snapshot**:
+   - list discovered domains/subdomains/capabilities,
+   - identify strong boundaries,
+   - flag ambiguous or missing boundaries.
+3. Decompose the change intent into product concerns:
+   - actors,
+   - workflows,
+   - business rules/invariants,
+   - capability outcomes.
+4. Propose a **nested taxonomy tree** using:
+   - `Domain -> Subdomain/Context -> Capability Leaf`
+   - nesting depth is unbounded and may go to any number of levels when each level introduces a distinct product boundary.
+5. Convert the proposed tree into concrete taxonomy artifacts:
+    - folder paths,
+    - capability leaf names,
+    - and spec file targets that should exist under `changes/<name>/specs/...`.
+    Explicitly label which paths are:
+    - existing paths reused as-is,
+    - existing capability files that need updates,
+    - and brand-new domain/context/capability paths to create.
+6. For resource-oriented API domains, use operation capabilities under resource ownership:
+   - `Domain -> Resource -> Operation Capability`
+   - examples include `create/read/list/update/delete` and non-CRUD operations such as `search/archive/reconcile` when behavior requires it.
+7. Present options, tradeoffs, and a recommended taxonomy. Pause for user confirmation before locking structure.
+8. Produce the final taxonomy tree and spec-path plan.
 
 ## Capability framing principles
 
-1. **Capability-first, implementation-agnostic**: boundaries describe observable behavior and constraints, not technology choices.
-2. **Centralize invariants**: global rules belong in one capability boundary that other capabilities depend on.
-3. **Split surfaces vs mechanisms**: surfaces are reader/author-facing endpoints; mechanisms are cross-cutting behaviors that affect multiple surfaces.
-4. **Prefer small capabilities that compose**: split when a capability contains multiple independent concerns.
-5. **Make determinism explicit**: ordering, tie-breakers, and generation rules must be stated in the owning capability.
-6. **Continuously dedupe**: remove shadow requirements by picking one capability to own a rule.
-7. **Decide once, reference everywhere**: decisions live in a single owning capability boundary.
+1. **Product-boundary first**: define boundaries by user/business outcomes and rule ownership.
+2. **Implementation-agnostic**: do not use frameworks, storage, transport, or infrastructure as primary taxonomy boundaries.
+3. **Capability leaves are spec-ready**: each leaf represents one testable capability outcome.
+4. **Centralize invariants**: shared rules have one owning capability; dependent capabilities reference it.
+5. **Separate independent outcomes**: if one node contains multiple independently testable outcomes, create separate leaves.
+6. **Keep inseparable outcomes together**: if two outcomes cannot be specified or validated independently, keep them in one leaf.
+7. **Depth follows boundary clarity**: use as many levels as needed to represent distinct product contexts; stop only when the next level would not add a new product-boundary distinction.
 
 ## Output format
 
 Provide:
 
-- Proposal-to-taxonomy mapping (existing capabilities, new capabilities, refactors, removals)
-- Boundary decisions (in/out of scope per domain)
-- Group structure (flat or grouped, with path depth)
-- Dependencies (capability-to-capability or cross-domain)
+1. **Existing Taxonomy Snapshot**
+   - discovered domain/capability paths
+   - quality notes (clear, ambiguous, missing)
+2. **Intent Decomposition**
+   - actors/workflows/rules/outcomes that drive structure
+3. **Proposed Nested Taxonomy**
+   - tree: `Domain -> Subdomain/Context -> Capability Leaf`
+4. **Taxonomy Artifact Plan**
+    - folder tree to create/reuse
+    - capability files (final spec filenames)
+    - per file/path status: `reuse`, `modify`, or `create`
+5. **Ownership Decisions**
+    - single-owner decisions for cross-domain rules
+6. **Spec File Plan**
+   - proposed files under `changes/<name>/specs/...`
+   - dependency notes where useful
+7. **Open Decisions for User Confirmation**
+   - options, recommendation, and consequences
 
 ## Quick heuristics
 
-- If a rule must be identical across multiple surfaces, centralize it and reference it.
-- If a capability has more than one entry point, split by entry point.
-- If a requirement spans domains, pick a single owning domain and have others reference it.
-- If a requirement is not testable as written, rewrite it until it is.
+- If a boundary is justified by technology rather than product behavior, reframe it.
+- If a rule must be identical across multiple contexts, centralize ownership and reference it.
+- If a capability node has multiple independent verbs/outcomes, split it into separate leaves.
+- If a requirement spans domains, assign one owning domain/capability and reference from others.
+- If a proposed leaf is not testable as written, refine until it is.
+- If existing taxonomy cannot cleanly contain intent, introduce new domain/context levels rather than forcing fit.
 
 ## Guardrails
 
-- Base decisions on domain/capability fit, not convenience.
-- Expect change sets to span multiple capabilities and domains.
-- Do not collapse or blur product system boundaries.
-- Taxonomy depth is unbounded, but keep paths as shallow as possible for cohesive boundaries.
+- Do not derive boundaries from implementation architecture.
+- Do not collapse distinct product contexts into one generic bucket.
+- Do not over-split capabilities into implementation-level details.
+- Keep taxonomy collaborative: propose, explain, and confirm before finalizing.
+
+## Example shapes
+
+- Product example:
+  - `gmail/inbox-organization/search-and-filters/full-text-discovery.md`
+- Resource-operation example:
+  - `account-management/users/create`
+  - `account-management/users/read`
+  - `account-management/users/list`
+  - `account-management/users/update`
+  - `account-management/users/delete`
+  - `account-management/users/search`
